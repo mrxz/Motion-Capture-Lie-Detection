@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Motion_lie_detection.SuitController">
+    <Position X="1.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQIAAAAAAAAAAAAAAEAAIAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SuitController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.XSensController">
+    <Position X="0.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAEAAIAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XSensController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.SuitRecordingProvider">
+    <Position X="1" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SuitRecordingProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.FileRecordingProvider">
+    <Position X="3.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>FileRecordingProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.BodyModel">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>BodyModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.Algorithm">
+    <Position X="11.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Algorithm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.LieDetectionAlgorithm">
+    <Position X="10.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>LieDetectionAlgorithm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.FilterPass">
+    <Position X="13.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Algorithm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.LieResult">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>LieResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.NormalizePosition">
+    <Position X="8.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Normalisation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.NormalizeOrientation">
+    <Position X="10.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Normalisation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.NormalizeLength">
+    <Position X="14" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Normalisation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.Visualizer">
+    <Position X="10.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Visualizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.TrafficLight">
+    <Position X="12.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TrafficLight.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.MotionLieDetection">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Motion_lie_detection.RecordingProvider">
+    <Position X="3.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RecordingProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Motion_lie_detection.Recording" Collapsed="true">
+    <Position X="6" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAACAAAAAIAAAAAAABAAIAAAAAACAAAQBAAIE=</HashCode>
+      <FileName>Recording.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Motion_lie_detection.Frame" Collapsed="true">
+    <Position X="6.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAgA=</HashCode>
+      <FileName>Recording.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Motion_lie_detection.Joint" Collapsed="true">
+    <Position X="6.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAQAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Recording.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Motion_lie_detection.MarkPoint" Collapsed="true">
+    <Position X="4" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAAAAABAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Recording.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Motion_lie_detection.BodyConfiguration" Collapsed="true">
+    <Position X="6.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BodyModel.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="Motion_lie_detection.Observer">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Observer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
