@@ -7,7 +7,7 @@ namespace Motion_lie_detection
 {
     public class SuitRecordingProvider : RecordingProvider
     {
-        public int GetFrameRate()
+        public override int GetFrameRate()
         {
             throw new NotImplementedException();
         }

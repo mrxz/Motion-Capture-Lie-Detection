@@ -1,6 +1,6 @@
 ﻿namespace Motion_lie_detection
 {
-    public struct BodyConfiguration
+    public class BodyConfiguration
     {
         public BodyConfiguration()
         {

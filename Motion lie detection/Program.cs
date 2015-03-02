@@ -9,7 +9,7 @@ namespace Motion_lie_detection
     {
         public static void Main()
         {
-            throw new System.NotImplementedException();
+            XSensListener.Listen();
         }
     }
 }

@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Motion_lie_detection
 {
-	class MainClass
+	class XSensListener
 	{
-		public static void Main (string[] args)
+		public static void Listen ()
 		{
 			byte[] custom = new byte[] { 
-				0x4D, 0x58, 0x54, 0x50, 0x31, 0x32,			// String ID
+				0x4D, 0x58, 0x54, 0x50, 0x30, 0x31,			// String ID
 				0x00, 0x00, 0x00, 0x00,						// 4 bytes
 				0x00,										// 1 byte
 				0x01,										// 1 byte
@@ -35,9 +35,9 @@ namespace Motion_lie_detection
 
 
 			// Listen
-			UdpClient client = new UdpClient ();
-			IPEndPoint endPoint = new IPEndPoint (IPAddress.Parse ("127.0.0.1"), 9763);
-			client.Connect (endPoint);
+			UdpClient client = new UdpClient (new IPEndPoint(IPAddress.Any, 9763));
+            IPEndPoint endPoint = new IPEndPoint (IPAddress.Parse ("127.0.0.1"), 9763);
+            //client.Connect (endPoint);
 
 			while (true) {
 				byte[] packet = client.Receive (ref endPoint);
@@ -55,11 +55,12 @@ namespace Motion_lie_detection
 
 			// Check the package type.
 			switch (header.id.Substring (4)) {
-			case "01":
+			case "02":
 				{
 					// Load the positions and quaternions.
 					for (int i = 0; i < header.numberOfItems; i++) {
 						Segment segment = Segment.fromBytes (reader);
+                        Console.WriteLine("id:{0} x:{1} y:{2} z:{3}", segment.id, segment.x, segment.y, segment.z);
 					}
 				}
 				break;
@@ -116,6 +117,7 @@ namespace Motion_lie_detection
 
 			header.timeCode = reader.ReadUInt32 ();
 			header.characterId = reader.ReadByte ();
+            reader.ReadBytes(7);
 
 			return header;
 		}
@@ -138,8 +140,8 @@ namespace Motion_lie_detection
 			while (!reader.EndOfStream) {
 				String line = reader.ReadLine ();
 				String[] values = line.Split (':');
-
-				properties.Add (values [0], values [1]);
+                if(line != "\0")
+				    properties.Add (values [0], values [1]);
 			}
 
 			return new Metadata (properties);

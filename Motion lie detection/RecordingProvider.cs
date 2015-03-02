@@ -2,6 +2,6 @@
 {
     public abstract class RecordingProvider
     {
-        abstract int GetFrameRate();
+        public abstract int GetFrameRate();
     }
 }

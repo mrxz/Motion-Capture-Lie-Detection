@@ -10,10 +10,11 @@ namespace Motion_lie_detection
         private List<MarkPoint> markpoints;
         private BodyConfiguration bconfig;
 
-        public Recording(BodyConfiguration bconfig)
+        public Recording(BodyConfiguration bodyconfig)
         {
             frames = new List<Frame>();
             markpoints = new List<MarkPoint>();
+            bconfig = bodyconfig;
         }
         
         public Frame FrameRate
@@ -62,32 +63,38 @@ namespace Motion_lie_detection
     public struct Joint
     {        
         private int id;
-        public Vector3 Position {get; set;}
-        public Quaternion Orientation { get; set; }
+        private Vector3 pos;
+        private Quaternion ort;        
 
         public Joint(int num, Vector3 position, Quaternion orientation)
         {
             id = num;
-            Position = position;
-            Orientation = orientation;
+            pos = position;
+            ort = orientation;
         }
 
         public int Id { get { return id; } }
+
+        public Vector3 Position { get { return pos; } set { pos = value; } }
+        public Quaternion Orientation { get { return ort; } set { ort = value; } }
     }
 
     public struct MarkPoint
     {
         private int id;
-        public string Description { get; set; }
-        public int Frameid { get; set; }
+        private string descr;
+        private int fid;
 
         public MarkPoint(int id, string description, int frameid)
         {
             this.id = id;
-            Description = description;
-            Frameid = frameid;
+            descr = description;
+            fid = frameid;
         }
 
         public int Id { get { return id; } }
+
+        public string Description { get { return descr; } set { Description = value; } }
+        public int Frameid { get { return fid; } set { fid = value; } }
     }
 }
