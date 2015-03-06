@@ -42,6 +42,7 @@
     <Compile Include="FileRecordingProvider.cs" />
     <Compile Include="LieDetectionAlgorithm.cs" />
     <Compile Include="LieResult.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Normalisation.cs" />
     <Compile Include="Observer.cs" />
     <Compile Include="Program.cs" />
