@@ -7,24 +7,29 @@ namespace Motion_lie_detection
 {
     public class XSensController : SuitController
     {
+		/**
+		 * The XSensListener used to receive packages.
+		 */
+		private readonly XSensListener listener;
+
+		public XSensController() {
+			this.listener = new XSensListener ("127.0.0.1", 9763);
+		}
+
         public override bool Connect()
         {
-            throw new NotImplementedException();
-        }
+			return listener.Start();
+		}
 
         public override bool Disconnect()
         {
-            throw new NotImplementedException();
+			return listener.Stop ();
         }
 
         public override bool Calibrate()
         {
-            throw new NotImplementedException();
-        }
-
-        public override bool Register(Observer observer)
-        {
-            throw new NotImplementedException();
+			// Note: in the case of the network stream the calibrating is done by the MVN Studio.
+			return true;
         }
     }
 }

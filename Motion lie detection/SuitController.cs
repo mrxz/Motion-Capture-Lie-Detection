@@ -4,20 +4,31 @@ namespace Motion_lie_detection
 {
     public abstract class SuitController
     {
-        protected List<Observer> observers;
+		protected readonly List<Observer> observers;
 
-        /// <summary>
-        /// Connect to suit and return if connecting was succesfull
-        /// </summary>
+		public SuitController() {
+			observers = new List<Observer> ();
+		}
+
+		/**
+		 * Attempt to connect to the suit.
+		 * @return True if connecting was succesfull, false otherwise.
+		 */
         public abstract bool Connect();
-
+		/**
+		 * Disconnect the suit.
+		 * @return True if disconnection was successful, false otherwise.
+		 */
         public abstract bool Disconnect();
 
-        /// <summary>
-        /// Start suit calibration and return if succeful
-        /// </summary>
+		/**
+		 * Start calibrating the suit.
+		 * @return True if the calibration is started, false otherwise.
+		 */
         public abstract bool Calibrate();
 
-        public abstract bool Register(Observer observer);
+		public void Register(Observer observer) {
+			this.observers.Add (observer);
+		}
     }
 }
