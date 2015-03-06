@@ -1,15 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Motion_lie_detection
 {
-    public class SuitRecordingProvider : RecordingProvider
-    {
-        public override int GetFrameRate()
-        {
-            throw new NotImplementedException();
-        }
-    }
+	/**
+	 * Recording provider that uses a motion capture suit as source of joint position data.
+	 */
+	public class SuitRecordingProvider : RecordingProvider
+	{
+
+		private readonly SuitController controller;
+
+		public SuitRecordingProvider (SuitController controller)
+		{
+			this.controller = controller;
+		}
+
+		public override int GetFrameRate ()
+		{
+			return 60; // FIXME: Hard-coded frame-rate.
+		}
+
+		public override BodyConfiguration getBodyConfiguration ()
+		{
+			return null;
+		}
+	}
 }

@@ -16,7 +16,7 @@ namespace Motion_lie_detection
 		/**
 		 * The logger for the XSensListener.
 		 */
-		public static readonly Logger LOG = Logger.getInstance("XSensListener");
+		public static readonly Logger LOG = Logger.getInstance ("XSensListener");
 
 		/**
 		 * The UdpClient 
@@ -32,12 +32,14 @@ namespace Motion_lie_detection
 		private Thread listeningThread;
 
 
-		public XSensListener(String host, int port) {
-			client = new UdpClient (new IPEndPoint(IPAddress.Any, port));
+		public XSensListener (String host, int port)
+		{
+			client = new UdpClient (new IPEndPoint (IPAddress.Any, port));
 			LOG.info ("XSensListener created for " + host + ":" + port);
 		}
 
-		public bool Start() {
+		public bool Start ()
+		{
 			// Only start a thread if not already running.
 			if (running) {
 				LOG.warn ("Already running");
@@ -46,13 +48,14 @@ namespace Motion_lie_detection
 
 			// Start thread for reading incoming packets.
 			listeningThread = new Thread (Listen);
-			listeningThread.Start();
+			listeningThread.Start ();
 			running = true;
 
 			return true;
 		}
 
-		public bool Stop() {
+		public bool Stop ()
+		{
 			// Only stop listening if we're listening.
 			if (!running)
 				return false;
@@ -91,7 +94,7 @@ namespace Motion_lie_detection
 					// Load the positions and quaternions.
 					for (int i = 0; i < header.numberOfItems; i++) {
 						Segment segment = Segment.fromBytes (reader);
-                        Console.WriteLine("id:{0} x:{1} y:{2} z:{3}", segment.id, segment.x, segment.y, segment.z);
+						Console.WriteLine ("id:{0} x:{1} y:{2} z:{3}", segment.id, segment.x, segment.y, segment.z);
 					}
 				}
 				break;
@@ -123,8 +126,22 @@ namespace Motion_lie_detection
 		}
 	}
 
+	/**
+	 * Header that is shared among the different packet types.
+	 * The total size of the header is 24 bytes.
+	 * 6 bytes		String id (e.g. MXTP02)
+	 * 4 bytes		Sample counter
+	 * 1 byte		Diagram counter
+	 * 1 byte		Number of items, in case of MXTP02 it's the number of segments.
+	 * 4 bytes		Time code
+	 * 1 byte		Character id
+	 * 7 bytes		Unused/reserved bytes
+	 */
 	class Header
 	{
+		/**
+		 * Six character long 
+		 */
 		public String id;
 
 		public uint sampleCounter;
@@ -148,15 +165,23 @@ namespace Motion_lie_detection
 
 			header.timeCode = reader.ReadUInt32 ();
 			header.characterId = reader.ReadByte ();
-            reader.ReadBytes(7);
+			reader.ReadBytes (7); // Unused space.
 
 			return header;
 		}
 	}
 
+	/**
+	 * Class representing the body of an MXTP12 packet.
+	 * The MXTP12 is a metadata packet.
+	 * It differs from the other types by not having a fixed size, but instead using string key/values.
+	 */
 	class Metadata
 	{
-		public Dictionary<String, String> properties = new Dictionary<String, String> ();
+		/**
+		 * Dictionary containing the 
+		 */
+		public readonly Dictionary<String, String> properties = new Dictionary<String, String> ();
 
 		public Metadata (Dictionary<String, String> properties)
 		{
@@ -167,19 +192,24 @@ namespace Motion_lie_detection
 		{
 			Dictionary<String, String> properties = new Dictionary<string, string> ();
 
+			// Continue reading after the 
 			StreamReader reader = new StreamReader (new MemoryStream (bytes, offset, bytes.Length - offset));
 			while (!reader.EndOfStream) {
 				String line = reader.ReadLine ();
 				String[] values = line.Split (':');
-                if(line != "\0")
-				    properties.Add (values [0], values [1]);
+
+				// Note: Weird quirk in C# where a string '\0' is read as-is.
+				if (line != "\0")
+					properties.Add (values [0], values [1]);
 			}
 
 			return new Metadata (properties);
 		}
 	}
 
-
+	/**
+	 * The segment represents an item in the body of the MXTP02 and MXTP13 packets.
+	 */
 	class Segment
 	{
 		public int id;
@@ -226,6 +256,9 @@ namespace Motion_lie_detection
 		}
 	}
 
+	/**
+	 * Class representing the point items in the body of the MXTP13 packet.
+	 */
 	class Point
 	{
 		public ushort id;
