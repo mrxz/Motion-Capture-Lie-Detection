@@ -8,6 +8,8 @@ namespace Motion_lie_detection
 {
 	class XSensListener
 	{
+		public static readonly Logger LOG = Logger.getInstance("XSensListener");
+
 		public static void Listen ()
 		{
 			byte[] custom = new byte[] { 
@@ -112,6 +114,7 @@ namespace Motion_lie_detection
 
 
 			// Listen
+			LOG.info ("Started listening on port 9763");
 			UdpClient client = new UdpClient (new IPEndPoint(IPAddress.Any, 9763));
             IPEndPoint endPoint = new IPEndPoint (IPAddress.Parse ("127.0.0.1"), 9763);
 
