@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm.cs" />
+    <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BodyModel.cs" />
     <Compile Include="FileRecordingProvider.cs" />
     <Compile Include="LieDetectionAlgorithm.cs" />
