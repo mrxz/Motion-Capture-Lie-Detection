@@ -12,7 +12,12 @@ namespace Motion_lie_detection
 			throw new NotImplementedException ();
 		}
 
-		public override BodyConfiguration getBodyConfiguration ()
+		public override BodyConfiguration GetBodyConfiguration ()
+		{
+			return null;
+		}
+
+		public override List<Frame> GetNewFrames()
 		{
 			return null;
 		}

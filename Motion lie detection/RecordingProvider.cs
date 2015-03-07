@@ -1,4 +1,7 @@
-﻿namespace Motion_lie_detection
+﻿using System;
+using System.Collections.Generic;
+
+namespace Motion_lie_detection
 {
 	/**
 	 * Class responsible for providing the information needed to construct a recording.
@@ -16,6 +19,12 @@
 		 * Method for getting the body configuration of the body in the recording source.
 		 * @return BodyConfiguration of the body if known, null otherwise.
 		 */
-		public abstract BodyConfiguration getBodyConfiguration ();
+		public abstract BodyConfiguration GetBodyConfiguration ();
+
+		/**
+		 * Method for retrieving the (buffered) frames since the last retrieval.
+		 * NOTE: Might be better to switch to a push based system rather than pull...
+		 */
+		public abstract List<Frame> GetNewFrames ();
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Motion_lie_detection
 {
@@ -27,8 +28,16 @@ namespace Motion_lie_detection
 		 */
         public abstract bool Calibrate();
 
-		public void Register(Observer observer) {
-			this.observers.Add (observer);
+
+		public void Register(Observer observer) 
+		{
+			observers.Add (observer);
+		}
+
+		public void NotifyObservers(Object data) 
+		{
+			foreach (Observer observer in observers)
+				observer.notify (data);
 		}
     }
 }

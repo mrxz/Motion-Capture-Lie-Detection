@@ -7,7 +7,7 @@ namespace Motion_lie_detection
 	/**
 	 * Class representing a recording.
 	 */
-	public struct Recording
+	public class Recording
 	{
 		/**
 		 * List of frames in the recording.
@@ -15,10 +15,18 @@ namespace Motion_lie_detection
 		 */
 		private readonly List<Frame> frames;
 		/**
+		 * The last frame available in the recording.
+		 */
+		private int lastFrameID;
+		/**
 		 * List containing markpoints made in this recording.
 		 */
 		private readonly List<MarkPoint> markpoints;
 
+		/**
+		 * The recording provider that provides the frame data containing joint positions.
+		 */
+		private readonly RecordingProvider provider;
 		/**
 		 * The configuration of the body in this recording.
 		 */
@@ -26,16 +34,48 @@ namespace Motion_lie_detection
 
 		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration)
 		{
-			frames = new List<Frame> ();
-			markpoints = new List<MarkPoint> ();
+			this.provider = provider;
 			this.bodyConfiguration = bodyConfiguration;
+
+			frames = new List<Frame> ();
+			lastFrameID = -1;
+			markpoints = new List<MarkPoint> ();
+
 		}
 
-		public Recording (RecordingProvider provider) : this (provider, provider.getBodyConfiguration ())
+		public Recording (RecordingProvider provider) : this (provider, provider.GetBodyConfiguration ())
 		{
 		}
 
-		public Frame FrameRate {
+		/**
+		 * Method for requesting a specific frame of the recording.
+		 * @param frameID The id of the frame to return
+		 * @return The requested frame if available, null otherwise.
+		 */
+		public Frame GetFrame(int frameID) {
+			// TODO: Handle some rudimentary checks.
+			return frames [frameID];
+		}
+
+		/**
+		 * Method that returns the frameID of the last (or latest) frame of the recording.
+		 * @return The last frame ID of the recording.
+		 */
+		public int LastFrame() {
+			// DEBUG:
+			List<Frame> frames = provider.GetNewFrames ();
+			if (frames != null) {
+				foreach (Frame frame in frames) {
+					Console.WriteLine (frame.Id);
+					AddFrame (frame);
+				}
+			}
+
+			// ACTUAL METHOD:
+			return lastFrameID;
+		}
+
+		public int FrameRate {
 			get {
 				throw new System.NotImplementedException ();
 			}
@@ -51,12 +91,18 @@ namespace Motion_lie_detection
 
 		public void AddFrame (Frame frame)
 		{
+			// TODO: replace with something a tad more sophisticated.
 			frames.Add (frame);
+			lastFrameID++;
 		}
 
-		public void AddMarkPoint (MarkPoint mpoint)
+		/**
+		 * Method for inserting a markpoint in the recording.
+		 * @param markpoint: The markpoint to add.
+		 */
+		public void AddMarkPoint (MarkPoint markpoint)
 		{
-			markpoints.Add (mpoint);
+			markpoints.Add (markpoint);
 		}
 	}
 
