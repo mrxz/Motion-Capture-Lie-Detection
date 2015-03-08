@@ -26,6 +26,12 @@ namespace Motion_lie_detection
 		{
 			this.recording = recording;
 			InitializeComponent();
+
+			// DEBUG: Render update timer thingy
+			var timer = new Timer();
+			timer.Interval = 1000 / 60;
+			timer.Tick += new EventHandler(timer_Tick);
+			timer.Start();
 		}
 
 
@@ -37,18 +43,18 @@ namespace Motion_lie_detection
 
 			// Loop over the joints.
 			foreach (Joint joint in frame.Joints) {
-				Console.WriteLine (joint.Position.X);
-
-				int x = (int)(joint.Position.X * 100) + panel1.Width / 2;
+				// DEBUG: Use different x positioning code for drawing the running jump
+				//int x = (int)(joint.Position.X * 100) + panel1.Width / 2;
+				int x = (int)(joint.Position.X * 100) + 100;
 				int y = (int)(-joint.Position.Z * 100) + panel1.Height / 2;
-				g.DrawEllipse (Pens.Green, x, y, 5, 5);
+				g.DrawEllipse (Pens.Green, x, y, 2, 2);
 
 				// Find the corresponding body part.
 				//BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
 			}
 		}
 
-		public void panel1_Click(Object source, EventArgs e) 
+		public void timer_Tick(Object source, EventArgs e)
 		{
 			frame = recording.GetFrame (recording.LastFrame());
 			panel1.Refresh ();

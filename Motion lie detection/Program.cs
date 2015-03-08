@@ -26,6 +26,10 @@ namespace Motion_lie_detection
 
 			// DEBUG: Open a window.
 			new Thread(openWindow).Start(recording);
+
+			// DEBUG: Send dummy stream.
+			DummyStream stream = new DummyStream ();
+			stream.Start ();
         }
 
 		public static void openWindow(Object data) {

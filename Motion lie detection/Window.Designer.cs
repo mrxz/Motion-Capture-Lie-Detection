@@ -23,16 +23,15 @@ namespace Motion_lie_detection
             this.panel1.Name = "panel1";
             this.panel1.Location = new System.Drawing.Point(16, 24);
             this.panel1.TabIndex = 0;
-            this.panel1.Size = new System.Drawing.Size(472, 576);
+			this.panel1.Size = new System.Drawing.Size(1180, 576);
             this.panel1.BackColor = System.Drawing.SystemColors.ControlText;
             this.panel1.Text = "panel1";
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-			this.panel1.Click += this.panel1_Click;
             // 
             // Window
             // 
             this.Name = "Window";
-            this.ClientSize = new System.Drawing.Size(511, 630);
+			this.ClientSize = new System.Drawing.Size(1200, 630);
             this.Controls.Add(this.panel1);
             this.Text = "Window";
 			this.FormClosing += this.form_Closed;

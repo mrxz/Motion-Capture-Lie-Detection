@@ -46,7 +46,8 @@ namespace Motion_lie_detection
 			// FIXME: Assume no out of order packets.
 
 			// Construct a frame from this packet.
-			int frameID = 0;//(int)header.timeCode; // FIXME: Perhaps induce the correct frameID instead of using the timeCode?
+			int frameID = (int)header.timeCode; // FIXME: Perhaps induce the correct frameID instead of using the timeCode?
+
 			List<Joint> joints = new List<Joint> ();
 
 			foreach(Segment segment in segments) {

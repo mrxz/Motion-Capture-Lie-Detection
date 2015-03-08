@@ -62,11 +62,10 @@ namespace Motion_lie_detection
 		 * @return The last frame ID of the recording.
 		 */
 		public int LastFrame() {
-			// DEBUG:
+			// DEBUG: Insert the new frames into the recording.
 			List<Frame> frames = provider.GetNewFrames ();
 			if (frames != null) {
 				foreach (Frame frame in frames) {
-					Console.WriteLine (frame.Id);
 					AddFrame (frame);
 				}
 			}
@@ -92,6 +91,7 @@ namespace Motion_lie_detection
 		public void AddFrame (Frame frame)
 		{
 			// TODO: replace with something a tad more sophisticated.
+			Console.WriteLine (frame.Id);
 			frames.Add (frame);
 			lastFrameID++;
 		}
