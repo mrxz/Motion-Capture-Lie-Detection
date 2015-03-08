@@ -24,10 +24,12 @@ namespace Motion_lie_detection
 		PELVIS,
 
 		LEFT_UPPER_LEG,
+		LEFT_KNEE,
 		LEFT_LOWER_LEG,
 		LEFT_FOOT,
 
 		RIGHT_UPPER_LEG,
+		RIGHT_KNEE,
 		RIGHT_LOWER_LEG,
 		RIGHT_FOOT
 
@@ -45,6 +47,19 @@ namespace Motion_lie_detection
 		{
 			mapping = new Dictionary<BodyPart, int> ();
 		}
+
+		public Dictionary<BodyPart, int> getMapping()
+		{
+			return mapping;
+		}
+
+		public int getJointFor(BodyPart part)
+		{
+			int jointID;
+			if (!mapping.TryGetValue (part, out jointID))
+				return -1;
+			return jointID;
+		}
 	}
 
 	/**
@@ -55,8 +70,11 @@ namespace Motion_lie_detection
 
 		public FixedBodyConfiguration() : base()
 		{
-			mapping.Add (BodyPart.HEAD, 1);
-			//mapping.Add (BodyPart.LEFT_SHOULDER, 2);
+			mapping.Add (BodyPart.HEAD, 7);
+			mapping.Add (BodyPart.LEFT_KNEE, 20);
+			mapping.Add (BodyPart.LEFT_FOOT, 21);
+			//mapping.Add (BodyPart.LEFT_SHOULDER, 9);
+			//mapping.Add (BodyPart.STERN, 8);
 		}
 
 	}

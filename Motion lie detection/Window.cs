@@ -42,16 +42,34 @@ namespace Motion_lie_detection
 				return;
 
 			// Loop over the joints.
+			Dictionary<int, Tuple<Joint, int, int>> joints = new Dictionary<int, Tuple<Joint, int, int>>();
 			foreach (Joint joint in frame.Joints) {
 				// DEBUG: Use different x positioning code for drawing the running jump
 				//int x = (int)(joint.Position.X * 100) + panel1.Width / 2;
 				int x = (int)(joint.Position.X * 100) + 100;
 				int y = (int)(-joint.Position.Z * 100) + panel1.Height / 2;
+				joints.Add(joint.Id, Tuple.Create(joint, x, y));
 				g.DrawEllipse (Pens.Green, x, y, 2, 2);
-
-				// Find the corresponding body part.
-				//BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
 			}
+
+			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
+
+			// Draw lines.
+			drawLine (joints, bodyConfiguration, g, BodyPart.LEFT_KNEE, BodyPart.LEFT_FOOT);
+
+		}
+
+		private void drawLine(Dictionary<int, Tuple<Joint, int, int>> joints, BodyConfiguration configuration, Graphics g, BodyPart first, BodyPart second)
+		{
+			int one = configuration.getJointFor (first);
+			int two = configuration.getJointFor (second);
+			if (one == -1 || two == -1)
+				return;
+
+			Tuple<Joint, int, int> firstJoint = joints [one];
+			Tuple<Joint, int, int> secondJoint = joints [two];
+
+			g.DrawLine (Pens.Blue, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
 		}
 
 		public void timer_Tick(Object source, EventArgs e)
