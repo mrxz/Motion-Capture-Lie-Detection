@@ -9,20 +9,26 @@ namespace Motion_lie_detection
 {
     public class MotionLieDetection
     {
+		public static readonly Logger LOG = Logger.getInstance("Main");
+
 		[STAThread]
         public static void Main()
         {
+			LOG.info ("Motion lie detection starting up");
+
 			// Calibrate and connect the suit.
 			SuitController controller = new XSensController ();
 			controller.Calibrate ();
 			controller.Connect();
 
 			// Wrap the controller in a recording.
-			SuitRecordingProvider provider = new SuitRecordingProvider (controller);
+			RecordingProvider provider = new SuitRecordingProvider (controller);
+			//RecordingProvider provider = new FileRecordingProvider ("../../../sitting_person_1.mvnx"); // FIXME: Hard-coded file name
+			provider.Init ();
 			Recording recording = new Recording (provider, new FixedBodyConfiguration());
 
 			// DEBUG:
-			((XSensController)controller).Test ();
+			//((XSensController)controller).Test ();
 
 			// DEBUG: Open a window.
 			new Thread(openWindow).Start(recording);
@@ -33,6 +39,7 @@ namespace Motion_lie_detection
         }
 
 		public static void openWindow(Object data) {
+			LOG.info ("Opening window for visualization");
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Window((Recording)data));

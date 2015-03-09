@@ -41,6 +41,10 @@ namespace Motion_lie_detection
 			lastFrameID = -1;
 			markpoints = new List<MarkPoint> ();
 
+			// Let the provider know the recording has started.
+			// FIXME: Probably better to create a Start() method in Recording and
+			//  a flag indicating whether it has started or not.
+			this.provider.Start ();
 		}
 
 		public Recording (RecordingProvider provider) : this (provider, provider.GetBodyConfiguration ()) {}		

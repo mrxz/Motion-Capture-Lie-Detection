@@ -3,8 +3,14 @@ using System.Collections.Generic;
 
 namespace Motion_lie_detection
 {
+	/**
+	 * Abstract class for suit controllers.
+	 */
     public abstract class SuitController
     {
+		/**
+		 * List of observers that should be notified when a new frame is ready.
+		 */
 		protected readonly List<Observer> observers;
 
 		public SuitController() {
@@ -27,7 +33,6 @@ namespace Motion_lie_detection
 		 * @return True if the calibration is started, false otherwise.
 		 */
         public abstract bool Calibrate();
-
 
 		public void Register(Observer observer) 
 		{

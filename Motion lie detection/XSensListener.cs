@@ -104,7 +104,7 @@ namespace Motion_lie_detection
 			BinaryReader reader = new BigEndianBinaryReader (new MemoryStream (packet));
 
 			Header header = Header.fromBytes (reader);
-			Console.WriteLine ("Received: " + header.id);
+			LOG.fine ("Received: " + header.id);
 
 			// Check the package type.
 			switch (header.id.Substring (4)) {
