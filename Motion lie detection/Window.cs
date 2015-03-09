@@ -55,7 +55,13 @@ namespace Motion_lie_detection
 			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
 
 			// Draw lines.
-			drawLine (joints, bodyConfiguration, g, BodyPart.LEFT_KNEE, BodyPart.LEFT_FOOT);
+			drawLine (joints, bodyConfiguration, g, BodyPart.PELVIS, BodyPart.L5);
+			drawLine (joints, bodyConfiguration, g, BodyPart.L5, BodyPart.L3);
+			drawLine (joints, bodyConfiguration, g, BodyPart.L3, BodyPart.T12);
+			drawLine (joints, bodyConfiguration, g, BodyPart.T12, BodyPart.T8);
+			drawLine (joints, bodyConfiguration, g, BodyPart.T8, BodyPart.NECK);
+			drawLine (joints, bodyConfiguration, g, BodyPart.NECK, BodyPart.HEAD);
+			//drawLine (joints, bodyConfiguration, g, BodyPart.LEFT_KNEE, BodyPart.LEFT_FOOT);
 
 		}
 
@@ -84,3 +90,4 @@ namespace Motion_lie_detection
 		}
 	}
 }
+

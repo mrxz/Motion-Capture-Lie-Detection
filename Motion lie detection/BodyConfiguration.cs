@@ -8,31 +8,33 @@ namespace Motion_lie_detection
 	 */
 	public enum BodyPart
 	{
+		PELVIS,
+		L5,
+		L3,
+		T12,
+		T8,
+		NECK,
 		HEAD,
-		STERN,
-
-		LEFT_SHOULDER,
-		LEFT_UPPER_ARM,
-		LEFT_LOWER_ARM,
-		LEFT_HAND,
 
 		RIGHT_SHOULDER,
 		RIGHT_UPPER_ARM,
-		RIGHT_LOWER_ARM,
+		RIGHT_FORE_ARM,
 		RIGHT_HAND,
 
-		PELVIS,
-
-		LEFT_UPPER_LEG,
-		LEFT_KNEE,
-		LEFT_LOWER_LEG,
-		LEFT_FOOT,
+		LEFT_SHOULDER,
+		LEFT_UPPER_ARM,
+		LEFT_FORE_ARM,
+		LEFT_HAND,
 
 		RIGHT_UPPER_LEG,
-		RIGHT_KNEE,
 		RIGHT_LOWER_LEG,
-		RIGHT_FOOT
+		RIGHT_FOOT,
+		RIGHT_TOE,
 
+		LEFT_UPPER_LEG,
+		LEFT_LOWER_LEG,
+		LEFT_FOOT,
+		LEFT_TOE
 	}
 
 	/**
@@ -70,11 +72,33 @@ namespace Motion_lie_detection
 
 		public FixedBodyConfiguration() : base()
 		{
+			mapping.Add (BodyPart.PELVIS, 1);
+			mapping.Add (BodyPart.L5, 2);
+			mapping.Add (BodyPart.L3, 3);
+			mapping.Add (BodyPart.T12, 4);
+			mapping.Add (BodyPart.T8, 5);
+			mapping.Add (BodyPart.NECK, 6);
 			mapping.Add (BodyPart.HEAD, 7);
-			mapping.Add (BodyPart.LEFT_KNEE, 20);
-			mapping.Add (BodyPart.LEFT_FOOT, 21);
-			//mapping.Add (BodyPart.LEFT_SHOULDER, 9);
-			//mapping.Add (BodyPart.STERN, 8);
+
+			mapping.Add (BodyPart.RIGHT_SHOULDER, 8);
+			mapping.Add (BodyPart.RIGHT_UPPER_ARM, 9);
+			mapping.Add (BodyPart.RIGHT_FORE_ARM, 10);
+			mapping.Add (BodyPart.RIGHT_HAND, 11);
+
+			mapping.Add (BodyPart.LEFT_SHOULDER, 12);
+			mapping.Add (BodyPart.LEFT_UPPER_ARM, 13);
+			mapping.Add (BodyPart.LEFT_FORE_ARM, 14);
+			mapping.Add (BodyPart.LEFT_HAND, 15);
+
+			mapping.Add (BodyPart.RIGHT_UPPER_LEG, 16);
+			mapping.Add (BodyPart.RIGHT_LOWER_LEG, 17);
+			mapping.Add (BodyPart.RIGHT_FOOT, 18);
+			mapping.Add (BodyPart.RIGHT_TOE, 19);
+
+			mapping.Add (BodyPart.LEFT_UPPER_LEG, 20);
+			mapping.Add (BodyPart.LEFT_LOWER_LEG, 21);
+			mapping.Add (BodyPart.LEFT_FOOT, 22);
+			mapping.Add (BodyPart.LEFT_TOE, 23);
 		}
 
 	}
