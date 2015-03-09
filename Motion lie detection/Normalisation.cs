@@ -7,7 +7,7 @@ namespace Motion_lie_detection
 {
     public class NormalizePosition : FilterPass
     {
-        public override LieResult compute(Recording recording, int framestart, int framend)
+        protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
             throw new NotImplementedException();
         }
@@ -15,7 +15,7 @@ namespace Motion_lie_detection
 
     public class NormalizeOrientation : FilterPass
     {
-        public override LieResult compute(Recording recording, int framestart, int framend)
+        protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
             throw new NotImplementedException();
         }
@@ -23,7 +23,7 @@ namespace Motion_lie_detection
 
     public class NormalizeLength : FilterPass
     {
-        public override LieResult compute(Recording recording, int framestart, int framend)
+        protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
             throw new NotImplementedException();
         }

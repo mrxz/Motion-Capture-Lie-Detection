@@ -43,9 +43,7 @@ namespace Motion_lie_detection
 
 		}
 
-		public Recording (RecordingProvider provider) : this (provider, provider.GetBodyConfiguration ())
-		{
-		}
+		public Recording (RecordingProvider provider) : this (provider, provider.GetBodyConfiguration ()) {}		
 
 		/**
 		 * Method for requesting a specific frame of the recording.
@@ -121,7 +119,16 @@ namespace Motion_lie_detection
 
 		public List<Joint> Joints { get { return joints; } }
         
-	}
+        public static Frame Empty
+        {
+            get { return new Frame(-1, null); }
+        }
+
+        public static bool IsEmpty(Frame frame)
+        {
+            return frame.joints == null;
+        }
+    }
 
 	public struct Joint
 	{
