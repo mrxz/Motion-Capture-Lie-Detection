@@ -18,7 +18,9 @@ namespace Motion_lie_detection
 			controller.Connect();
 
 			// Wrap the controller in a recording.
-			SuitRecordingProvider provider = new SuitRecordingProvider (controller);
+			RecordingProvider provider = new SuitRecordingProvider (controller);
+			//RecordingProvider provider = new FileRecordingProvider ("../../../sitting_person_2.mvnx"); // FIXME: Hard-coded file name
+			provider.Init ();
 			Recording recording = new Recording (provider, new FixedBodyConfiguration());
 
 			// DEBUG:

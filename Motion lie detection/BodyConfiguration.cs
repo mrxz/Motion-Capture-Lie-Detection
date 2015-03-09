@@ -50,12 +50,17 @@ namespace Motion_lie_detection
 			mapping = new Dictionary<BodyPart, int> ();
 		}
 
-		public Dictionary<BodyPart, int> getMapping()
+		public Dictionary<BodyPart, int> GetMapping()
 		{
 			return mapping;
 		}
 
-		public int getJointFor(BodyPart part)
+		public void AddMapping(BodyPart part, int id)
+		{
+			mapping [part] = id;
+		}
+
+		public int GetJointFor(BodyPart part)
 		{
 			int jointID;
 			if (!mapping.TryGetValue (part, out jointID))

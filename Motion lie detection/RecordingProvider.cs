@@ -9,6 +9,17 @@ namespace Motion_lie_detection
 	 */
 	public abstract class RecordingProvider
 	{
+
+		/**
+		 * Method that allows the recording provider to be initialized.
+		 */
+		public abstract bool Init();
+
+		/**
+		 * Method that signals the recording provider that the recording starts.
+		 */
+		public abstract bool Start();
+
 		/**
 		 * Method for returning the framerate for the recording in frames per second.
 		 * Note that the framerate MUST be fixed and so subsequential calls to GetFrameRate should return the same value.

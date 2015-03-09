@@ -21,9 +21,21 @@ namespace Motion_lie_detection
 		public SuitRecordingProvider (SuitController controller)
 		{
 			this.controller = controller;
-			this.controller.Register (this);
+		}
 
+		public override bool Init ()
+		{
+			// Register to the SuitController.
+			this.controller.Register (this);
 			newFrames = new List<Frame> ();
+
+			return true;
+		}
+
+		public override bool Start ()
+		{
+			// FIXME: Clear the NewFrames list and capture the time stamp as start point.
+			return true;
 		}
 
 		public override int GetFrameRate ()

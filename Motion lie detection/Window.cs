@@ -67,8 +67,8 @@ namespace Motion_lie_detection
 
 		private void drawLine(Dictionary<int, Tuple<Joint, int, int>> joints, BodyConfiguration configuration, Graphics g, BodyPart first, BodyPart second)
 		{
-			int one = configuration.getJointFor (first);
-			int two = configuration.getJointFor (second);
+			int one = configuration.GetJointFor (first);
+			int two = configuration.GetJointFor (second);
 			if (one == -1 || two == -1)
 				return;
 
