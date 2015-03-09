@@ -48,11 +48,24 @@ namespace Motion_lie_detection
 	 */
 	public class BodyConfiguration
 	{
+		/**
+		 * The mapping between BodyPart and joint id.
+		 */
 		protected readonly Dictionary<BodyPart, int> mapping;
+		/**
+		 * The different connections that exist in the body.
+		 */
+		protected readonly List<Tuple<BodyPart, BodyPart>> connections;
+		/**
+		 * Mapping between connections and their length (float in meters).
+		 */
+		protected readonly Dictionary<Tuple<BodyPart, BodyPart>, float> lengths;
 
 		public BodyConfiguration()
 		{
 			mapping = new Dictionary<BodyPart, int> ();
+			connections = new List<Tuple<BodyPart, BodyPart>> ();
+			lengths = new Dictionary<Tuple<BodyPart, BodyPart>, float> ();
 		}
 
 		public Dictionary<BodyPart, int> GetMapping()
@@ -63,6 +76,31 @@ namespace Motion_lie_detection
 		public void AddMapping(BodyPart part, int id)
 		{
 			mapping [part] = id;
+		}
+
+		public List<Tuple<BodyPart, BodyPart>> GetConnections()
+		{
+			return connections;
+		}
+
+		public void AddConnection(BodyPart from, BodyPart to)
+		{
+			connections.Add (Tuple.Create (from, to));
+		}
+
+		public float GetLength(BodyPart from, BodyPart to)
+		{
+			float result;
+			if (!lengths.TryGetValue (Tuple.Create (from, to), out result))
+				return -1;
+			return result;
+		}
+
+		public void SetLength(BodyPart from, BodyPart to, float length)
+		{
+			// FIXME: Make sure connection exists perhaps?
+
+			lengths.Add (Tuple.Create (from, to), length);
 		}
 
 		public int GetJointFor(BodyPart part)
@@ -112,6 +150,35 @@ namespace Motion_lie_detection
 			mapping.Add (BodyPart.LEFT_LOWER_LEG, 21);
 			mapping.Add (BodyPart.LEFT_FOOT, 22);
 			mapping.Add (BodyPart.LEFT_TOE, 23);
+
+			// Add the connections.
+			// SPINE
+			connections.Add(Tuple.Create(BodyPart.PELVIS, BodyPart.L5));
+			connections.Add(Tuple.Create(BodyPart.L5, BodyPart.L3));
+			connections.Add(Tuple.Create(BodyPart.L3, BodyPart.T12));
+			connections.Add(Tuple.Create(BodyPart.T12, BodyPart.NECK));
+			connections.Add(Tuple.Create(BodyPart.NECK, BodyPart.HEAD));
+
+			// RIGHT-ARM
+			connections.Add(Tuple.Create(BodyPart.RIGHT_SHOULDER, BodyPart.RIGHT_UPPER_ARM));
+			connections.Add(Tuple.Create(BodyPart.RIGHT_UPPER_ARM, BodyPart.RIGHT_FORE_ARM));
+			connections.Add(Tuple.Create(BodyPart.RIGHT_FORE_ARM, BodyPart.RIGHT_HAND));
+
+			// LEFT-ARM
+			connections.Add(Tuple.Create(BodyPart.LEFT_SHOULDER, BodyPart.LEFT_UPPER_ARM));
+			connections.Add(Tuple.Create(BodyPart.LEFT_UPPER_ARM, BodyPart.LEFT_FORE_ARM));
+			connections.Add(Tuple.Create(BodyPart.LEFT_FORE_ARM, BodyPart.LEFT_HAND));
+
+			// RIGHT-LEG
+			connections.Add(Tuple.Create(BodyPart.RIGHT_UPPER_LEG, BodyPart.RIGHT_LOWER_LEG));
+			connections.Add(Tuple.Create(BodyPart.RIGHT_LOWER_LEG, BodyPart.RIGHT_FOOT));
+			connections.Add(Tuple.Create(BodyPart.RIGHT_FOOT, BodyPart.RIGHT_TOE));
+
+			// LEFT-LEG
+			connections.Add(Tuple.Create(BodyPart.LEFT_UPPER_LEG, BodyPart.LEFT_LOWER_LEG));
+			connections.Add(Tuple.Create(BodyPart.LEFT_LOWER_LEG, BodyPart.LEFT_FOOT));
+			connections.Add(Tuple.Create(BodyPart.LEFT_FOOT, BodyPart.LEFT_TOE));
+
 		}
 
 	}

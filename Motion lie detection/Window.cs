@@ -49,19 +49,14 @@ namespace Motion_lie_detection
 				int x = (int)(joint.Position.X * 100) + 100;
 				int y = (int)(-joint.Position.Z * 100) + panel1.Height / 2;
 				joints.Add(joint.Id, Tuple.Create(joint, x, y));
-				g.DrawEllipse (Pens.Green, x, y, 2, 2);
+				g.DrawEllipse (Pens.Green, x - 2, y - 2, 4, 4);
 			}
 
 			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
 
 			// Draw lines.
-			drawLine (joints, bodyConfiguration, g, BodyPart.PELVIS, BodyPart.L5);
-			drawLine (joints, bodyConfiguration, g, BodyPart.L5, BodyPart.L3);
-			drawLine (joints, bodyConfiguration, g, BodyPart.L3, BodyPart.T12);
-			drawLine (joints, bodyConfiguration, g, BodyPart.T12, BodyPart.T8);
-			drawLine (joints, bodyConfiguration, g, BodyPart.T8, BodyPart.NECK);
-			drawLine (joints, bodyConfiguration, g, BodyPart.NECK, BodyPart.HEAD);
-			//drawLine (joints, bodyConfiguration, g, BodyPart.LEFT_KNEE, BodyPart.LEFT_FOOT);
+			foreach(Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections()) 
+				drawLine (joints, bodyConfiguration, g, connection.Item1 , connection.Item2);
 
 		}
 
