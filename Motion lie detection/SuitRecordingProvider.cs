@@ -9,6 +9,11 @@ namespace Motion_lie_detection
 	public class SuitRecordingProvider : RecordingProvider, Observer
 	{
 		/**
+		 * The logger for the suit recording provider.
+		 */
+		public static readonly Logger LOG = Logger.getInstance("SuitRecordingProvider");
+
+		/**
 		 * The suit controller that provides the frames and body configuration.
 		 */
 		private readonly SuitController controller;
@@ -47,6 +52,7 @@ namespace Motion_lie_detection
 		public override bool Start ()
 		{
 			// FIXME: Clear the NewFrames list and capture the time stamp as start point.
+			LOG.info ("Starting");
 			return true;
 		}
 
@@ -73,18 +79,21 @@ namespace Motion_lie_detection
 			if (data is Frame) {
 				// Add the frame.
 				newFrames.Add ((Frame)data);
+				LOG.fine ("Inserting new frame");
 				return;
 			}
 
 			// In case it is a (new) body configuration store it.
 			if (data is BodyConfiguration) {
 				bodyConfiguration = (BodyConfiguration)data;
+				LOG.info ("Received new BodyConfiguration from suit");
 				return;
 			}
 
 			// FIXME: A bit rigid to assume an integer value == frameRate.
 			if (data is int) {
 				frameRate = (int)data;
+				LOG.info ("Received new frame rate from suit");
 				return;
 			}
 		}

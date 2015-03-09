@@ -7,6 +7,8 @@ namespace Motion_lie_detection
 {
 	public partial class DummyStream
 	{
+		public static readonly Logger LOG = Logger.getInstance("DummyStream");
+
 		private byte[][] packets;
 		private int frameRate = 60;
 
@@ -15,6 +17,7 @@ namespace Motion_lie_detection
 
 		public DummyStream ()
 		{
+			LOG.info ("New dummy stream created");
 			packets = new byte[594][];
 			init();
 		}
@@ -27,6 +30,7 @@ namespace Motion_lie_detection
 			}
 			currentPacket = 0;
 
+			LOG.info ("Starting streaming thread");
 			new Thread (send).Start();
 		}
 
@@ -34,6 +38,7 @@ namespace Motion_lie_detection
 		{
 			while(currentPacket < packets.Length)
 			{
+				LOG.fine ("Sending packet #" + currentPacket);
 				client.Send (packets [currentPacket], packets [currentPacket].Length);
 
 				Thread.Sleep (1000 / frameRate);

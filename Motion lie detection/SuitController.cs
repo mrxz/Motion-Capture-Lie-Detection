@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Motion_lie_detection
 {
 	/**
-	 * Abstract class for 
+	 * Abstract class for suit controllers.
 	 */
     public abstract class SuitController
     {

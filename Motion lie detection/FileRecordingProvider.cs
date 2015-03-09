@@ -13,6 +13,11 @@ namespace Motion_lie_detection
 	public class FileRecordingProvider : RecordingProvider
 	{
 		/**
+		 * The logger for the FileRecordingProvider.
+		 */
+		public static readonly Logger LOG = Logger.getInstance ("FileRecordingProvider");
+
+		/**
 		 * The file the recording provider reads.
 		 */
 		private readonly String file;
@@ -35,6 +40,7 @@ namespace Motion_lie_detection
 		public FileRecordingProvider(String file)
 		{
 			this.file = file;
+			LOG.info ("New FileRecordingProvider for file " + file);
 			// FIXME: Check the file extensions (or not).
 		}
 
@@ -103,6 +109,7 @@ namespace Motion_lie_detection
 
 				reader.ReadToFollowing ("frame");
 			}
+			LOG.info("Read " + newFrames.Count + " frames from file " + file);
 
 			return true;
 		}
@@ -110,6 +117,7 @@ namespace Motion_lie_detection
 		public override bool Start ()
 		{
 			// Nothing to do here.
+			LOG.info ("Starting");
 			return true;
 		}
 
