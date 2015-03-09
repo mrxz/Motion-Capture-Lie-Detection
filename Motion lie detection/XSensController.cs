@@ -68,7 +68,14 @@ namespace Motion_lie_detection
 
 		public void onMXTP13(Header header, List<Segment> segments, List<Point> point)
 		{
-			// Length data, not sure how to receive this packet. 
+			// TODO Note: Length data, not sure how to receive this packet. 
+
+			// FIXME: Ideally we read and interpret the content of this packet to construct the BodyConfiguration.
+			// Sadly the segments aren't labeled, but only the points. We could parse the points with a (0,0,0) offset
+			// from the corresponding joint and use that point's label to determine the body part.
+			// BUT, this would MOST likely result in the exact same configuration as the FixedBodyConfiguration!
+			BodyConfiguration bodyConfiguration = new FixedBodyConfiguration ();
+			NotifyObservers (bodyConfiguration);
 		}
 	}
 }

@@ -14,6 +14,18 @@ namespace Motion_lie_detection
 		private readonly SuitController controller;
 
 		/**
+		 * The frame-rate in which the suit-controller provides frames.
+		 * Note: this shouldn't change once a recording has started.
+		 */
+		private int frameRate = 60; // FIXME: Default to 60 fps.
+
+		/**
+		 * The body configuration of the person in the suit-controller.
+		 * Note: this shouldn't change once a recording has started.
+		 */
+		private BodyConfiguration bodyConfiguration = null;
+
+		/**
 		 * Buffer containing new frames (and unfinished/partial frames).
 		 */
 		private List<Frame> newFrames;
@@ -40,12 +52,12 @@ namespace Motion_lie_detection
 
 		public override int GetFrameRate ()
 		{
-			return 60; // FIXME: Hard-coded frame-rate.
+			return frameRate;
 		}
 
 		public override BodyConfiguration GetBodyConfiguration ()
 		{
-			return null;
+			return bodyConfiguration;
 		}
 
 		public override List<Frame> GetNewFrames()
@@ -57,10 +69,23 @@ namespace Motion_lie_detection
 
 		public void notify(Object data)
 		{
-			// Only interested in frames.
+			// In case the data is a frame add it to the newFrames list.
 			if (data is Frame) {
 				// Add the frame.
 				newFrames.Add ((Frame)data);
+				return;
+			}
+
+			// In case it is a (new) body configuration store it.
+			if (data is BodyConfiguration) {
+				bodyConfiguration = (BodyConfiguration)data;
+				return;
+			}
+
+			// FIXME: A bit rigid to assume an integer value == frameRate.
+			if (data is int) {
+				frameRate = (int)data;
+				return;
 			}
 		}
 	}

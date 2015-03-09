@@ -8,6 +8,7 @@ namespace Motion_lie_detection
 	 */
 	public enum BodyPart
 	{
+		// From the Pelvis up to the Head.
 		PELVIS,
 		L5,
 		L3,
@@ -16,21 +17,25 @@ namespace Motion_lie_detection
 		NECK,
 		HEAD,
 
+		// Right arm
 		RIGHT_SHOULDER,
 		RIGHT_UPPER_ARM,
 		RIGHT_FORE_ARM,
 		RIGHT_HAND,
 
+		// Left arm
 		LEFT_SHOULDER,
 		LEFT_UPPER_ARM,
 		LEFT_FORE_ARM,
 		LEFT_HAND,
 
+		// Right leg
 		RIGHT_UPPER_LEG,
 		RIGHT_LOWER_LEG,
 		RIGHT_FOOT,
 		RIGHT_TOE,
 
+		// Left leg
 		LEFT_UPPER_LEG,
 		LEFT_LOWER_LEG,
 		LEFT_FOOT,
@@ -71,12 +76,15 @@ namespace Motion_lie_detection
 
 	/**
 	 * Simple body configuration that provides a static mapping and configuration of the body.
+	 * This mapping is based on the default segment layout of XSens hardware.
 	 */
 	public class FixedBodyConfiguration : BodyConfiguration
 	{
 
 		public FixedBodyConfiguration() : base()
 		{
+			// The mapping between body part and segment id.
+			// Source: http://issuu.com/xsensmvn/docs/mvn_studio_real-time_network_stream/16?e=14522406/10381348
 			mapping.Add (BodyPart.PELVIS, 1);
 			mapping.Add (BodyPart.L5, 2);
 			mapping.Add (BodyPart.L3, 3);

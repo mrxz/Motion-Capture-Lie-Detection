@@ -5,10 +5,10 @@ namespace Motion_lie_detection
 {
 	/**
 	 * A BigEndian version of the standard C# BinaryReader.
-	 * The default BinaryReader assumes the input to be little endian
-	 * when reading multi-byte types with no means of altering or specifying it.
+	 * The default BinaryReader assumes that the input is in little endian when 
+	 * reading multi-byte types with no means of altering or specifying it.
 	 * This BigEndianBinaryReader first reads the number of bytes required for the type,
-	 * reverses them and returns the value.
+	 * reverses them and returns the (correct) value.
 	 */
 	public class BigEndianBinaryReader : BinaryReader
 	{

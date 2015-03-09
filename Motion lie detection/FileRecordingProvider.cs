@@ -130,6 +130,11 @@ namespace Motion_lie_detection
 			return result;
 		}
 
+		/**
+		 * Method for retrieving the BodyPart that corresponds with a segment label.
+		 * @param label The label to return the BodyPart for.
+		 * @return The corresponding body part.
+		 */
 		private BodyPart fromXSensString(String label)
 		{
 			switch (label) {
