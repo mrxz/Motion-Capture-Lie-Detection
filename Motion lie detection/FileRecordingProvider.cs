@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Xml;
+using System.Globalization;
 
 namespace Motion_lie_detection
 {
@@ -89,11 +90,11 @@ namespace Motion_lie_detection
 				int frameId = int.Parse(reader.GetAttribute("time"));
 
 				reader.Read (); // orientation
-				float[] orientations = reader.ReadString().Split().Select(n => Convert.ToSingle(n)).ToArray();
+				float[] orientations = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
 				reader.Read (); // end orientation
 
 				reader.Read (); // position
-				float[] positions = reader.ReadString().Split().Select(n => Convert.ToSingle(n)).ToArray();
+				float[] positions = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
 				reader.Read (); // end of position
 
 				// Convert the data into a frame and add it to the newFrames list.
