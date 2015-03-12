@@ -22,20 +22,25 @@ namespace Motion_lie_detection
 			controller.Connect();
 
 			// Wrap the controller in a recording.
-			RecordingProvider provider = new SuitRecordingProvider (controller);
-			//RecordingProvider provider = new FileRecordingProvider ("../../../sitting_person_1.mvnx"); // FIXME: Hard-coded file name
+			//RecordingProvider provider = new SuitRecordingProvider (controller);
+			OpenFileDialog dialog = new OpenFileDialog ();
+			dialog.DefaultExt = "mvnx";
+			dialog.Multiselect = false;
+			dialog.CheckFileExists = true;
+			DialogResult result = dialog.ShowDialog ();
+			if (result == DialogResult.Cancel)
+				Environment.Exit (0);
+
+			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
 			provider.Init ();
 			Recording recording = new Recording (provider, new FixedBodyConfiguration());
-
-			// DEBUG:
-			//((XSensController)controller).Test ();
 
 			// DEBUG: Open a window.
 			new Thread(openWindow).Start(recording);
 
 			// DEBUG: Send dummy stream.
-			DummyStream stream = new DummyStream ();
-			stream.Start ();
+			//DummyStream stream = new DummyStream ();
+			//stream.Start ();
         }
 
 		public static void openWindow(Object data) {

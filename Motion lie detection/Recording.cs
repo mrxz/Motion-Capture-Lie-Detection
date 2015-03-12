@@ -52,10 +52,11 @@ namespace Motion_lie_detection
 		/**
 		 * Method for requesting a specific frame of the recording.
 		 * @param frameID The id of the frame to return
-		 * @return The requested frame if available, null otherwise.
+		 * @return The requested frame if available, Frame.Empty otherwise.
 		 */
 		public Frame GetFrame(int frameID) {
-			// TODO: Handle some rudimentary checks.
+			if (frameID < 0 || frameID >= frames.Count)
+				return Frame.Empty;
 			return frames [frameID];
 		}
 
@@ -93,7 +94,6 @@ namespace Motion_lie_detection
 		public void AddFrame (Frame frame)
 		{
 			// TODO: replace with something a tad more sophisticated.
-			Console.WriteLine (frame.Id);
 			frames.Add (frame);
 			lastFrameID++;
 		}

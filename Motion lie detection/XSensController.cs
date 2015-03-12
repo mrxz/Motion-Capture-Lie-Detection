@@ -36,10 +36,6 @@ namespace Motion_lie_detection
 			return true;
 		}
 
-		public void Test() {
-			listener.Test ();
-		}
-
 		public void onMXTP02(Header header, List<Segment> segments)
 		{
 			// FIXME: Assume no fragmentation of the packet.
