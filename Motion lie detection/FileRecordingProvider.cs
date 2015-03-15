@@ -73,6 +73,10 @@ namespace Motion_lie_detection
 				bodyConfiguration.AddMapping (fromXSensString(label), id);
 			}
 
+			// FIXME: Read the connections between the segments.
+			// Note: isn't really worth the effort probably since it will always be the same.
+			FixedBodyConfiguration.PopulateConnections (bodyConfiguration);
+
 			// Read the frames.
 			newFrames = new List<Frame> ();
 			reader.ReadToFollowing ("frames");
@@ -81,38 +85,57 @@ namespace Motion_lie_detection
 					reader.ReadToFollowing ("frame");
 
 				// Not interested in poses, only 'normal' frames.
-				if (reader.GetAttribute ("type") != "normal") {
-					reader.ReadToFollowing ("frame");
-					continue;
+				switch(reader.GetAttribute("type")) {
+				case "npose":
+					// The npose can be used to determine the lengths of the body-part.
+					Frame npose = readFrame (reader);
+					bodyConfiguration.LengthsFromNPose (npose);
+					break;
+				case "normal":
+					// Read the frame and add it to the newFrames list.
+					Frame newFrame = readFrame (reader);
+					newFrames.Add(newFrame);
+					break;
+				default:
+					// This type of frame doesn't interest us, so don't do anything.
+					break;
 				}
 
-				// The frame.
-				int frameId = int.Parse(reader.GetAttribute("time"));
-
-				reader.Read (); // orientation
-				float[] orientations = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
-				reader.Read (); // end orientation
-
-				reader.Read (); // position
-				float[] positions = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
-				reader.Read (); // end of position
-
-				// Convert the data into a frame and add it to the newFrames list.
-				List<Joint> joints = new List<Joint> (segmentCount);
-				for (int i = 0; i < segmentCount; i++) {
-					joints.Add(
-						new Joint (
-							i + 1,
-							new Microsoft.Xna.Framework.Vector3 (positions [3 * i], positions [3 * i + 1], positions [3 * i + 2]),
-							new Microsoft.Xna.Framework.Quaternion (orientations [4 * i], orientations [4 * i + 1], orientations [4 * i + 2], orientations [4 * i + 3])));
-				}
-				newFrames.Add(new Frame(frameId, joints));
-
+				// Read to the next frame.
 				reader.ReadToFollowing ("frame");
 			}
 			LOG.info("Read " + newFrames.Count + " frames from file " + file);
 
 			return true;
+		}
+
+		/**
+		 * Method for reading a frame given an XmlReader positioned at a frame.
+		 * @param reader The XmlReader to read the frame of.
+		 * @return The Frame from the xmlReader, Frame.Empty on failure.
+		 */
+		private Frame readFrame(XmlReader reader) {
+			int frameId = int.Parse(reader.GetAttribute("time"));
+
+			reader.Read (); // orientation
+			float[] orientations = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
+			reader.Read (); // end orientation
+
+			reader.Read (); // position
+			float[] positions = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
+			reader.Read (); // end of position
+
+			// Convert the data into a frame and add it to the newFrames list.
+			List<Joint> joints = new List<Joint> ();
+			for (int i = 0; i < positions.Length/3; i++) {
+				joints.Add(
+					new Joint (
+						i + 1,
+						new Microsoft.Xna.Framework.Vector3 (positions [3 * i], positions [3 * i + 1], positions [3 * i + 2]),
+						new Microsoft.Xna.Framework.Quaternion (orientations [4 * i], orientations [4 * i + 1], orientations [4 * i + 2], orientations [4 * i + 3])));
+			}
+
+			return new Frame (frameId, joints);
 		}
 
 		public override bool Start ()

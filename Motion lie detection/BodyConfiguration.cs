@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
 {
@@ -110,6 +111,24 @@ namespace Motion_lie_detection
 				return -1;
 			return jointID;
 		}
+
+		/**
+		 * Method for determining the connection lengths from an n-pose.
+		 * Note: this requires the connections to be already present.
+		 * @param nposeFrame Frame of the person in an n-pose.
+		 */
+		public void LengthsFromNPose(Frame nposeFrame) 
+		{
+			// 
+			foreach(Tuple<BodyPart, BodyPart> connection in connections) {
+				// FIXME: At the moment we utilse the fact that the jointId -1 is the index in the Joints array.
+				Joint first = nposeFrame.Joints[mapping[connection.Item1] - 1];
+				Joint second = nposeFrame.Joints[mapping[connection.Item2] - 1];
+
+				float distance = Vector3.Distance (first.Position, second.Position);
+				lengths.Add (connection, distance);
+			}
+		}
 	}
 
 	/**
@@ -121,66 +140,72 @@ namespace Motion_lie_detection
 
 		public FixedBodyConfiguration() : base()
 		{
-			// The mapping between body part and segment id.
-			// Source: http://issuu.com/xsensmvn/docs/mvn_studio_real-time_network_stream/16?e=14522406/10381348
-			mapping.Add (BodyPart.PELVIS, 1);
-			mapping.Add (BodyPart.L5, 2);
-			mapping.Add (BodyPart.L3, 3);
-			mapping.Add (BodyPart.T12, 4);
-			mapping.Add (BodyPart.T8, 5);
-			mapping.Add (BodyPart.NECK, 6);
-			mapping.Add (BodyPart.HEAD, 7);
-
-			mapping.Add (BodyPart.RIGHT_SHOULDER, 8);
-			mapping.Add (BodyPart.RIGHT_UPPER_ARM, 9);
-			mapping.Add (BodyPart.RIGHT_FORE_ARM, 10);
-			mapping.Add (BodyPart.RIGHT_HAND, 11);
-
-			mapping.Add (BodyPart.LEFT_SHOULDER, 12);
-			mapping.Add (BodyPart.LEFT_UPPER_ARM, 13);
-			mapping.Add (BodyPart.LEFT_FORE_ARM, 14);
-			mapping.Add (BodyPart.LEFT_HAND, 15);
-
-			mapping.Add (BodyPart.RIGHT_UPPER_LEG, 16);
-			mapping.Add (BodyPart.RIGHT_LOWER_LEG, 17);
-			mapping.Add (BodyPart.RIGHT_FOOT, 18);
-			mapping.Add (BodyPart.RIGHT_TOE, 19);
-
-			mapping.Add (BodyPart.LEFT_UPPER_LEG, 20);
-			mapping.Add (BodyPart.LEFT_LOWER_LEG, 21);
-			mapping.Add (BodyPart.LEFT_FOOT, 22);
-			mapping.Add (BodyPart.LEFT_TOE, 23);
-
-			// Add the connections.
-			// SPINE
-			connections.Add(Tuple.Create(BodyPart.PELVIS, BodyPart.L5));
-			connections.Add(Tuple.Create(BodyPart.L5, BodyPart.L3));
-			connections.Add(Tuple.Create(BodyPart.L3, BodyPart.T12));
-			connections.Add(Tuple.Create(BodyPart.T12, BodyPart.NECK));
-			connections.Add(Tuple.Create(BodyPart.NECK, BodyPart.HEAD));
-
-			// RIGHT-ARM
-			connections.Add(Tuple.Create(BodyPart.RIGHT_SHOULDER, BodyPart.RIGHT_UPPER_ARM));
-			connections.Add(Tuple.Create(BodyPart.RIGHT_UPPER_ARM, BodyPart.RIGHT_FORE_ARM));
-			connections.Add(Tuple.Create(BodyPart.RIGHT_FORE_ARM, BodyPart.RIGHT_HAND));
-
-			// LEFT-ARM
-			connections.Add(Tuple.Create(BodyPart.LEFT_SHOULDER, BodyPart.LEFT_UPPER_ARM));
-			connections.Add(Tuple.Create(BodyPart.LEFT_UPPER_ARM, BodyPart.LEFT_FORE_ARM));
-			connections.Add(Tuple.Create(BodyPart.LEFT_FORE_ARM, BodyPart.LEFT_HAND));
-
-			// RIGHT-LEG
-			connections.Add(Tuple.Create(BodyPart.RIGHT_UPPER_LEG, BodyPart.RIGHT_LOWER_LEG));
-			connections.Add(Tuple.Create(BodyPart.RIGHT_LOWER_LEG, BodyPart.RIGHT_FOOT));
-			connections.Add(Tuple.Create(BodyPart.RIGHT_FOOT, BodyPart.RIGHT_TOE));
-
-			// LEFT-LEG
-			connections.Add(Tuple.Create(BodyPart.LEFT_UPPER_LEG, BodyPart.LEFT_LOWER_LEG));
-			connections.Add(Tuple.Create(BodyPart.LEFT_LOWER_LEG, BodyPart.LEFT_FOOT));
-			connections.Add(Tuple.Create(BodyPart.LEFT_FOOT, BodyPart.LEFT_TOE));
-
+			PopulateMapping (this);
+			PopulateConnections (this);
 		}
 
+
+		public static void PopulateMapping(BodyConfiguration configuration) {
+			// The mapping between body part and segment id.
+			// Source: http://issuu.com/xsensmvn/docs/mvn_studio_real-time_network_stream/16?e=14522406/10381348
+			configuration.AddMapping(BodyPart.PELVIS, 1);
+			configuration.AddMapping (BodyPart.L5, 2);
+			configuration.AddMapping (BodyPart.L3, 3);
+			configuration.AddMapping (BodyPart.T12, 4);
+			configuration.AddMapping (BodyPart.T8, 5);
+			configuration.AddMapping (BodyPart.NECK, 6);
+			configuration.AddMapping (BodyPart.HEAD, 7);
+
+			configuration.AddMapping (BodyPart.RIGHT_SHOULDER, 8);
+			configuration.AddMapping (BodyPart.RIGHT_UPPER_ARM, 9);
+			configuration.AddMapping (BodyPart.RIGHT_FORE_ARM, 10);
+			configuration.AddMapping (BodyPart.RIGHT_HAND, 11);
+
+			configuration.AddMapping (BodyPart.LEFT_SHOULDER, 12);
+			configuration.AddMapping (BodyPart.LEFT_UPPER_ARM, 13);
+			configuration.AddMapping (BodyPart.LEFT_FORE_ARM, 14);
+			configuration.AddMapping (BodyPart.LEFT_HAND, 15);
+
+			configuration.AddMapping (BodyPart.RIGHT_UPPER_LEG, 16);
+			configuration.AddMapping (BodyPart.RIGHT_LOWER_LEG, 17);
+			configuration.AddMapping (BodyPart.RIGHT_FOOT, 18);
+			configuration.AddMapping (BodyPart.RIGHT_TOE, 19);
+
+			configuration.AddMapping (BodyPart.LEFT_UPPER_LEG, 20);
+			configuration.AddMapping (BodyPart.LEFT_LOWER_LEG, 21);
+			configuration.AddMapping (BodyPart.LEFT_FOOT, 22);
+			configuration.AddMapping (BodyPart.LEFT_TOE, 23);
+		}
+
+		public static void PopulateConnections(BodyConfiguration configuration) {
+			// Add the connections.
+			// SPINE
+			configuration.AddConnection(BodyPart.PELVIS, BodyPart.L5);
+			configuration.AddConnection(BodyPart.L5, BodyPart.L3);
+			configuration.AddConnection(BodyPart.L3, BodyPart.T12);
+			configuration.AddConnection(BodyPart.T12, BodyPart.NECK);
+			configuration.AddConnection(BodyPart.NECK, BodyPart.HEAD);
+
+			// RIGHT-ARM
+			configuration.AddConnection(BodyPart.RIGHT_SHOULDER, BodyPart.RIGHT_UPPER_ARM);
+			configuration.AddConnection(BodyPart.RIGHT_UPPER_ARM, BodyPart.RIGHT_FORE_ARM);
+			configuration.AddConnection(BodyPart.RIGHT_FORE_ARM, BodyPart.RIGHT_HAND);
+
+			// LEFT-ARM
+			configuration.AddConnection(BodyPart.LEFT_SHOULDER, BodyPart.LEFT_UPPER_ARM);
+			configuration.AddConnection(BodyPart.LEFT_UPPER_ARM, BodyPart.LEFT_FORE_ARM);
+			configuration.AddConnection(BodyPart.LEFT_FORE_ARM, BodyPart.LEFT_HAND);
+
+			// RIGHT-LEG
+			configuration.AddConnection(BodyPart.RIGHT_UPPER_LEG, BodyPart.RIGHT_LOWER_LEG);
+			configuration.AddConnection(BodyPart.RIGHT_LOWER_LEG, BodyPart.RIGHT_FOOT);
+			configuration.AddConnection(BodyPart.RIGHT_FOOT, BodyPart.RIGHT_TOE);
+
+			// LEFT-LEG
+			configuration.AddConnection(BodyPart.LEFT_UPPER_LEG, BodyPart.LEFT_LOWER_LEG);
+			configuration.AddConnection(BodyPart.LEFT_LOWER_LEG, BodyPart.LEFT_FOOT);
+			configuration.AddConnection(BodyPart.LEFT_FOOT, BodyPart.LEFT_TOE);
+		}
 	}
 }
 

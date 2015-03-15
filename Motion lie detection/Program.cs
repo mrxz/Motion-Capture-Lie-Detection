@@ -16,13 +16,24 @@ namespace Motion_lie_detection
         {
 			LOG.info ("Motion lie detection starting up");
 
-			// Calibrate and connect the suit.
+			/**
+			 * Suit demo code
+			 */
+			/*
 			SuitController controller = new XSensController ();
 			controller.Calibrate ();
 			controller.Connect();
+			RecordingProvider provider = new SuitRecordingProvider (controller);
+			provider.Init ();
+			Recording recording = new Recording (provider, new FixedBodyConfiguration());
 
-			// Wrap the controller in a recording.
-			//RecordingProvider provider = new SuitRecordingProvider (controller);
+			DummyStream stream = new DummyStream ();
+			stream.Start (); */
+
+
+			/**
+			 * File recording demo
+			 */
 			OpenFileDialog dialog = new OpenFileDialog ();
 			dialog.DefaultExt = "mvnx";
 			dialog.Multiselect = false;
@@ -33,14 +44,13 @@ namespace Motion_lie_detection
 
 			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
 			provider.Init ();
-			Recording recording = new Recording (provider, new FixedBodyConfiguration());
+			Recording recording = new Recording (provider);
 
-			// DEBUG: Open a window.
+
+			/**
+			 * DEBUG: Visualization
+			 */
 			new Thread(openWindow).Start(recording);
-
-			// DEBUG: Send dummy stream.
-            //DummyStream stream = new DummyStream ();
-            //stream.Start ();
         }
 
 		public static void openWindow(Object data) {
