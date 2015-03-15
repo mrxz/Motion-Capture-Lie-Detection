@@ -80,10 +80,7 @@ namespace Motion_lie_detection
 			// Read the frames.
 			newFrames = new List<Frame> ();
 			reader.ReadToFollowing ("frames");
-			while (reader.Read ()) {
-				if (reader.Name != "frame")
-					reader.ReadToFollowing ("frame");
-
+			while (reader.ReadToFollowing ("frame")) {
 				// Not interested in poses, only 'normal' frames.
 				switch(reader.GetAttribute("type")) {
 				case "npose":
@@ -100,9 +97,6 @@ namespace Motion_lie_detection
 					// This type of frame doesn't interest us, so don't do anything.
 					break;
 				}
-
-				// Read to the next frame.
-				reader.ReadToFollowing ("frame");
 			}
 			LOG.info("Read " + newFrames.Count + " frames from file " + file);
 

@@ -81,6 +81,7 @@
     <Compile Include="BodyConfiguration.cs" />
     <Compile Include="DummyStream.cs" />
     <Compile Include="RunningJump.cs" />
+    <Compile Include="RecordingSaver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />

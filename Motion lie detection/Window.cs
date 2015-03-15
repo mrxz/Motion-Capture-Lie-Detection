@@ -87,6 +87,7 @@ namespace Motion_lie_detection
 
 		public void timer_Tick(Object source, EventArgs e)
 		{
+			recording.Update ();
 			if (!stepMode) {
 				if (forward) {
 					currentFrameID++;

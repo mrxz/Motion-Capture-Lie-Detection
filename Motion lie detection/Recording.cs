@@ -61,25 +61,36 @@ namespace Motion_lie_detection
 		}
 
 		/**
+		 * Method for updating the recording by appending any new frames from the underlying recording provider.
+		 * This method should be called when the recording is allowed to change.
+		 * @return True if new frames are added, false if none are added.
+		 */
+		public bool Update() {
+			List<Frame> frames = provider.GetNewFrames ();
+			if (frames != null && frames.Count > 0) {
+				foreach (Frame frame in frames) {
+					AddFrame (frame);
+				}
+
+				// New frames are added.
+				return true;
+			}
+
+			// No new frames.
+			return false;
+		}
+
+		/**
 		 * Method that returns the frameID of the last (or latest) frame of the recording.
 		 * @return The last frame ID of the recording.
 		 */
 		public int LastFrame() {
-			// DEBUG: Insert the new frames into the recording.
-			List<Frame> frames = provider.GetNewFrames ();
-			if (frames != null) {
-				foreach (Frame frame in frames) {
-					AddFrame (frame);
-				}
-			}
-
-			// ACTUAL METHOD:
 			return lastFrameID;
 		}
 
 		public int FrameRate {
 			get {
-				throw new System.NotImplementedException ();
+				return provider.GetFrameRate();
 			}
 		}
 

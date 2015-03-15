@@ -45,7 +45,13 @@ namespace Motion_lie_detection
 			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
 			provider.Init ();
 			Recording recording = new Recording (provider);
+			recording.Update ();
 
+			/**
+			 * Saving the recording.
+			 */
+			//RecordingSaver saver = new MVNXSaver ("test.mvnx");
+			//saver.saveToFile (recording);
 
 			/**
 			 * DEBUG: Visualization
