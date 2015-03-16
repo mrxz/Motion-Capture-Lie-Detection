@@ -25,7 +25,7 @@ namespace Motion_lie_detection
      * COULD:
      * maak de spheres kleiner want ze zijn zo groot nu.
      * mooie kleurtjes!!!
-     * /
+     */
 
 
     public class Visualizer : Game
