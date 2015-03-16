@@ -59,18 +59,22 @@
     <Compile Include="Algorithm.cs" />
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BodyModel.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="FileRecordingProvider.cs" />
+    <Compile Include="GeoMetricPrimitive.cs" />
     <Compile Include="LieDetectionAlgorithm.cs" />
     <Compile Include="LieResult.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Normalisation.cs" />
     <Compile Include="Observer.cs" />
+    <Compile Include="PrimitiveSphere.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="RecordingProvider.cs" />
     <Compile Include="SuitController.cs" />
     <Compile Include="SuitRecordingProvider.cs" />
     <Compile Include="TrafficLight.cs" />
+    <Compile Include="VertexPositionNormal.cs" />
     <Compile Include="Visualizer.cs" />
     <Compile Include="XSensController.cs" />
     <Compile Include="XSensListener.cs" />
@@ -85,6 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data" />
