@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.GamerServices;
+using System.ComponentModel;
+using System.Data;
+using System.Text;
+using System.Windows.Forms;
 
 
 namespace Motion_lie_detection
@@ -19,19 +20,56 @@ namespace Motion_lie_detection
         Camera camera;
         TrafficLight trafficLight;
         Color DrawColor = Color.Green;
-        Frame frame;
         GeometricPrimitive primitive;
+        GraphicsDeviceManager graphics;
 
-        public Visualizer()
+        /**
+		 * The recording to visualize.
+		 */
+        private readonly Recording recording;
+        /**
+         * The frame that is being drawn.
+         */
+        private Frame frame = new Frame();
+
+        /**
+         * Simple playback control variables.
+         */
+        private int currentFrameID = 0;
+        private bool forward = true;
+        private bool stepMode = false;
+
+
+        public Visualizer(Recording recording)
         {
-            primitive = new SpherePrimitive(GraphicsDevice);
+            this.recording = recording;
+            graphics = new GraphicsDeviceManager(this);
+            graphics.ApplyChanges();            
+            var timer = new Timer();
+            timer.Interval = 1000 / 60;
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
+            LoadContent();
+        }
+
+        protected override void LoadContent()
+        {
+            primitive = new SpherePrimitive(graphics.GraphicsDevice);
+            base.LoadContent();
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            if (frame.Joints == null)
+                return;
 
-            Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, -20), new Vector3(0, 0, 100), Vector3.Up);
+            Matrix view = Matrix.CreateLookAt(new Vector3(-10, -15, -15), new Vector3(0, 0, 100), Vector3.Up);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1.0f, 100);
 
             
@@ -44,11 +82,6 @@ namespace Motion_lie_detection
             base.Draw(gameTime);
         }
 
-        public void DrawFrame(Frame frame)
-        {
-            this.frame = frame;
-
-        }
         private Vector3 ConvertRealWorldPoint(Vector3 position)
         {
             var returnVector = new Vector3();
@@ -56,6 +89,26 @@ namespace Motion_lie_detection
             returnVector.Y = position.Y * 10;
             returnVector.Z = position.Z;
             return returnVector;
+        }
+
+        public void timer_Tick(Object source, EventArgs e)
+        {
+            recording.Update();
+            if (!stepMode)
+            {
+                if (forward)
+                {
+                    currentFrameID++;
+                    currentFrameID = Math.Min(currentFrameID, recording.LastFrame());
+                }
+                else
+                {
+                    currentFrameID--;
+                    currentFrameID = Math.Max(currentFrameID, 0);
+                }
+            }
+
+            frame = recording.GetFrame(currentFrameID);
         }
     }
 }

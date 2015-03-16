@@ -10,6 +10,8 @@ namespace Motion_lie_detection
     public class MotionLieDetection
     {
 		public static readonly Logger LOG = Logger.getInstance("Main");
+        public static Visualizer visualizer;
+        public static Recording recording;
 
 		[STAThread]
         public static void Main()
@@ -44,7 +46,7 @@ namespace Motion_lie_detection
 
 			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
 			provider.Init ();
-			Recording recording = new Recording (provider);
+		    recording = new Recording (provider);
 			recording.Update ();
 
 			/**
@@ -56,7 +58,9 @@ namespace Motion_lie_detection
 			/**
 			 * DEBUG: Visualization
 			 */
-			new Thread(openWindow).Start(recording);
+            
+            new Thread(updateVisualizer).Start();
+			//new Thread(openWindow).Start(recording);
         }
 
 		public static void openWindow(Object data) {
@@ -65,5 +69,12 @@ namespace Motion_lie_detection
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Window((Recording)data));
 		}
+        public static void updateVisualizer()
+        {
+            LOG.info("Opening window for visualization");
+            visualizer = new Visualizer(recording);
+            visualizer.Run();
+            LOG.info("Closing window");
+        }
     }
 }
