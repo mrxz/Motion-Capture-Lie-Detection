@@ -14,6 +14,20 @@ using System.Windows.Forms;
 namespace Motion_lie_detection
 
 {
+    /*
+     * ONZE SUPER COOOLE MEGA TODO LIJST!!!!!
+     * 
+     *  MUST:
+     * - Add camera controllzzz
+     * - Basix GUI die loaden en saven ondersteunt 
+     * - Draw de verbindingen tussen de joints waar ze verbonden zijn
+     * 
+     * COULD:
+     * maak de spheres kleiner want ze zijn zo groot nu.
+     * mooie kleurtjes!!!
+     * /
+
+
     public class Visualizer : Game
     {
         BodyModel bodyModel;
