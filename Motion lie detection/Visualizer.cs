@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.GamerServices;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
@@ -35,7 +34,7 @@ namespace Motion_lie_detection
         TrafficLight trafficLight;
         Color DrawColor = Color.Green;
         GeometricPrimitive primitive;
-        GraphicsDeviceManager graphics;
+		GraphicsDevice graphics;
 
         /**
 		 * The recording to visualize.
@@ -57,23 +56,33 @@ namespace Motion_lie_detection
         public Visualizer(Recording recording)
         {
             this.recording = recording;
-            graphics = new GraphicsDeviceManager(this);
-            graphics.ApplyChanges();            
-            var timer = new Timer();
-            timer.Interval = 1000 / 60;
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Start();
-            LoadContent();
+			new GraphicsDeviceManager (this);
         }
+
+		protected override void Initialize ()
+		{
+			// FIXME: This code doesn't work for some reason, the time_Tick method is never invoked.
+			var timer = new Timer();
+			timer.Interval = 1000 / 60;
+			timer.Tick += new EventHandler(this.timer_Tick);
+			timer.Start();
+			base.Initialize ();
+
+			// HACK: Call time_Tick method once to get something on the screen.
+			timer_Tick (null, null);
+		}
 
         protected override void LoadContent()
         {
-            primitive = new SpherePrimitive(graphics.GraphicsDevice);
-            base.LoadContent();
+			graphics = this.GraphicsDevice;
+			primitive = new SpherePrimitive(graphics);
+			base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
+			// HACK: This makes it work sort of, but relies on update frequency of the visualization :/
+			//timer_Tick (null, null);
             base.Update(gameTime);
         }
 
@@ -93,8 +102,8 @@ namespace Motion_lie_detection
                 Matrix world = Matrix.CreateTranslation(position);
                 primitive.Draw(world, view, projection, DrawColor);                
             }
-            base.Draw(gameTime);
-        }
+			base.Draw(gameTime);
+		}
 
         private Vector3 ConvertRealWorldPoint(Vector3 position)
         {

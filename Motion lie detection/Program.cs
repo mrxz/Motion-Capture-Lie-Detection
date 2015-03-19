@@ -69,11 +69,12 @@ namespace Motion_lie_detection
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Window((Recording)data));
 		}
+
         public static void updateVisualizer()
         {
             LOG.info("Opening window for visualization");
             visualizer = new Visualizer(recording);
-            visualizer.Run();
+			visualizer.Run ();
             LOG.info("Closing window");
         }
     }
