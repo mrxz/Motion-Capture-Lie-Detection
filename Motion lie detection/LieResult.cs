@@ -14,7 +14,7 @@ namespace Motion_lie_detection
         private List<List<float>> frameDifferences;
         private float meandiff;
 
-        public LieResult(ref Recording recording, int framestart, Frame start)
+        public LieResult(Recording recording, int framestart, Frame start)
         {
             this.recording = recording;
             this.filteredFrames = new List<Frame>();
@@ -31,9 +31,9 @@ namespace Motion_lie_detection
             }
         }
 
-        public static LieResult Empty(ref Recording recording)
+        public static LieResult Empty(Recording recording)
         {
-            return new LieResult(ref recording, -1, Frame.Empty);
+            return new LieResult(recording, -1, Frame.Empty);
         }
 
         public void AddDiff(int next, List<float> diff)

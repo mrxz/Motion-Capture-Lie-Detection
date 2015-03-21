@@ -30,6 +30,12 @@ namespace Motion_lie_detection
 		private bool forward = true;
 		private bool stepMode = false;
 
+		/**
+		 * Algorithm,
+		 */
+		private Algorithm algo = null;
+		private VisualizerPass visPass = null;
+
 		public Window(Recording recording)
 		{
 			this.recording = recording;
@@ -40,6 +46,10 @@ namespace Motion_lie_detection
 			timer.Interval = 1000 / 60;
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
+
+			// Construct the algo.
+			visPass = new VisualizerPass(new LieDetectionAlgorithm ());
+			algo = new NormalizePosition (visPass);
 		}
 
 		public void panel1_Click(Object source, EventArgs e)
@@ -64,6 +74,8 @@ namespace Motion_lie_detection
 			}
 
 			g.DrawString("Current frame: " + currentFrameID + " (" + currentFrameID/60 + "s)", new Font ("Arial", 10.0f), Brushes.Red, 5, 560);
+			g.DrawLine (Pens.LightGray, panel1.Width / 2, 0, panel1.Width / 2, panel1.Height);
+			g.DrawLine (Pens.LightGray, 0, panel1.Height/2, panel1.Width, panel1.Height /2);
 
 			// Draw lines.
 			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
@@ -99,6 +111,10 @@ namespace Motion_lie_detection
 			}
 
 			frame = recording.GetFrame (currentFrameID);
+			if(currentFrameID > 1) {
+				algo.Compute (recording, currentFrameID - 1, currentFrameID);
+				frame = visPass.GetFrame ();
+			}
 			panel1.Refresh ();
 		}
 
@@ -119,6 +135,28 @@ namespace Motion_lie_detection
 		{
 			Environment.Exit (0);
 		}
+	}
+
+	/**
+	 * Filter pass that simply stores the frame for visualization.
+	 */
+	public class VisualizerPass : FilterPass
+	{
+		private Frame frame = Frame.Empty;
+
+		public VisualizerPass(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
+
+		public override List<float> ComputeFrame (LieResult result, Frame next)
+		{
+			frame = next;
+			return BaseAlgorithm.ComputeFrame (result, next);
+		}
+
+		public Frame GetFrame() 
+		{
+			return frame;
+		}
+
 	}
 }
 

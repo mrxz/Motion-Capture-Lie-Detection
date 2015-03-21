@@ -4,9 +4,18 @@ using System.Collections.Generic;
 
 namespace Motion_lie_detection
 {
+	/**
+	 * Lie detection algorithm.
+	 */
     public class LieDetectionAlgorithm : Algorithm
     {
-        protected override List<float> ComputeFrame(LieResult result, Frame next)
+		/**
+		 * Method for computing the result for one single frame.
+		 * @param result
+		 * @param next
+		 * @return
+		 */
+        public override List<float> ComputeFrame(LieResult result, Frame next)
         {
             Frame last = result.LastFrame;
             result.AddFrame(next);
