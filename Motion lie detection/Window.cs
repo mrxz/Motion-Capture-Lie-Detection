@@ -35,6 +35,9 @@ namespace Motion_lie_detection
 		 */
 		private Algorithm algo = null;
 		private VisualizerPass visPass = null;
+		private NormalizeOrientation ortPass = null;
+
+		private int prevMouseX = -1;
 
 		public Window(Recording recording)
 		{
@@ -49,12 +52,29 @@ namespace Motion_lie_detection
 
 			// Construct the algo.
 			visPass = new VisualizerPass(new LieDetectionAlgorithm ());
-			algo = new NormalizePosition (visPass);
+			ortPass = new NormalizeOrientation (visPass);
+			algo = new NormalizePosition (ortPass);
 		}
 
 		public void panel1_Click(Object source, EventArgs e)
 		{
 			forward = !forward;
+			prevMouseX = MousePosition.X;
+		}
+
+		public void panel1_Drag(object source, MouseEventArgs e) {
+			if (prevMouseX != -1) {
+				ortPass.AdditionalRotation += (float)(MousePosition.X - prevMouseX) * 0.05f;
+				prevMouseX = MousePosition.X;
+			}
+		}
+		public void panel1_StartDrag(object source, MouseEventArgs e) {
+			if (e.Button == MouseButtons.Right) {
+				prevMouseX = MousePosition.X;
+			}
+		}
+		public void panel1_StopDrag(object source, MouseEventArgs e) {
+			prevMouseX = -1;
 		}
 
 		public void panel1_Paint(Object source, PaintEventArgs e)

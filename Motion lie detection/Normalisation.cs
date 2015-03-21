@@ -25,7 +25,7 @@ namespace Motion_lie_detection
 				}
 			}
 
-            // Loop over the joints and disposition them.
+            // Loop over the joints and re-position them.
 			for (int i = 0; i < next.Joints.Count; i++) {
 				Joint joint = next.Joints [i];
 				next.Joints[i] = new Joint(
@@ -47,9 +47,30 @@ namespace Motion_lie_detection
     {
 		public NormalizeOrientation(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
+		// DEBUG: this variable is used for debugging purposes to rotate the visualization, i know, UGLY...
+		public float AdditionalRotation = 0.0f;
+
         public override List<float> ComputeFrame(LieResult result, Frame next)
         {
-            
+            // Get the rotation of the body.
+			double rotation = 0.0f;
+			// FIXME: Hard-coded joints.
+			rotation = Math.Atan2 (next.Joints [15].Position.X, next.Joints [15].Position.Y);
+			rotation += AdditionalRotation;
+
+			// Loop over the joints and rotate them.
+			for (int i = 0; i < next.Joints.Count; i++) {
+				Joint joint = next.Joints [i];
+
+				double newX = Math.Cos (rotation) * joint.Position.X - Math.Sin (rotation) * joint.Position.Y;
+				double newY = Math.Sin (rotation) * joint.Position.X + Math.Cos (rotation) * joint.Position.Y;
+
+				next.Joints[i] = new Joint(
+					joint.Id,
+					new Vector3((float)newX, (float)newY, joint.Position.Z),
+					joint.Orientation);
+			}
+
 
 			return BaseAlgorithm.ComputeFrame (result, next);
         }
