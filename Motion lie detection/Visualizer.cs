@@ -10,8 +10,8 @@ using System.Text;
 using System.Windows.Forms;
 
 
-namespace Motion_lie_detection
 
+namespace Motion_lie_detection
 {
     /*
      * ONZE SUPER COOOLE MEGA TODO LIJST!!!!!
@@ -24,7 +24,7 @@ namespace Motion_lie_detection
      * COULD:
      * maak de spheres kleiner want ze zijn zo groot nu.
      * mooie kleurtjes!!!
-     * /
+     */
 
 
     public class Visualizer : Game
@@ -35,6 +35,9 @@ namespace Motion_lie_detection
         Color DrawColor = Color.Green;
         GeometricPrimitive primitive;
 		GraphicsDevice graphics;
+        KeyboardState keyboardState;
+
+        Vector3 eye, focus, up;
 
         /**
 		 * The recording to visualize.
@@ -57,6 +60,7 @@ namespace Motion_lie_detection
         {
             this.recording = recording;
 			new GraphicsDeviceManager (this);
+            keyboardState = new KeyboardState();
         }
 
 		protected override void Initialize ()
@@ -66,6 +70,11 @@ namespace Motion_lie_detection
 			timer.Interval = 1000 / 60;
 			timer.Tick += new EventHandler(this.timer_Tick);
 			timer.Start();
+
+            eye = new Vector3(0, 0, -50);
+            focus = new Vector3(0, 0, 0);
+            up = Vector3.Up;
+
 			base.Initialize ();
 
 			// HACK: Call time_Tick method once to get something on the screen.
@@ -83,6 +92,29 @@ namespace Motion_lie_detection
         {
 			// HACK: This makes it work sort of, but relies on update frequency of the visualization :/
 			//timer_Tick (null, null);
+            float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
+            keyboardState = Keyboard.GetState();
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+                this.Exit();
+            
+            
+            //rotate around the visualized data
+            float deltaAngle = 0.0f;
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                deltaAngle += 0.05f;
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                deltaAngle -= 0.05f;
+            if (deltaAngle != 0)
+                eye = Vector3.Transform(eye, Matrix.CreateRotationY(deltaAngle));
+
+            //zoom controls
+            float zoom = 0.00f;
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                zoom += 1f;
+            if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                zoom -= 1f;
+            eye.Z += zoom;
+            
             base.Update(gameTime);
         }
 
@@ -92,16 +124,32 @@ namespace Motion_lie_detection
             if (frame.Joints == null)
                 return;
 
-            Matrix view = Matrix.CreateLookAt(new Vector3(-10, -15, -15), new Vector3(0, 0, 100), Vector3.Up);
+            Matrix view = Matrix.CreateLookAt(eye, focus, up);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1.0f, 100);
 
-            
+            //draw a red sphere at the center of the world.
+            Vector3 position = Vector3.Zero;
+            Matrix world = Matrix.CreateTranslation(position);
+            primitive.Draw(world, view, projection, Color.Red);
+
+            //find the average position
+            Vector3 AveragePosition = Vector3.Zero;
+            foreach (Joint joint in frame.Joints)
+            {
+                AveragePosition += joint.Position;
+            }
+            AveragePosition /= frame.Joints.Count;
+            AveragePosition.X *= 10;
+            AveragePosition.Y *= 10;
+
             foreach ( Joint joint in frame.Joints)
             {
-                Vector3 position = ConvertRealWorldPoint(joint.Position);
-                Matrix world = Matrix.CreateTranslation(position);
+                position = ConvertRealWorldPoint(joint.Position);
+                position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
+                world = Matrix.CreateTranslation(position);              
                 primitive.Draw(world, view, projection, DrawColor);                
             }
+            
 			base.Draw(gameTime);
 		}
 
