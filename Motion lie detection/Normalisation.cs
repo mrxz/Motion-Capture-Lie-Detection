@@ -13,13 +13,12 @@ namespace Motion_lie_detection
     {
 		public NormalizePosition(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-        public override List<float> ComputeFrame(LieResult result, Frame next)
+		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
         {
 			// Get the position of the root joint.
 			Vector3 rootPosition = Vector3.Zero;
 			foreach (Joint joint in next.Joints) {
-				// FIXME: Hard-coded pelvis joint id.
-				if (joint.Id == 1) { 
+				if (joint.Id == bodyConfiguration.GetJointFor(BodyPart.PELVIS)) { 
 					rootPosition = joint.Position;
 					break;
 				}
@@ -34,7 +33,7 @@ namespace Motion_lie_detection
 					joint.Orientation);
 			}
 
-			return BaseAlgorithm.ComputeFrame (result, next);
+			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
         }
     }
 
@@ -50,12 +49,20 @@ namespace Motion_lie_detection
 		// DEBUG: this variable is used for debugging purposes to rotate the visualization, i know, UGLY...
 		public float AdditionalRotation = 0.0f;
 
-        public override List<float> ComputeFrame(LieResult result, Frame next)
+		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
         {
+			// 
+			Vector3 reference = Vector3.Zero;
+			foreach (Joint joint in next.Joints) {
+				if (joint.Id == bodyConfiguration.GetJointFor(BodyPart.RIGHT_UPPER_LEG)) { 
+					reference = joint.Position;
+					break;
+				}
+			}
+
             // Get the rotation of the body.
-			double rotation = 0.0f;
-			// FIXME: Hard-coded joints.
-			rotation = Math.Atan2 (next.Joints [15].Position.X, next.Joints [15].Position.Y);
+			double rotation = Math.Atan2 (reference.X, reference.Y);
+			// DEBUG:
 			rotation += AdditionalRotation;
 
 			// Loop over the joints and rotate them.
@@ -72,7 +79,7 @@ namespace Motion_lie_detection
 			}
 
 
-			return BaseAlgorithm.ComputeFrame (result, next);
+			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
         }
     }
 
@@ -85,11 +92,10 @@ namespace Motion_lie_detection
     {
 		public NormalizeLength(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-        public override List<float> ComputeFrame(LieResult result, Frame next)
+		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
         {
 
-
-			return BaseAlgorithm.ComputeFrame (result, next);
+			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
         }
     }
 }

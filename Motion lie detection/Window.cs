@@ -56,12 +56,6 @@ namespace Motion_lie_detection
 			algo = new NormalizePosition (ortPass);
 		}
 
-		public void panel1_Click(Object source, EventArgs e)
-		{
-			forward = !forward;
-			prevMouseX = MousePosition.X;
-		}
-
 		public void panel1_Drag(object source, MouseEventArgs e) {
 			if (prevMouseX != -1) {
 				ortPass.AdditionalRotation += (float)(MousePosition.X - prevMouseX) * 0.05f;
@@ -69,8 +63,10 @@ namespace Motion_lie_detection
 			}
 		}
 		public void panel1_StartDrag(object source, MouseEventArgs e) {
-			if (e.Button == MouseButtons.Right) {
+			if (e.Button == MouseButtons.Left) {
 				prevMouseX = MousePosition.X;
+			} else {
+				forward = !forward;
 			}
 		}
 		public void panel1_StopDrag(object source, MouseEventArgs e) {
@@ -166,10 +162,10 @@ namespace Motion_lie_detection
 
 		public VisualizerPass(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		public override List<float> ComputeFrame (LieResult result, Frame next)
+		public override List<float> ComputeFrame (LieResult result, BodyConfiguration bodyConfiguration, Frame next)
 		{
 			frame = next;
-			return BaseAlgorithm.ComputeFrame (result, next);
+			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
 		}
 
 		public Frame GetFrame() 

@@ -29,13 +29,13 @@ namespace Motion_lie_detection
                 int next = result.NextFrameId;
                 if (next >= recording.FrameCount)
                     break;
-                result.AddDiff(next, ComputeFrame(result, recording.Frames[next]));
+				result.AddDiff(next, ComputeFrame(result, recording.BodyConfiguration, recording.Frames[next]));
                 framestart++;
             }
             return result;
         }
 
-        public abstract List<float> ComputeFrame(LieResult result, Frame next);    
+		public abstract List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next);    
     }
 
 	/**
