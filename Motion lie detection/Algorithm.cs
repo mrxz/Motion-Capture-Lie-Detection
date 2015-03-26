@@ -12,7 +12,8 @@ namespace Motion_lie_detection
             return Compute(ref recording, 0, recording.FrameCount);
         }
 
-        public LieResult Compute(ref Recording recording, int framestart, int framend){
+        public LieResult Compute(ref Recording recording, int framestart, int framend)
+        {
             //Check if order of frameindices is valid
             if (framend < framestart)
                 throw new Exception("Frame indices must be specified from small to high");
@@ -29,6 +30,14 @@ namespace Motion_lie_detection
                 result.AddDiff(next, ComputeFrame(result, recording.Frames[next]));
                 framestart++;
             }
+            return result;
+        }
+
+        public LieResult Compute(ref Recording recording, LieResult result)
+        {
+            int next = result.NextFrameId;
+            if (next < recording.FrameCount)
+                result.AddDiff(next, ComputeFrame(result, recording.Frames[next]));
             return result;
         }
 

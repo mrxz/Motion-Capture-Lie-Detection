@@ -56,6 +56,11 @@ namespace Motion_lie_detection
 			/**
 			 * DEBUG: Visualization
 			 */
+            Algorithm algo = new LieDetectionAlgorithm();
+            LieResult res = LieResult.Empty(ref recording);
+            while(Frame.IsEmpty(fr)){
+                res = algo.Compute(ref recording, res);
+            }
 			new Thread(openWindow).Start(recording);
         }
 

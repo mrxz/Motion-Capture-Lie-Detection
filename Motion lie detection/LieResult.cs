@@ -13,10 +13,13 @@ namespace Motion_lie_detection
         private List<Frame> filteredFrames;
         private List<List<float>> frameDifferences;
         private float meandiff;
+        private float[] means;
+        private float meancount = 0;
 
         public LieResult(ref Recording recording, int framestart, Frame start)
         {
             this.recording = recording;
+            this.means = new float[8];
             this.filteredFrames = new List<Frame>();
             this.frameDifferences = new List<List<float>>();
             this.framestart = (framestart > 0) ? framestart : 0;
@@ -38,15 +41,25 @@ namespace Motion_lie_detection
 
         public void AddDiff(int next, List<float> diff)
         {
-            if (diff == null)            
-                framestart = framend = next;
-            else
-            {
-                framend = next;
-                frameDifferences.Add(diff);
-                float n = frameDifferences.Count;
-                meandiff = (n - 1) / n * meandiff + diff[diff.Count -1] / n;
+        //    if (diff == null)            
+        //        framestart = framend = next;
+        //    else
+        //    {
+        //        framend = next;
+        //        frameDifferences.Add(diff);
+        //        float n = frameDifferences.Count;
+        //        meandiff = (n - 1) / n * meandiff + diff[diff.Count -1] / n;
+        //    }
+            for(int i =0; i < 8; i++){
+                means[i] *= meancount / (meancount + 1);
+                means[i] += diff[i] / (meancount + 1);
             }
+            meancount++;
+        }
+
+        public float[] Means
+        {
+            get { return means; }
         }
         //TODO: check setting of star and and, I believe i is done twice now
         public void AddFrame(Frame frame)

@@ -6,46 +6,74 @@ namespace Motion_lie_detection
 {
     public class LieDetectionAlgorithm : Algorithm
     {
-        protected override List<float> ComputeFrame(LieResult result, Frame next)
+        public override List<float> ComputeFrame(LieResult result, Frame next)
         {
             Frame last = result.LastFrame;
             result.AddFrame(next);
             if (Frame.IsEmpty(last))
                 return null;
-            return PairwiseDifference(last, next);
+            //return PairwiseDifference(last.Joints, next.Joints);
+            List<float> res = new List<float>();
+            //full body
+            res.Add(AbsoluteMovement(last.Joints, next.Joints));
+            //left arm
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), 0));
+            //right arm
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), 0));
+            //left leg
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), 0));
+            //right leg
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), 0));
+            //head
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.T8, 3), next.Joints.GetRange((int)BodyPart.T8, 3), 0));
+            //body
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 4), next.Joints.GetRange((int)BodyPart.PELVIS, 4), 0));
+            //upper body
+            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 15), next.Joints.GetRange((int)BodyPart.PELVIS, 15), 0));
+            return res;
         }
 
-        //public override LieResult NextFrame(LieResult result)
-        //{
-        //    Frame next = result.NextFrame;
-        //    Frame last = result.LastFrame;
-        //    //Check if next frame does exist
-        //    if (!Frame.IsEmpty(next))
-        //        //if there is now last frame, no differences can be calculated onlt framestaret can be set
-        //        if (!Frame.IsEmpty(next))
-        //            result.AddFrame(next, null);
-        //        else
-        //        result.AddFrame(next, PairwiseDifference(last, next));
-        //    else
-        //        result = null;
-        //    return result;
-        //}
-
-        private List<float> PairwiseDifference(Frame A, Frame B)
+        private List<float> PairwiseDifference(List<Joint> A, List<Joint> B)
         {
-            if (A.Joints.Count != B.Joints.Count)
+            if (A.Count != B.Count)
                 throw new Exception("Number of joints, is not equal");
             List<float> res = new List<float>();
             float totdiff = 0;
-            for (int i = 0; i < A.Joints.Count; i++)
+            for (int i = 0; i < A.Count; i++)
             {
-                float diff = Vector3.Distance(A.Joints[i].Position, B.Joints[i].Position);
+                float diff = Vector3.Distance(A[i].Position, B[i].Position);
                 res.Add(diff);
                 totdiff += diff;
             }
             //Add sum of pairwise differences
             res.Add(totdiff);
             return res;
+        }
+
+        private float AbsoluteMovement(List<Joint> A, List<Joint> B)
+        {
+            if (A.Count != B.Count)
+                throw new Exception("Number of joints, is not equal");
+            float totdiff = 0;
+            for (int i = 0; i < A.Count; i++)
+            {
+                totdiff += Vector3.Distance(A[i].Position, B[i].Position);
+            }
+            //return sum of pairwise differences
+            return totdiff;
+        }
+
+        private float NAbsoluteMovement(List<Joint> A, List<Joint> B, int normal)
+        {
+            if (A.Count != B.Count)
+                throw new Exception("Number of joints, is not equal");
+            float totdiff = 0;
+            for (int i = 0; i < A.Count; i++)
+            {
+                totdiff += Vector3.Distance(A[i].Position - A[normal].Position, B[i].Position - B[normal].Position);
+            }
+            //return sum of pairwise differences
+            return totdiff;
         }
     }
 }

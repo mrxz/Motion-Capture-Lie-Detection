@@ -21,7 +21,7 @@ namespace Motion_lie_detection
 		/**
 		 * List containing markpoints made in this recording.
 		 */
-		private readonly List<MarkPoint> markpoints;
+		private List<MarkPoint> markpoints;
 
 		/**
 		 * The recording provider that provides the frame data containing joint positions.
@@ -31,6 +31,11 @@ namespace Motion_lie_detection
 		 * The configuration of the body in this recording.
 		 */
 		private readonly BodyConfiguration bodyConfiguration;
+
+        /**
+		 * Number of frames that are averaged
+		 */
+        private int downsamplerate = 1;
 
 		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration)
 		{
@@ -117,6 +122,11 @@ namespace Motion_lie_detection
 		{
 			markpoints.Add (markpoint);
 		}
+
+        public int DownSampleRate
+        {
+            get { return downsamplerate; }
+        }
 	}
 
 	public struct Frame
@@ -143,13 +153,24 @@ namespace Motion_lie_detection
         {
             return frame.joints == null;
         }
+
+        public static Frame MeanFrame(List<Frame> list)
+        {
+            List<List<Joint>> joints = new List<List<Joint>>();
+            foreach(Frame frame in list){
+                for (int i = 0; i < frame.Joints.Count; i++){
+                    joints[i].Add(frame.joints[i]);
+                }
+            }
+            return new Frame(list[0].Id, joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)));
+        }
     }
 
 	public struct Joint
 	{
 		private readonly int id;
-		private readonly Vector3 position;
-		private readonly Quaternion orientation;
+		private Vector3 position;
+		private Quaternion orientation;
 
 		public Joint (int jointId, Vector3 position, Quaternion orientation)
 		{
@@ -160,9 +181,23 @@ namespace Motion_lie_detection
 
 		public int Id { get { return id; } }
 
-		public Vector3 Position { get { return position; } }
+        public Vector3 Position { get { return position; } set { position = value; } }
 
 		public Quaternion Orientation { get { return orientation; } }
+
+        public static Joint MeanJoint(List<Joint> joints)
+        {
+            //TODO: calculate mean for quaternions
+            Joint res = joints[0];
+            for (int i = 1; i < joints.Count; i++)
+            {
+                res.position += joints[i].Position;
+                //res.orientation += joints[i].orientation;
+            }
+            res.position /= joints.Count;
+            //res.orientation /= joints.Count;
+            return res;
+        }
 	}
 
 	public struct MarkPoint

@@ -9,7 +9,7 @@ namespace Motion_lie_detection
     {
         protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
-            throw new NotImplementedException();
+            return BaseAlgorithm.ComputeFrame(result, next);
         }
     }
 
@@ -17,7 +17,7 @@ namespace Motion_lie_detection
     {
         protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
-            throw new NotImplementedException();
+            return BaseAlgorithm.ComputeFrame(result, next);
         }
     }
 
@@ -25,7 +25,7 @@ namespace Motion_lie_detection
     {
         protected override List<float> ComputeFrame(LieResult result, Frame next)
         {
-            throw new NotImplementedException();
+            return BaseAlgorithm.ComputeFrame(result, next);
         }
     }
 }
