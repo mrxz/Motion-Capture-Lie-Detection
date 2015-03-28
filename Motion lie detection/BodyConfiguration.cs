@@ -5,111 +5,54 @@ using Microsoft.Xna.Framework;
 namespace Motion_lie_detection
 {
 	/**
-	 * Enumeration containing the body parts.
-	 */
-	public enum BodyPart
-	{
-		// From the Pelvis up to the Head.
-		PELVIS,
-		L5,
-		L3,
-		T12,
-		T8,
-		NECK,
-		HEAD,
-
-		// Right arm
-		RIGHT_SHOULDER,
-		RIGHT_UPPER_ARM,
-		RIGHT_FORE_ARM,
-		RIGHT_HAND,
-
-		// Left arm
-		LEFT_SHOULDER,
-		LEFT_UPPER_ARM,
-		LEFT_FORE_ARM,
-		LEFT_HAND,
-
-		// Right leg
-		RIGHT_UPPER_LEG,
-		RIGHT_LOWER_LEG,
-		RIGHT_FOOT,
-		RIGHT_TOE,
-
-		// Left leg
-		LEFT_UPPER_LEG,
-		LEFT_LOWER_LEG,
-		LEFT_FOOT,
-		LEFT_TOE
-	}
-
-	/**
 	 * Class representing a configuration of a body.
 	 * This includes the mapping between the joints and jointIDs as well as the lengths of the body parts.
 	 */
 	public class BodyConfiguration
 	{
 		/**
-		 * The mapping between BodyPart and joint id.
+		 * The bodyTree.
 		 */
-		protected readonly Dictionary<BodyPart, int> mapping;
+		protected BodyNode root;
 		/**
-		 * The different connections that exist in the body.
+		 * The bodyNode that can be used to determine the orientation.
 		 */
-		protected readonly List<Tuple<BodyPart, BodyPart>> connections;
-		/**
-		 * Mapping between connections and their length (float in meters).
-		 */
-		protected readonly Dictionary<Tuple<BodyPart, BodyPart>, float> lengths;
+		protected BodyNode orientationNode;
 
 		public BodyConfiguration()
 		{
-			mapping = new Dictionary<BodyPart, int> ();
-			connections = new List<Tuple<BodyPart, BodyPart>> ();
-			lengths = new Dictionary<Tuple<BodyPart, BodyPart>, float> ();
+			root = null;
+			orientationNode = null;
 		}
 
-		public Dictionary<BodyPart, int> GetMapping()
+		public BodyNode getRoot()
 		{
-			return mapping;
+			return root;
 		}
 
-		public void AddMapping(BodyPart part, int id)
+		public BodyNode getOrientationNode()
 		{
-			mapping [part] = id;
+			return orientationNode;
 		}
 
-		public List<Tuple<BodyPart, BodyPart>> GetConnections()
-		{
-			return connections;
+		public Joint getJoint(List<Joint> joints, BodyNode node) {
+			// TODO: Add alternative in case the joint order is known.
+			// Loop over the joints to find the correct one.
+			foreach (Joint joint in joints) {
+				if (joint.Id == node.getJointId ())
+					return joint;
+			}
+
+			// Not found.
+			return new Joint ();
 		}
 
-		public void AddConnection(BodyPart from, BodyPart to)
-		{
-			connections.Add (Tuple.Create (from, to));
+		public Joint getRootJoint(List<Joint> joints) {
+			return getJoint (joints, root);
 		}
 
-		public float GetLength(BodyPart from, BodyPart to)
-		{
-			float result;
-			if (!lengths.TryGetValue (Tuple.Create (from, to), out result))
-				return -1;
-			return result;
-		}
-
-		public void SetLength(BodyPart from, BodyPart to, float length)
-		{
-			// FIXME: Make sure connection exists perhaps?
-
-			lengths.Add (Tuple.Create (from, to), length);
-		}
-
-		public int GetJointFor(BodyPart part)
-		{
-			int jointID;
-			if (!mapping.TryGetValue (part, out jointID))
-				return -1;
-			return jointID;
+		public Joint getOrientationJoint(List<Joint> joints) {
+			return getJoint (joints, orientationNode);
 		}
 
 		/**
@@ -119,7 +62,7 @@ namespace Motion_lie_detection
 		 */
 		public void LengthsFromNPose(Frame nposeFrame) 
 		{
-			// 
+			/*
 			foreach(Tuple<BodyPart, BodyPart> connection in connections) {
 				// FIXME: At the moment we utilse the fact that the jointId -1 is the index in the Joints array.
 				Joint first = nposeFrame.Joints[mapping[connection.Item1] - 1];
@@ -127,8 +70,66 @@ namespace Motion_lie_detection
 
 				float distance = Vector3.Distance (first.Position, second.Position);
 				lengths.Add (connection, distance);
-			}
+			}*/
 		}
+	}
+
+	/**
+	 * A node in the body tree.
+	 */
+	public class BodyNode 
+	{
+		/**
+		 * The bodyNode this node should be normalized against.
+		 */
+		private BodyNode root;
+
+		/**
+		 * List containing the adjacent body nodes. 
+		 */
+		private List<BodyNode> adjacent;
+
+		/**
+		 * The joint id that corresponds with this bodypart.
+		 */
+		private int jointId;
+		/**
+		 * The name of the bodyNode.
+		 */
+		private String name;
+
+		public BodyNode(int jointId, String name) 
+		{
+			root = null;
+			adjacent = new List<BodyNode> ();
+			this.jointId = jointId;
+			this.name = name;
+		}
+
+		public List<BodyNode> getNeighbours() {
+			return adjacent;
+		}
+
+		public void addNeighbour(BodyNode node) {
+			adjacent.Add (node);
+		}
+
+		public BodyNode getRoot() {
+			return root != null ? root : this;
+		}
+
+		public void setRoot(BodyNode node) {
+			this.root = node;
+		}
+
+		public int getJointId() {
+			return jointId;
+		}
+
+		public String getName() {
+			return name;
+		}
+
 	}
 
 	/**
@@ -140,72 +141,104 @@ namespace Motion_lie_detection
 
 		public FixedBodyConfiguration() : base()
 		{
-			PopulateMapping (this);
-			PopulateConnections (this);
+			// Spine
+			BodyNode pelvis = new BodyNode (1, "Pelvis");
+			BodyNode l5 = new BodyNode (2, "L5");
+			BodyNode l3 = new BodyNode (3, "L3");
+			BodyNode t12 = new BodyNode (4, "T12");
+			BodyNode t8 = new BodyNode (5, "T8");
+			BodyNode neck = new BodyNode (6, "Neck");
+			BodyNode head = new BodyNode (7, "Head");
+			l5.setRoot (pelvis);
+			l3.setRoot (pelvis);
+			t12.setRoot (pelvis);
+			t8.setRoot (pelvis);
+			neck.setRoot (pelvis);
+			head.setRoot (neck);
+
+			pelvis.addNeighbour (l5);
+			l5.addNeighbour (l3);
+			l3.addNeighbour (t12);
+			t12.addNeighbour (t8);
+			t8.addNeighbour (neck);
+			neck.addNeighbour (head);
+
+
+			// Left leg.
+			{
+				BodyNode lT = new BodyNode (23, "LeftToe");
+				BodyNode lF = new BodyNode (22, "LeftFoot");
+				BodyNode lL = new BodyNode (21, "LeftLowerLeg");
+				BodyNode lU = new BodyNode (20, "LeftUpperLeg");
+				lT.setRoot (lU);
+				lF.setRoot (lU);
+				lL.setRoot (lU);
+				lU.setRoot (pelvis);
+
+				lF.addNeighbour (lT);
+				lL.addNeighbour (lF);
+				lU.addNeighbour (lL);
+				pelvis.addNeighbour (lU);
+			}
+
+			// Right leg.
+			{
+				BodyNode rT = new BodyNode (19, "RightToe");
+				BodyNode rF = new BodyNode (18, "RightFoot");
+				BodyNode rL = new BodyNode (17, "RightLowerLeg");
+				BodyNode rU = new BodyNode (16, "RightUpperLeg");
+				rT.setRoot (rU);
+				rF.setRoot (rU);
+				rL.setRoot (rU);
+				rU.setRoot (pelvis);
+
+				rF.addNeighbour (rT);
+				rL.addNeighbour (rF);
+				rU.addNeighbour (rL);
+				pelvis.addNeighbour (rU);
+
+				// Also use the right uppper leg as orientation node.
+				orientationNode = rU;
+			}
+
+			// Left arm
+			{
+				BodyNode lH = new BodyNode (15, "LeftHand");
+				BodyNode lF = new BodyNode (14, "LeftForeArm");
+				BodyNode lU = new BodyNode (13, "LeftUpperArm");
+				BodyNode lS = new BodyNode (12, "LeftShoulder");
+				lH.setRoot (lS);
+				lF.setRoot (lS);
+				lU.setRoot (lS);
+				lS.setRoot (t8);
+
+				lF.addNeighbour (lH);
+				lU.addNeighbour (lF);
+				lS.addNeighbour (lU);
+				t8.addNeighbour (lS);
+			}
+
+			// Right arm
+			{
+				BodyNode rH = new BodyNode (11, "RightHand");
+				BodyNode rF = new BodyNode (10, "RightForeArm");
+				BodyNode rU = new BodyNode (9, "RightUpperArm");
+				BodyNode rS = new BodyNode (8, "RightShoulder");
+				rH.setRoot (rS);
+				rF.setRoot (rS);
+				rU.setRoot (rS);
+				rS.setRoot (t8);
+
+				rF.addNeighbour (rH);
+				rU.addNeighbour (rF);
+				rS.addNeighbour (rU);
+				t8.addNeighbour (rS);
+			}
+
+			// Make the pelvis the root of the body.
+			this.root = pelvis;
 		}
 
-
-		public static void PopulateMapping(BodyConfiguration configuration) {
-			// The mapping between body part and segment id.
-			// Source: http://issuu.com/xsensmvn/docs/mvn_studio_real-time_network_stream/16?e=14522406/10381348
-			configuration.AddMapping(BodyPart.PELVIS, 1);
-			configuration.AddMapping (BodyPart.L5, 2);
-			configuration.AddMapping (BodyPart.L3, 3);
-			configuration.AddMapping (BodyPart.T12, 4);
-			configuration.AddMapping (BodyPart.T8, 5);
-			configuration.AddMapping (BodyPart.NECK, 6);
-			configuration.AddMapping (BodyPart.HEAD, 7);
-
-			configuration.AddMapping (BodyPart.RIGHT_SHOULDER, 8);
-			configuration.AddMapping (BodyPart.RIGHT_UPPER_ARM, 9);
-			configuration.AddMapping (BodyPart.RIGHT_FORE_ARM, 10);
-			configuration.AddMapping (BodyPart.RIGHT_HAND, 11);
-
-			configuration.AddMapping (BodyPart.LEFT_SHOULDER, 12);
-			configuration.AddMapping (BodyPart.LEFT_UPPER_ARM, 13);
-			configuration.AddMapping (BodyPart.LEFT_FORE_ARM, 14);
-			configuration.AddMapping (BodyPart.LEFT_HAND, 15);
-
-			configuration.AddMapping (BodyPart.RIGHT_UPPER_LEG, 16);
-			configuration.AddMapping (BodyPart.RIGHT_LOWER_LEG, 17);
-			configuration.AddMapping (BodyPart.RIGHT_FOOT, 18);
-			configuration.AddMapping (BodyPart.RIGHT_TOE, 19);
-
-			configuration.AddMapping (BodyPart.LEFT_UPPER_LEG, 20);
-			configuration.AddMapping (BodyPart.LEFT_LOWER_LEG, 21);
-			configuration.AddMapping (BodyPart.LEFT_FOOT, 22);
-			configuration.AddMapping (BodyPart.LEFT_TOE, 23);
-		}
-
-		public static void PopulateConnections(BodyConfiguration configuration) {
-			// Add the connections.
-			// SPINE
-			configuration.AddConnection(BodyPart.PELVIS, BodyPart.L5);
-			configuration.AddConnection(BodyPart.L5, BodyPart.L3);
-			configuration.AddConnection(BodyPart.L3, BodyPart.T12);
-			configuration.AddConnection(BodyPart.T12, BodyPart.NECK);
-			configuration.AddConnection(BodyPart.NECK, BodyPart.HEAD);
-
-			// RIGHT-ARM
-			configuration.AddConnection(BodyPart.RIGHT_SHOULDER, BodyPart.RIGHT_UPPER_ARM);
-			configuration.AddConnection(BodyPart.RIGHT_UPPER_ARM, BodyPart.RIGHT_FORE_ARM);
-			configuration.AddConnection(BodyPart.RIGHT_FORE_ARM, BodyPart.RIGHT_HAND);
-
-			// LEFT-ARM
-			configuration.AddConnection(BodyPart.LEFT_SHOULDER, BodyPart.LEFT_UPPER_ARM);
-			configuration.AddConnection(BodyPart.LEFT_UPPER_ARM, BodyPart.LEFT_FORE_ARM);
-			configuration.AddConnection(BodyPart.LEFT_FORE_ARM, BodyPart.LEFT_HAND);
-
-			// RIGHT-LEG
-			configuration.AddConnection(BodyPart.RIGHT_UPPER_LEG, BodyPart.RIGHT_LOWER_LEG);
-			configuration.AddConnection(BodyPart.RIGHT_LOWER_LEG, BodyPart.RIGHT_FOOT);
-			configuration.AddConnection(BodyPart.RIGHT_FOOT, BodyPart.RIGHT_TOE);
-
-			// LEFT-LEG
-			configuration.AddConnection(BodyPart.LEFT_UPPER_LEG, BodyPart.LEFT_LOWER_LEG);
-			configuration.AddConnection(BodyPart.LEFT_LOWER_LEG, BodyPart.LEFT_FOOT);
-			configuration.AddConnection(BodyPart.LEFT_FOOT, BodyPart.LEFT_TOE);
-		}
 	}
 }
 

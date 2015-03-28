@@ -95,19 +95,23 @@ namespace Motion_lie_detection
 
 			// Draw lines.
 			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
-			foreach(Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections()) 
-				drawLine (joints, bodyConfiguration, g, connection.Item1 , connection.Item2, 255);
+			Queue<BodyNode> q = new Queue<BodyNode> ();
+			q.Enqueue (bodyConfiguration.getRoot ());
+			while (q.Count > 0) {
+				BodyNode node = q.Dequeue ();
+
+				foreach (BodyNode neighbour in node.getNeighbours()) { 
+					drawLine (joints, bodyConfiguration, g, node.getJointId(), neighbour.getJointId(), 255);
+
+					q.Enqueue (neighbour);
+				}
+			}
 		}
 
-		private void drawLine(Dictionary<int, Tuple<Joint, int, int>> joints, BodyConfiguration configuration, Graphics g, BodyPart first, BodyPart second, int intensity)
+		private void drawLine(Dictionary<int, Tuple<Joint, int, int>> joints, BodyConfiguration configuration, Graphics g, int first, int second, int intensity)
 		{
-			int one = configuration.GetJointFor (first);
-			int two = configuration.GetJointFor (second);
-			if (one == -1 || two == -1)
-				return;
-
-			Tuple<Joint, int, int> firstJoint = joints [one];
-			Tuple<Joint, int, int> secondJoint = joints [two];
+			Tuple<Joint, int, int> firstJoint = joints [first];
+			Tuple<Joint, int, int> secondJoint = joints [second];
 
 			Pen pen = new Pen (Color.FromArgb (0, 0, intensity));
 			g.DrawLine (pen, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
