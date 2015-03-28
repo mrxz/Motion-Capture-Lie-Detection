@@ -42,7 +42,7 @@ namespace Motion_lie_detection
 			timer.Start();
 		}
 
-		public void panel1_Click(Object source, EventArgs e)
+	/*	public void panel1_Click(Object source, EventArgs e)
 		{
 			forward = !forward;
 		}
@@ -83,7 +83,7 @@ namespace Motion_lie_detection
 
 			Pen pen = new Pen (Color.FromArgb (0, 0, intensity));
 			g.DrawLine (pen, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
-		}
+		}*/
 
 		public void timer_Tick(Object source, EventArgs e)
 		{
@@ -99,8 +99,10 @@ namespace Motion_lie_detection
 			}
 
 			frame = recording.GetFrame (currentFrameID);
-			panel1.Refresh ();
-		}
+			//panel1.Refresh ();
+
+			visualizer.Refresh ();
+		}/*
 
 		public void keyDown(object source, KeyEventArgs e)
 		{
@@ -113,7 +115,7 @@ namespace Motion_lie_detection
 				currentFrameID--;
 				currentFrameID = Math.Max (currentFrameID, 0);
 			}
-		}
+		}*/
 
 		public void form_Closed(Object source, EventArgs e)
 		{

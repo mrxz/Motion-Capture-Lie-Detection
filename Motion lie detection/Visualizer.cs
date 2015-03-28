@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
-using System.Windows.Forms;
+using System.Timers;
 
 
 
@@ -27,7 +27,7 @@ namespace Motion_lie_detection
      */
 
 
-    public class Visualizer : Game
+	public class Visualizer : GraphicsDeviceControl
     {
         BodyModel bodyModel;
         Camera camera;
@@ -59,7 +59,7 @@ namespace Motion_lie_detection
         public Visualizer(Recording recording)
         {
             this.recording = recording;
-			new GraphicsDeviceManager (this);
+			//new GraphicsDeviceManager (this);
             keyboardState = new KeyboardState();
         }
 
@@ -68,26 +68,27 @@ namespace Motion_lie_detection
 			// FIXME: This code doesn't work for some reason, the time_Tick method is never invoked.
 			var timer = new Timer();
 			timer.Interval = 1000 / 60;
-			timer.Tick += new EventHandler(this.timer_Tick);
+			//timer.Elapsed
 			timer.Start();
+			timer.Enabled = true;
 
             eye = new Vector3(0, 0, -50);
             focus = new Vector3(0, 0, 0);
             up = Vector3.Up;
 
-			base.Initialize ();
+			//base.Initialize ();
 
 			// HACK: Call time_Tick method once to get something on the screen.
 			timer_Tick (null, null);
-		}
 
-        protected override void LoadContent()
-        {
 			graphics = this.GraphicsDevice;
 			primitive = new SpherePrimitive(graphics);
-			base.LoadContent();
-        }
+			//base.LoadContent();
+		}
 
+
+
+		/*
         protected override void Update(GameTime gameTime)
         {
 			// HACK: This makes it work sort of, but relies on update frequency of the visualization :/
@@ -116,9 +117,9 @@ namespace Motion_lie_detection
             eye.Z += zoom;
             
             base.Update(gameTime);
-        }
+        }*/
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(	)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             if (frame.Joints == null)
@@ -140,7 +141,7 @@ namespace Motion_lie_detection
             }
             AveragePosition /= frame.Joints.Count;
             AveragePosition.X *= 10;
-            AveragePosition.Y *= 10;
+            AveragePosition.Z *= 10;
 
             foreach ( Joint joint in frame.Joints)
             {
@@ -150,20 +151,21 @@ namespace Motion_lie_detection
                 primitive.Draw(world, view, projection, DrawColor);                
             }
             
-			base.Draw(gameTime);
+			//base.Draw(gameTime);
 		}
 
         private Vector3 ConvertRealWorldPoint(Vector3 position)
         {
             var returnVector = new Vector3();
             returnVector.X = position.X * 10;
-            returnVector.Y = position.Y * 10;
-            returnVector.Z = position.Z;
+            returnVector.Z = position.Y * 10;
+			returnVector.Y = position.Z * 10;
             return returnVector;
         }
 
         public void timer_Tick(Object source, EventArgs e)
         {
+			Console.WriteLine ("he");
             recording.Update();
             if (!stepMode)
             {

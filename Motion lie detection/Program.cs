@@ -59,7 +59,10 @@ namespace Motion_lie_detection
 			 * DEBUG: Visualization
 			 */
             
-            new Thread(updateVisualizer).Start();
+
+			new Thread (openVisualizer2).Start (recording);
+			new Thread (openWindow).Start (recording);
+            //new Thread(updateVisualizer).Start();
 			//new Thread(openWindow).Start(recording);
         }
 
@@ -70,12 +73,19 @@ namespace Motion_lie_detection
 			Application.Run(new Window((Recording)data));
 		}
 
-        public static void updateVisualizer()
+		private static void openVisualizer2(object data)
+		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new VisualizerWindow((Recording)data));
+		}
+
+       /* public static void updateVisualizer()
         {
             LOG.info("Opening window for visualization");
             visualizer = new Visualizer(recording);
 			visualizer.Run ();
             LOG.info("Closing window");
-        }
+        }*/
     }
 }
