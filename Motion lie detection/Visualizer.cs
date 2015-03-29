@@ -140,12 +140,15 @@ namespace Motion_lie_detection
             //find the average position
             Vector3 AveragePosition = Vector3.Zero;
             foreach (Joint joint in frame.Joints)
-            {
+            {               
+                float temp = AveragePosition.Y;
+                AveragePosition.Y = AveragePosition.Z;
+                AveragePosition.Z = temp;
                 AveragePosition += joint.Position;
+                
             }
             AveragePosition /= frame.Joints.Count;
-            AveragePosition.X *= 10;
-            AveragePosition.Y *= 10;
+            AveragePosition *= 10;
 
             //jointId, joint, (x, y, z)
             Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
@@ -181,17 +184,16 @@ namespace Motion_lie_detection
             basicEffect.CurrentTechnique.Passes[0].Apply();
             var vertices = new[] { new VertexPositionColor(firstJoint.Item2, Color.White),  new VertexPositionColor(secondJoint.Item2, Color.White) };
             GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
-                     
-          
+                            
         }
 
         private Vector3 ConvertRealWorldPoint(Vector3 position)
         {
             var returnVector = new Vector3();
-            returnVector.X = position.X * 10;
-            returnVector.Y = position.Y * 10;
-            returnVector.Z = position.Z;
-            return returnVector;
+            returnVector.X = position.X ;
+            returnVector.Y = position.Z ;
+            returnVector.Z = position.Y;
+            return returnVector * 10;
         }
 
         public void timer_Tick(Object source, EventArgs e)
