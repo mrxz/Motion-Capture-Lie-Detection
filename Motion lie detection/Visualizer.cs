@@ -36,6 +36,7 @@ namespace Motion_lie_detection
         GeometricPrimitive primitive;
 		GraphicsDevice graphics;
         KeyboardState keyboardState;
+        BasicEffect basicEffect;
 
         Vector3 eye, focus, up;
 
@@ -84,7 +85,10 @@ namespace Motion_lie_detection
         protected override void LoadContent()
         {
 			graphics = this.GraphicsDevice;
-			primitive = new SpherePrimitive(graphics);
+            primitive = new SpherePrimitive(graphics, 0.5f, 16);
+            basicEffect = new BasicEffect(GraphicsDevice);
+            basicEffect.View = Matrix.CreateLookAt(eye,focus, up);
+            basicEffect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.Viewport.AspectRatio, 1f, 1000f);
 			base.LoadContent();
         }
 
@@ -96,8 +100,7 @@ namespace Motion_lie_detection
             keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 this.Exit();
-            
-            
+  
             //rotate around the visualized data
             float deltaAngle = 0.0f;
             if (keyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
@@ -124,8 +127,10 @@ namespace Motion_lie_detection
             if (frame.Joints == null)
                 return;
 
+            //update the view matrix
             Matrix view = Matrix.CreateLookAt(eye, focus, up);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1.0f, 100);
+            basicEffect.View = Matrix.CreateLookAt(eye, focus, up);
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.Viewport.AspectRatio, 1f, 1000f);
 
             //draw a red sphere at the center of the world.
             Vector3 position = Vector3.Zero;
@@ -142,16 +147,43 @@ namespace Motion_lie_detection
             AveragePosition.X *= 10;
             AveragePosition.Y *= 10;
 
+            //jointId, joint, (x, y, z)
+            Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
+
+            //Draw each joint
             foreach ( Joint joint in frame.Joints)
             {
                 position = ConvertRealWorldPoint(joint.Position);
                 position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
-                world = Matrix.CreateTranslation(position);              
+                joints.Add(joint.Id, Tuple.Create(joint, position));
+                world = Matrix.CreateTranslation(position);
                 primitive.Draw(world, view, projection, DrawColor);                
             }
+
+            BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
+            foreach (Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections())
+                drawLine(joints, bodyConfiguration, connection.Item1, connection.Item2);
             
 			base.Draw(gameTime);
 		}
+
+        private void drawLine(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, BodyPart first, BodyPart second)
+        {
+            int one = configuration.GetJointFor(first);
+            int two = configuration.GetJointFor(second);
+            if (one == -1 || two == -1)
+                return;
+
+            Tuple<Joint, Vector3> firstJoint = joints[one];
+            Tuple<Joint, Vector3> secondJoint = joints[two];
+            
+            //Draw the lines between the joints
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            var vertices = new[] { new VertexPositionColor(firstJoint.Item2, Color.White),  new VertexPositionColor(secondJoint.Item2, Color.White) };
+            GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+                     
+          
+        }
 
         private Vector3 ConvertRealWorldPoint(Vector3 position)
         {

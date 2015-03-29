@@ -18,7 +18,7 @@ namespace Motion_lie_detection
         /// Constructs a new sphere primitive, using default settings.
         /// </summary>
         public SpherePrimitive(GraphicsDevice graphicsDevice)
-            : this(graphicsDevice, 1, 16)
+            : this(graphicsDevice, 0.5f, 16)
         {
         }
 
