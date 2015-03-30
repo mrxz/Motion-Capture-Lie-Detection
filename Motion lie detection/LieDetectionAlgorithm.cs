@@ -22,25 +22,25 @@ namespace Motion_lie_detection
             if (Frame.IsEmpty(last))
                 return null;
 
-            //return PairwiseDifference(last.Joints, next.Joints);
-            List<float> res = new List<float>();
-            //full body
-            res.Add(AbsoluteMovement(last.Joints, next.Joints));
-            //left arm
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), 0));
-            //right arm
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), 0));
-            //left leg
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), 0));
-            //right leg
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), 0));
-            //head
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.T8, 3), next.Joints.GetRange((int)BodyPart.T8, 3), 0));
-            //body
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 4), next.Joints.GetRange((int)BodyPart.PELVIS, 4), 0));
-            //upper body
-            res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 15), next.Joints.GetRange((int)BodyPart.PELVIS, 15), 0));
-            return res;
+            return PairwiseDifference(last.Joints, next.Joints);
+            //List<float> res = new List<float>();
+            ////full body
+            //res.Add(AbsoluteMovement(last.Joints, next.Joints));
+            ////left arm
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), 0));
+            ////right arm
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), 0));
+            ////left leg
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), 0));
+            ////right leg
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), 0));
+            ////head
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.T8, 3), next.Joints.GetRange((int)BodyPart.T8, 3), 0));
+            ////body
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 4), next.Joints.GetRange((int)BodyPart.PELVIS, 4), 0));
+            ////upper body
+            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 15), next.Joints.GetRange((int)BodyPart.PELVIS, 15), 0));
+            //return res;
         }
 
         private List<float> PairwiseDifference(List<Joint> A, List<Joint> B)
