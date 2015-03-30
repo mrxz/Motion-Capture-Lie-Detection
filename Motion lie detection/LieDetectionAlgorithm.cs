@@ -9,12 +9,20 @@ namespace Motion_lie_detection
 	 */
     public class LieDetectionAlgorithm : Algorithm
     {
-		/**
+        protected List<BodyNode> calculationnodes;
+
+        public LieDetectionAlgorithm(List<BodyNode> rootnodes = null)
+        {
+            calculationnodes = (rootnodes == null) ? new List<BodyNode>() : rootnodes;
+        }
+
+        /**
 		 * Method for computing the result for one single frame.
 		 * @param result
 		 * @param next
 		 * @return
 		 */
+
 		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
             Frame last = context.LastFrame;
@@ -22,9 +30,37 @@ namespace Motion_lie_detection
             if (Frame.IsEmpty(last))
                 return null;
 
-            return PairwiseDifference(last.Joints, next.Joints);
-            //List<float> res = new List<float>();
-            ////full body
+            if(calculationnodes.Count == 0)
+                return PairwiseDifference(last.Joints, next.Joints);
+
+            
+            List<float> res = new List<float>();
+            Queue<BodyNode> queue = new Queue<BodyNode>();
+            BodyNode current;
+            foreach (BodyNode node in calculationnodes)
+            {
+                if(node.getRoot() == node){
+                    res.Add(AbsoluteMovement(last.Joints, next.Joints));
+                    continue;
+                }
+                int normal = node.getRoot().JointId;
+                queue.Enqueue(node);
+                float totdiff = 0;
+                while(queue.Count > 0)
+                {
+                    current = queue.Dequeue();
+                    foreach (BodyNode v in current.getNeighbours())
+                    {
+                        queue.Enqueue(v);
+                    }
+                    totdiff += Vector3.Distance(last.Joints[current.JointId].Position - last.Joints[normal].Position, next.Joints[current.JointId].Position - next.Joints[normal].Position);
+                }
+                //return sum of pairwise differences
+                res.Add(totdiff);
+            }
+            return res;
+
+            /*full body
             //res.Add(AbsoluteMovement(last.Joints, next.Joints));
             ////left arm
             //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), 0));
@@ -40,7 +76,7 @@ namespace Motion_lie_detection
             //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 4), next.Joints.GetRange((int)BodyPart.PELVIS, 4), 0));
             ////upper body
             //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 15), next.Joints.GetRange((int)BodyPart.PELVIS, 15), 0));
-            //return res;
+            //return res; */
         }
 
         private List<float> PairwiseDifference(List<Joint> A, List<Joint> B)
@@ -73,17 +109,17 @@ namespace Motion_lie_detection
             return totdiff;
         }
 
-        private float NAbsoluteMovement(List<Joint> A, List<Joint> B, int normal)
-        {
-            if (A.Count != B.Count)
-                throw new Exception("Number of joints, is not equal");
-            float totdiff = 0;
-            for (int i = 0; i < A.Count; i++)
-            {
-                totdiff += Vector3.Distance(A[i].Position - A[normal].Position, B[i].Position - B[normal].Position);
-            }
-            //return sum of pairwise differences
-            return totdiff;
-        }
+        //private float NAbsoluteMovement(List<Joint> A, List<Joint> B, int normal = 0)
+        //{
+        //    if (A.Count != B.Count)
+        //        throw new Exception("Number of joints, is not equal");
+        //    float totdiff = 0;
+        //    for (int i = 0; i < A.Count; i++)
+        //    {
+        //        totdiff += Vector3.Distance(A[i].Position - A[normal].Position, B[i].Position - B[normal].Position);
+        //    }
+        //    //return sum of pairwise differences
+        //    return totdiff;
+        //}
     }
 }

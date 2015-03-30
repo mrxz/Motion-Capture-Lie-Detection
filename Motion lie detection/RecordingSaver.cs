@@ -136,8 +136,8 @@ namespace Motion_lie_detection
 				BodyNode node = q.Dequeue ();
 
 				writer.WriteStartElement ("segment");
-				writer.WriteAttributeString ("label", toXSensString(node.getJointId()));
-				writer.WriteAttributeString ("id", node.getJointId().ToString());
+				writer.WriteAttributeString ("label", toXSensString(node.JointId));
+				writer.WriteAttributeString ("id", node.JointId.ToString());
 
 				// Points
 				writer.WriteStartElement ("points");
@@ -198,7 +198,7 @@ namespace Motion_lie_detection
 
 		private void writeFrame(XmlWriter writer, Frame frame, String type) {
 			writer.WriteStartElement ("frame");
-			writer.WriteAttributeString ("time", frame.Id.ToString()); // FIXME: Id is not the frameId, but the time code ...
+			writer.WriteAttributeString ("time", frame.Id.ToString()); // FIXME: Id is not the frameId, but the time code ..., I did notice that to, maybe add variabele an call it time Id is used nowhere as index
 			writer.WriteAttributeString ("type", type);
 
 			StringBuilder orientations = new StringBuilder ();

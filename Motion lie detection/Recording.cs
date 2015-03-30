@@ -31,12 +31,7 @@ namespace Motion_lie_detection
 		 * The configuration of the body in this recording.
 		 */
 		private readonly BodyConfiguration bodyConfiguration;
-
-        /**
-		 * Number of frames that are averaged
-		 */
-        private int downsamplerate = 1;
-
+        
 		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration)
 		{
 			this.provider = provider;
@@ -122,11 +117,6 @@ namespace Motion_lie_detection
 		{
 			markpoints.Add (markpoint);
 		}
-
-        public int DownSampleRate
-        {
-            get { return downsamplerate; }
-        }
 	}
 
 	public struct Frame

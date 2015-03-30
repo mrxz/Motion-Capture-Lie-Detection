@@ -107,7 +107,7 @@ namespace Motion_lie_detection
 				BodyNode node = q.Dequeue ();
 
 				foreach (BodyNode neighbour in node.getNeighbours()) { 
-					drawLine (joints, bodyConfiguration, g, node.getJointId(), neighbour.getJointId(), 255);
+					drawLine (joints, bodyConfiguration, g, node.JointId, neighbour.JointId, 255);
 
 					q.Enqueue (neighbour);
 				}

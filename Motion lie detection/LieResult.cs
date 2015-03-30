@@ -19,9 +19,7 @@ namespace Motion_lie_detection
             this.frameDifferences = new List<List<float>>();
             this.framestart = framestart;
             this.framend = framestart - 1;
-        }
-
-        public LieResult(Frame start) : this(start.Id) {}
+        }        
 
         public static LieResult Empty
         {
@@ -29,11 +27,9 @@ namespace Motion_lie_detection
         }
 
         public void AddFrameDiff(List<float> diff, int next)
-        {
-            if (diff == null)
-                framend = next;
-            else
-            {
+        {            
+            framend = next;
+            if (diff != null) { 
                 frameDifferences.Add(diff);
                 for (int i = 0; i < 8; i++)
                 {

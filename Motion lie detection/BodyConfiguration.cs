@@ -39,7 +39,7 @@ namespace Motion_lie_detection
 			// TODO: Add alternative in case the joint order is known.
 			// Loop over the joints to find the correct one.
 			foreach (Joint joint in joints) {
-				if (joint.Id == node.getJointId ())
+				if (joint.Id == node.JointId)
 					return joint;
 			}
 
@@ -122,9 +122,7 @@ namespace Motion_lie_detection
 			this.root = node;
 		}
 
-		public int getJointId() {
-			return jointId;
-		}
+        public int JointId { get { return jointId; } }
 
 		public String getName() {
 			return name;
