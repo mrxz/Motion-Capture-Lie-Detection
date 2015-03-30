@@ -21,7 +21,9 @@ namespace Motion_lie_detection
             this.panel1.BackColor = System.Drawing.SystemColors.ControlText;
             this.panel1.Text = "panel1";
             this.panel1.Paint += new PaintEventHandler(this.panel1_Paint);
-			this.panel1.Click += this.panel1_Click;
+			this.panel1.MouseMove += this.panel1_Drag;
+			this.panel1.MouseDown += this.panel1_StartDrag;
+			this.panel1.MouseUp += this.panel1_StopDrag;
 
 			// 
             // Window
