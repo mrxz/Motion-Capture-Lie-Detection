@@ -16,15 +16,7 @@ namespace Motion_lie_detection
 		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
 			// Get the position of the root joint.
-			Vector3 rootPosition = Vector3.Zero;
-            foreach (Joint joint in next.Joints)
-            {
-                if (joint.Id == bodyConfiguration.GetJointFor(BodyPart.PELVIS))
-                {
-                    rootPosition = joint.Position;
-                    break;
-                }
-            }
+			Vector3 rootPosition = bodyConfiguration.getRootJoint (next.Joints).Position;
 
             // Loop over the joints and re-position them.
 			for (int i = 0; i < next.Joints.Count; i++) {
@@ -53,14 +45,7 @@ namespace Motion_lie_detection
 
         public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
-			// 
-			Vector3 reference = Vector3.Zero;
-			foreach (Joint joint in next.Joints) {
-				if (joint.Id == bodyConfiguration.GetJointFor(BodyPart.RIGHT_UPPER_LEG)) { 
-					reference = joint.Position;
-					break;
-				}
-			}
+			Vector3 reference = bodyConfiguration.getOrientationJoint(next.Joints).Position;
 
             // Get the rotation of the body.
 			double rotation = Math.Atan2 (reference.X, reference.Y);

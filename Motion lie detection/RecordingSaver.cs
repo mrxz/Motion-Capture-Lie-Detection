@@ -130,10 +130,14 @@ namespace Motion_lie_detection
 		private void writeSegments(XmlWriter writer, BodyConfiguration configuration) {
 			writer.WriteStartElement ("segments");
 
-			foreach (KeyValuePair<BodyPart, int> pair in configuration.GetMapping()) {
+			Queue<BodyNode> q = new Queue<BodyNode> ();
+			q.Enqueue (configuration.getRoot ());
+			while (q.Count > 0) {
+				BodyNode node = q.Dequeue ();
+
 				writer.WriteStartElement ("segment");
-				writer.WriteAttributeString ("label", toXSensString(pair.Key));
-				writer.WriteAttributeString ("id", pair.Value.ToString());
+				writer.WriteAttributeString ("label", toXSensString(node.getJointId()));
+				writer.WriteAttributeString ("id", node.getJointId().ToString());
 
 				// Points
 				writer.WriteStartElement ("points");
@@ -141,6 +145,9 @@ namespace Motion_lie_detection
 				writer.WriteFullEndElement ();
 
 				writer.WriteEndElement ();
+
+				foreach (BodyNode neighbour in node.getNeighbours())
+					q.Enqueue (neighbour);
 			}
 
 			writer.WriteFullEndElement ();
@@ -241,58 +248,27 @@ namespace Motion_lie_detection
 			writer.WriteFullEndElement ();
 		}
 
-		private String toXSensString(BodyPart part)
+		private String toXSensString(int jointId)
 		{
-			switch (part) {
-			case BodyPart.PELVIS:
-				return "Pelvis";
-			case BodyPart.L5:
-				return "L5";
-			case BodyPart.L3:
-				return "L3";
-			case BodyPart.T12:
-				return "T12";
-			case BodyPart.T8:
-				return "T8";
-			case BodyPart.NECK:
-				return "Neck";
-			case BodyPart.HEAD:
-				return "Head";
-			case BodyPart.RIGHT_SHOULDER:
-				return "RightShoulder";
-			case BodyPart.RIGHT_UPPER_ARM:
-				return "RightUpperArm";
-			case BodyPart.RIGHT_FORE_ARM:
-				return "RightForeArm";
-			case BodyPart.RIGHT_HAND:
-				return "RightHand";
-			case BodyPart.LEFT_SHOULDER:
-				return "LeftShoulder";
-			case BodyPart.LEFT_UPPER_ARM:
-				return "LeftUpperArm";
-			case BodyPart.LEFT_FORE_ARM:
-				return "LeftForeArm";
-			case BodyPart.LEFT_HAND:
-				return "LeftHand";
-			case BodyPart.RIGHT_UPPER_LEG:
-				return "RightUpperLeg";
-			case BodyPart.RIGHT_LOWER_LEG:
-				return "RightLowerLeg";
-			case BodyPart.RIGHT_FOOT:
-				return "RightFoot";
-			case BodyPart.RIGHT_TOE:
-				return "RightToe";
-			case BodyPart.LEFT_UPPER_LEG:
-				return "LeftUpperLeg";
-			case BodyPart.LEFT_LOWER_LEG:
-				return "LeftLowerLeg";
-			case BodyPart.LEFT_FOOT:
-				return "LeftFoot";
-			case BodyPart.LEFT_TOE:
-				return "LeftToe";
-			default:
-				throw new Exception ();
-			}
+			String[] names = new String[] { 
+				"Pelvis", "L5","L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm", "RightForeArm",
+				"RightHand",
+				"LeftShoulder",
+				"LeftUpperArm",
+				"LeftForeArm",
+				"LeftHand",
+				"RightUpperLeg",
+				"RightLowerLeg",
+				"RightFoot",
+				"RightToe",
+				"LeftUpperLeg",
+				"LeftLowerLeg",
+				"LeftFoot",
+				"LeftToe"
+				};
+
+
+			return names[jointId - 1];
 		}
 	}
 }

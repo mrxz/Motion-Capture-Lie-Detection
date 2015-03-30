@@ -62,7 +62,11 @@ namespace Motion_lie_detection
 			int segmentCount = int.Parse (reader.GetAttribute ("segmentCount"));
 
 			// Read the segments.
-			bodyConfiguration = new BodyConfiguration ();
+			bodyConfiguration = new FixedBodyConfiguration ();
+			// FIXME: Read the connections between the segments.
+			// Note: isn't really worth the effort probably since it will always be the same.
+			// Note: We simply skip the reading the body configuration from the file for the time being, since we know it's an .mvnx file from XSens, meaning the layout is constant.
+			/*
 			reader.ReadToFollowing ("segments");
 			for (int i = 0; i < segmentCount; i++) {
 				reader.ReadToFollowing ("segment");
@@ -70,12 +74,10 @@ namespace Motion_lie_detection
 				int id = int.Parse (reader.GetAttribute ("id"));
 
 				// Convert the label to BodyPart
-				bodyConfiguration.AddMapping (fromXSensString(label), id);
-			}
+				//bodyConfiguration.AddMapping (fromXSensString(label), id);
+			}*/
 
-			// FIXME: Read the connections between the segments.
-			// Note: isn't really worth the effort probably since it will always be the same.
-			FixedBodyConfiguration.PopulateConnections (bodyConfiguration);
+
 
 			// Read the frames.
 			newFrames = new List<Frame> ();
@@ -154,65 +156,6 @@ namespace Motion_lie_detection
 			List<Frame> result = newFrames;
 			newFrames = new List<Frame> ();
 			return result;
-		}
-
-		/**
-		 * Method for retrieving the BodyPart that corresponds with a segment label.
-		 * @param label The label to return the BodyPart for.
-		 * @return The corresponding body part.
-		 */
-		private BodyPart fromXSensString(String label)
-		{
-			switch (label) {
-			case "Pelvis":
-				return BodyPart.PELVIS;
-			case "L5":
-				return BodyPart.L5;
-			case "L3":
-				return BodyPart.L3;
-			case "T12":
-				return BodyPart.T12;
-			case "T8":
-				return BodyPart.T8;
-			case "Neck":
-				return BodyPart.NECK;
-			case "Head":
-				return BodyPart.HEAD;
-			case "RightShoulder":
-				return BodyPart.RIGHT_SHOULDER;
-			case "RightUpperArm":
-				return BodyPart.RIGHT_UPPER_ARM;
-			case "RightForeArm":
-				return BodyPart.RIGHT_FORE_ARM;
-			case "RightHand":
-				return BodyPart.RIGHT_HAND;
-			case "LeftShoulder":
-				return BodyPart.LEFT_SHOULDER;
-			case "LeftUpperArm":
-				return BodyPart.LEFT_UPPER_ARM;
-			case "LeftForeArm":
-				return BodyPart.LEFT_FORE_ARM;
-			case "LeftHand":
-				return BodyPart.LEFT_HAND;
-			case "RightUpperLeg":
-				return BodyPart.RIGHT_UPPER_LEG;
-			case "RightLowerLeg":
-				return BodyPart.RIGHT_LOWER_LEG;
-			case "RightFoot":
-				return BodyPart.RIGHT_FOOT;
-			case "RightToe":
-				return BodyPart.RIGHT_TOE;
-			case "LeftUpperLeg":
-				return BodyPart.LEFT_UPPER_LEG;
-			case "LeftLowerLeg":
-				return BodyPart.LEFT_LOWER_LEG;
-			case "LeftFoot":
-				return BodyPart.LEFT_FOOT;
-			case "LeftToe":
-				return BodyPart.LEFT_TOE;
-			default:
-				throw new Exception ();
-			}
 		}
 	}
 }
