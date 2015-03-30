@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm.cs" />
+    <Compile Include="AlgorithmContext.cs" />
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BodyModel.cs" />
     <Compile Include="FileRecordingProvider.cs" />

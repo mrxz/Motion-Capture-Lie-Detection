@@ -15,12 +15,13 @@ namespace Motion_lie_detection
 		 * @param next
 		 * @return
 		 */
-		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
+		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
-            Frame last = result.LastFrame;
-            result.AddFrame(next);
+            Frame last = context.LastFrame;
+            context.LastFrame = next;
             if (Frame.IsEmpty(last))
                 return null;
+
             //return PairwiseDifference(last.Joints, next.Joints);
             List<float> res = new List<float>();
             //full body

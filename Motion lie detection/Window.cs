@@ -17,11 +17,16 @@ namespace Motion_lie_detection
 		/**
 		 * The recording to visualize.
 		 */
-		private readonly Recording recording;
+		private Recording recording;
+
+        /**
+		 * The rlgorithm context.
+		 */
+        private AlgorithmContext context;
 		/**
 		 * The frame that is being drawn.
 		 */
-		private Frame frame = new Frame();
+        private Frame frame;
 
 		/**
 		 * Simple playback control variables.
@@ -42,6 +47,7 @@ namespace Motion_lie_detection
 		public Window(Recording recording)
 		{
 			this.recording = recording;
+            this.context = new AlgorithmContext();
 			InitializeComponent();
 
 			// DEBUG: Render update timer thingy
@@ -128,7 +134,7 @@ namespace Motion_lie_detection
 
 			frame = recording.GetFrame (currentFrameID);
 			if(currentFrameID > 1) {
-				algo.Compute (recording, currentFrameID - 1, currentFrameID);
+				algo.Compute (ref recording, ref context, currentFrameID - 1, currentFrameID);
 				frame = visPass.GetFrame ();
 			}
 			panel1.Refresh ();
@@ -158,14 +164,14 @@ namespace Motion_lie_detection
 	 */
 	public class VisualizerPass : FilterPass
 	{
-		private Frame frame = Frame.Empty;
+		private Frame frame;
 
 		public VisualizerPass(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		public override List<float> ComputeFrame (LieResult result, BodyConfiguration bodyConfiguration, Frame next)
+		public override List<float> ComputeFrame (ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
 		{
 			frame = next;
-			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
 		}
 
 		public Frame GetFrame() 

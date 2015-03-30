@@ -7,49 +7,34 @@ namespace Motion_lie_detection
 {
     public class LieResult
     {
-        private Recording recording;
         private int framestart;
         private int framend;
-        private List<Frame> filteredFrames;
         private List<List<float>> frameDifferences;
-        //private float meandiff;
         private float[] means;
         private float meancount = 0;
 
-        public LieResult(Recording recording, int framestart, Frame start)
+        public LieResult(int framestart = 0)
         {
-            this.recording = recording;
             this.means = new float[8];
-            this.filteredFrames = new List<Frame>();
             this.frameDifferences = new List<List<float>>();
-            this.framestart = (framestart > 0) ? framestart : 0;
-            if (Frame.IsEmpty(start)) 
-            {
-                this.framend = framestart - 1;
-            }
-            else
-            {                
-                this.filteredFrames.Add(start);
-                this.framend = framestart;
-            }
+            this.framestart = framestart;
+            this.framend = framestart - 1;
         }
 
-        public static LieResult Empty(ref Recording recording)
+        public LieResult(Frame start) : this(start.Id) {}
+
+        public static LieResult Empty
         {
-            return new LieResult(recording, 0, Frame.Empty);
+            get { return new LieResult(); }
         }
 
-        public void AddDiff(int next, List<float> diff)
+        public void AddFrameDiff(List<float> diff, int next)
         {
             if (diff == null)
-                framestart = framend = next;
+                framend = next;
             else
             {
-                //        framend = next;
-                //        frameDifferences.Add(diff);
-                //        float n = frameDifferences.Count;
-                //        meandiff = (n - 1) / n * meandiff + diff[diff.Count -1] / n;
-                //    }
+                frameDifferences.Add(diff);
                 for (int i = 0; i < 8; i++)
                 {
                     means[i] *= meancount / (meancount + 1);
@@ -59,26 +44,26 @@ namespace Motion_lie_detection
             }
         }
 
+        public int NextFrameId { get { return framend + 1; } }
+
+        public int Start { get { return framestart; } }
+
+        public int End { get { return framend; } }
+
         public float[] Means
         {
             get { return means; }
         }
 
-        //TODO: check setting of star and and, I believe i is done twice now
-        public void AddFrame(Frame frame)
+        public List<float> FrameDifference(int id)
         {
-            filteredFrames.Add(frame);
-            framend++;
+            if (id <= framestart || id > framend)
+                throw new Exception("Id out of range of the Lieresult, must be greater than Framestart and smaller or equal to Framend");
+            //TODO: make finding right framedifference for given frameid better
+            int m = (framend - framestart - 1) / frameDifferences.Count;
+            return frameDifferences[((id - framestart) / m) - 1];
         }
 
-        public int NextFrameId
-        {
-            get { return (framend + 1 < recording.FrameCount) ? framend + 1 : -1; }
-        }
-
-        public Frame LastFrame
-        {
-            get { return (filteredFrames.Count > 0) ? filteredFrames[filteredFrames.Count -1] : Frame.Empty; }
-        }
+        public List<float> this[int frameid] { get { return FrameDifference(frameid); } }
     }
 }

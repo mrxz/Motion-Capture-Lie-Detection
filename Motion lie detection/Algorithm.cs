@@ -10,18 +10,18 @@ namespace Motion_lie_detection
 	 */
     public abstract class Algorithm
     {
-        public LieResult Compute(Recording recording)
+        public LieResult Compute(ref Recording recording, ref AlgorithmContext context)
         {
-            return Compute(recording, 0, recording.FrameCount);
+            return Compute(ref recording, ref context, 0, recording.FrameCount);
         }
 
-        public LieResult Compute(Recording recording, int framestart, int framend){
+        public LieResult Compute(ref Recording recording, ref AlgorithmContext context, int framestart, int framend){
             //Check if order of frameindices is valid
             if (framend < framestart)
                 throw new Exception("Frame indices must be specified from small to high");
 
             //Make base result by setting framestart
-            LieResult result = new LieResult(recording, framestart, Frame.Empty);
+            LieResult result = new LieResult(framestart);
             
             //Add the consecutive differences of the frames
             while (framestart < framend)
@@ -29,21 +29,21 @@ namespace Motion_lie_detection
                 int next = result.NextFrameId;
                 if (next >= recording.FrameCount)
                     break;
-				result.AddDiff(next, ComputeFrame(result, recording.BodyConfiguration, recording.Frames[next]));
+                result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
                 framestart++;
             }
             return result;
         }
 
-        public LieResult Compute(ref Recording recording, LieResult result)
+        public LieResult Compute(ref Recording recording, ref AlgorithmContext context, LieResult result)
         {
             int next = result.NextFrameId;
             if (next > -1 && next < recording.FrameCount)
-                result.AddDiff(next, ComputeFrame(result, recording.BodyConfiguration, recording.Frames[next]));
+                result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
             return result;
         }
 
-        public abstract List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next);    
+        public abstract List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next);    
     }
 
 	/**

@@ -164,6 +164,7 @@ namespace Motion_lie_detection
             }
             return new Frame(list[0].Id, joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)));
         }
+        
     }
 
 	public struct Joint

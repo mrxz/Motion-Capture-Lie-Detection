@@ -53,16 +53,20 @@ namespace Motion_lie_detection
 			//RecordingSaver saver = new MVNXSaver ("test.mvnx");
 			//saver.saveToFile (recording);
 
+            /**
+             * DEBUG: Algorithm,
+             */
+            Algorithm algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new LieDetectionAlgorithm())), 5);
+            AlgorithmContext context = new AlgorithmContext();
+            LieResult res = LieResult.Empty;
+            while (res.NextFrameId < recording.FrameCount)
+            {
+                res = algo.Compute(ref recording, ref context, res);
+            }
+
 			/**
 			 * DEBUG: Visualization
 			 */
-            Algorithm algo = new LieDetectionAlgorithm();
-            LieResult prev = null;
-            LieResult res = LieResult.Empty(ref recording);
-            while(prev != res){
-                prev = res;
-                res = algo.Compute(ref recording, res);
-            }
 			new Thread(openWindow).Start(recording);
         }
 

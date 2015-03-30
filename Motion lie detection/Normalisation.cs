@@ -13,7 +13,7 @@ namespace Motion_lie_detection
     {
 		public NormalizePosition(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
+		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
 			// Get the position of the root joint.
 			Vector3 rootPosition = Vector3.Zero;
@@ -35,7 +35,7 @@ namespace Motion_lie_detection
 					joint.Orientation);
 			}
 
-			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
         }
     }
 
@@ -51,7 +51,7 @@ namespace Motion_lie_detection
 		// DEBUG: this variable is used for debugging purposes to rotate the visualization, i know, UGLY...
 		public float AdditionalRotation = 0.0f;
 
-		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
+        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
 			// 
 			Vector3 reference = Vector3.Zero;
@@ -79,9 +79,44 @@ namespace Motion_lie_detection
 					new Vector3((float)newX, (float)newY, joint.Position.Z),
 					joint.Orientation);
 			}
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
+        }
+    }
 
+    /**
+	 * Filter pass that normalizes the orientation of the entire body.
+	 */
+    public class DownsamplePass : FilterPass
+    {
+        public DownsamplePass(Algorithm baseAlgorithm, int samplerate) : base(baseAlgorithm) { DownsampleRate = samplerate; }
 
-			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
+        public int DownsampleRate;
+
+        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+        {
+            float n = context.SampleSize;
+            if (n < DownsampleRate && n > 0)
+            {
+                List<Joint> samplejoints = context.SampleFrame.Joints;
+                for (int i = 0; i < samplejoints.Count; i++)
+                {
+                    Joint j = samplejoints[i];
+                    j.Position = j.Position * (n / (n + 1)) + next.Joints[i].Position / (n + 1);
+                    samplejoints[i] = j;
+                }
+
+                next = new Frame(next.Id, samplejoints);
+                
+            }
+            n++;
+
+            if (n >= DownsampleRate)
+            {
+                context.FlushSample();
+                return BaseAlgorithm.ComputeFrame(ref context, bodyConfiguration, next);
+            }
+            context.SetSample(next, (int)n);
+            return null;
         }
     }
 
@@ -94,10 +129,9 @@ namespace Motion_lie_detection
     {
 		public NormalizeLength(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		public override List<float> ComputeFrame(LieResult result, BodyConfiguration bodyConfiguration, Frame next)
+        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
-
-			return BaseAlgorithm.ComputeFrame (result, bodyConfiguration, next);
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
         }
     }
 }
