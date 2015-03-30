@@ -59,8 +59,8 @@ namespace Motion_lie_detection
 			 * DEBUG: Visualization
 			 */
             
-            new Thread(updateVisualizer).Start();
-			//new Thread(openWindow).Start(recording);
+            //new Thread(updateVisualizer).Start();
+			new Thread(openWindow).Start(recording);
         }
 
 		public static void openWindow(Object data) {

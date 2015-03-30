@@ -20,7 +20,7 @@ namespace Motion_lie_detection
 			this.panel1.Size = new Size(1180, 576);
             this.panel1.BackColor = System.Drawing.SystemColors.ControlText;
             this.panel1.Text = "panel1";
-            this.panel1.Paint += new PaintEventHandler(this.panel1_Paint);
+            //this.panel1.Paint += new PaintEventHandler(this.panel1_Paint);
 			this.panel1.Click += this.panel1_Click;
 
 			// 
