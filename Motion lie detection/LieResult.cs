@@ -10,16 +10,17 @@ namespace Motion_lie_detection
         private int framestart;
         private int framend;
         private List<List<float>> frameDifferences;
-        private float[] means;
+        private List<float> means;
         private float meancount = 0;
 
         public LieResult(int framestart = 0)
         {
-            this.means = new float[8];
+            this.means = new List<float>();
             this.frameDifferences = new List<List<float>>();
             this.framestart = framestart;
             this.framend = framestart - 1;
-        }        
+        }
+        
 
         public static LieResult Empty
         {
@@ -29,14 +30,22 @@ namespace Motion_lie_detection
         public void AddFrameDiff(List<float> diff, int next)
         {            
             framend = next;
-            if (diff != null) { 
-                frameDifferences.Add(diff);
-                for (int i = 0; i < 8; i++)
+            if (diff != null) {
+                if (means.Count == 0)
                 {
-                    means[i] *= meancount / (meancount + 1);
-                    means[i] += diff[i] / (meancount + 1);
+                    means = diff;
+                    meancount = 1;
                 }
-                meancount++;
+                else
+                {
+                    frameDifferences.Add(diff);
+                    for (int i = 0; i < means.Count; i++)
+                    {
+                        means[i] *= meancount / (meancount + 1);
+                        means[i] += diff[i] / (meancount + 1);
+                    }
+                    meancount++;
+                }
             }
         }
 
@@ -46,7 +55,7 @@ namespace Motion_lie_detection
 
         public int End { get { return framend; } }
 
-        public float[] Means
+        public List<float> Means
         {
             get { return means; }
         }

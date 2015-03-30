@@ -30,11 +30,7 @@ namespace Motion_lie_detection
             if (Frame.IsEmpty(last))
                 return null;
 
-            if(calculationnodes.Count == 0)
-                return PairwiseDifference(last.Joints, next.Joints);
-
-            
-            List<float> res = new List<float>();
+            List<float> res = PairwiseDifference(last.Joints, next.Joints);
             Queue<BodyNode> queue = new Queue<BodyNode>();
             BodyNode current;
             foreach (BodyNode node in calculationnodes)
