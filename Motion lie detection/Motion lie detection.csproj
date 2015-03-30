@@ -73,7 +73,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Normalisation.cs" />
     <Compile Include="Observer.cs" />
-    <Compile Include="PrimitiveSphere.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="RecordingProvider.cs" />
@@ -92,6 +91,7 @@
     <Compile Include="DummyStream.cs" />
     <Compile Include="RunningJump.cs" />
     <Compile Include="RecordingSaver.cs" />
+    <Compile Include="Primitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

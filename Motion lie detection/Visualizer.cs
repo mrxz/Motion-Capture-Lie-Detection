@@ -36,7 +36,8 @@ namespace Motion_lie_detection
         //Camera camera;
         TrafficLight trafficLight;
         Color DrawColor = Color.Green;
-        GeometricPrimitive primitive;
+        GeometricPrimitive sphere;
+		CylinderPrimitive cylinder;
 		GraphicsDevice graphics;
         KeyboardState keyboardState;
         BasicEffect basicEffect;
@@ -88,11 +89,15 @@ namespace Motion_lie_detection
 		
 		}
 
+
+
         protected override void LoadContent()
         {
 			graphics = this.GraphicsDevice;
 
-            primitive = new SpherePrimitive(graphics, 0.5f, 16);
+			sphere = new SpherePrimitive(graphics, 0.5f, 16);
+			cylinder = new CylinderPrimitive (graphics, 1, 0.5f, 16);
+
             basicEffect = new BasicEffect(GraphicsDevice);
 			basicEffect.View = camera.ViewMatrix;
 			basicEffect.Projection = camera.ProjectionMatrix;
@@ -120,10 +125,10 @@ namespace Motion_lie_detection
 			}
 
 			if (state.IsKeyDown (Keys.OemPlus)) {
-				camera.Zoom += 1;
+				camera.Zoom -= 1;
 			}
 			if (state.IsKeyDown (Keys.OemMinus)) {
-				camera.Zoom -= 1;
+				camera.Zoom += 1;
 			}
             
             base.Update(gameTime);
@@ -169,7 +174,7 @@ namespace Motion_lie_detection
 	
             Vector3 position = Vector3.Zero;
             Matrix world = Matrix.CreateTranslation(position);
-			primitive.Draw(world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
+			sphere.Draw(world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
 
             //find the average position
 			Vector3 Centre;
@@ -194,7 +199,7 @@ namespace Motion_lie_detection
                 //position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
                 joints.Add(joint.Id, Tuple.Create(joint, position));
                 world = Matrix.CreateTranslation(position);
-				primitive.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);                
+				sphere.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);                
             }
 
             BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
@@ -216,7 +221,22 @@ namespace Motion_lie_detection
             
             //Draw the lines between the joints
             basicEffect.CurrentTechnique.Passes[0].Apply();
-            var vertices = new[] { new VertexPositionColor(firstJoint.Item2, Color.White),  new VertexPositionColor(secondJoint.Item2, Color.White) };
+
+
+			float length = Vector3.Distance (firstJoint.Item2, secondJoint.Item2);
+			Matrix scale = Matrix.CreateScale (length, 1, 1);
+
+			Vector3 dir = Vector3.Normalize (secondJoint.Item2 - firstJoint.Item2);
+			Vector3 axis = Vector3.Cross (Vector3.UnitX, dir);
+			float cos = Vector3.Dot (dir, Vector3.UnitX);
+			float angle = (float)Math.Acos ((double)cos);
+			Matrix rot = Matrix.CreateFromAxisAngle (axis, angle);
+
+			Matrix world = Matrix.Multiply (scale, rot);
+
+			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
+			//cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.White);
+			var vertices = new[] { new VertexPositionColor(firstJoint.Item2, Color.White),  new VertexPositionColor(secondJoint.Item2, Color.White) };
             GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
                             
         }
