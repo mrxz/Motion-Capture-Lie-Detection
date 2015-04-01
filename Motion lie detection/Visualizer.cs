@@ -222,23 +222,22 @@ namespace Motion_lie_detection
             //Draw the lines between the joints
             basicEffect.CurrentTechnique.Passes[0].Apply();
 
+			Matrix initTrans = Matrix.CreateTranslation (0, 0.5f, 0);
 
 			float length = Vector3.Distance (firstJoint.Item2, secondJoint.Item2);
-			Matrix scale = Matrix.CreateScale (length, 1, 1);
+			Matrix scale = Matrix.CreateScale (.5f, length, .5f);
 
 			Vector3 dir = Vector3.Normalize (secondJoint.Item2 - firstJoint.Item2);
-			Vector3 axis = Vector3.Cross (Vector3.UnitX, dir);
-			float cos = Vector3.Dot (dir, Vector3.UnitX);
-			float angle = (float)Math.Acos ((double)cos);
-			Matrix rot = Matrix.CreateFromAxisAngle (axis, angle);
+			Vector3 axis = Vector3.Normalize (Vector3.Cross (Vector3.UnitY, dir));
+			Matrix rot = Matrix.Identity;
+			rot.Up = dir;
+			rot.Right = axis;
+			rot.Forward = Vector3.Cross (dir, axis);
 
-			Matrix world = Matrix.Multiply (scale, rot);
+			Matrix trans = Matrix.CreateTranslation (firstJoint.Item2);
 
+			Matrix world = initTrans * scale * rot * trans;
 			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
-			//cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.White);
-			var vertices = new[] { new VertexPositionColor(firstJoint.Item2, Color.White),  new VertexPositionColor(secondJoint.Item2, Color.White) };
-            GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
-                            
         }
 
         private Vector3 ConvertRealWorldPoint(Vector3 position)
