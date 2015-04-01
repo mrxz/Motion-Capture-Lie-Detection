@@ -7,6 +7,7 @@ namespace Motion_lie_detection
     public partial class Window
     {
 		private Panel panel1;
+		private Timeline timeline;
 
 		private void InitializeComponent()
         {
@@ -29,13 +30,21 @@ namespace Motion_lie_detection
             // Window
             // 
             this.Name = "Window";
-			this.ClientSize = new Size(1200, 630);
+			this.ClientSize = new Size(1200, 830);
             this.Controls.Add(this.panel1);
             this.Text = "Window";
 			this.FormClosing += this.form_Closed;
 			this.DoubleBuffered = true;
 			this.KeyPreview = true;
 			this.KeyDown += this.keyDown;
+
+			//
+			// Timeline
+			//
+			timeline = new Timeline ();
+			timeline.Location = new System.Drawing.Point (16, 630);
+			timeline.Size = new Size (1180, 150);
+			this.Controls.Add (timeline);
         }
     }
 }

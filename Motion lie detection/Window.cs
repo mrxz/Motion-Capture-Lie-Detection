@@ -31,7 +31,6 @@ namespace Motion_lie_detection
 		/**
 		 * Simple playback control variables.
 		 */
-		private int currentFrameID = 0;
 		private bool forward = true;
 		private bool stepMode = false;
 
@@ -60,6 +59,9 @@ namespace Motion_lie_detection
 			visPass = new VisualizerPass(new LieDetectionAlgorithm ());
 			ortPass = new NormalizeOrientation (visPass);
 			algo = new NormalizePosition (ortPass);
+
+			timeline.Recording = recording;
+			timeline.CurrentPos = 0;
 		}
 
 		public void panel1_Drag(object source, MouseEventArgs e) {
@@ -95,7 +97,7 @@ namespace Motion_lie_detection
 				g.DrawEllipse (Pens.Green, x - 2, y - 2, 4, 4);
 			}
 
-			g.DrawString("Current frame: " + currentFrameID + " (" + currentFrameID/60 + "s)", new Font ("Arial", 10.0f), Brushes.Red, 5, 560);
+			g.DrawString("Current frame: " + timeline.CurrentPos + " (" + timeline.CurrentPos/recording.FrameRate + "s)", new Font ("Arial", 10.0f), Brushes.Red, 5, 560);
 			g.DrawLine (Pens.LightGray, panel1.Width / 2, 0, panel1.Width / 2, panel1.Height);
 			g.DrawLine (Pens.LightGray, 0, panel1.Height/2, panel1.Width, panel1.Height /2);
 
@@ -127,18 +129,15 @@ namespace Motion_lie_detection
 		{
 			recording.Update ();
 			if (!stepMode) {
-				if (forward) {
-					currentFrameID++;
-					currentFrameID = Math.Min (currentFrameID, recording.LastFrame ());
-				} else {
-					currentFrameID--;
-					currentFrameID = Math.Max (currentFrameID, 0);
-				}
+				if (forward)
+					timeline.CurrentPos++;
+				else
+					timeline.CurrentPos--;
 			}
 
-			frame = recording.GetFrame (currentFrameID);
-			if(currentFrameID > 1) {
-				algo.Compute (ref recording, ref context, currentFrameID - 1, currentFrameID);
+			frame = recording.GetFrame (timeline.CurrentPos);
+			if(timeline.CurrentPos > 1) {
+				algo.Compute (ref recording, ref context, timeline.CurrentPos - 1, timeline.CurrentPos);
 				frame = visPass.GetFrame ();
 			}
 			panel1.Refresh ();
@@ -148,12 +147,12 @@ namespace Motion_lie_detection
 		{
 			if (e.KeyCode == Keys.Space)
 				stepMode = !stepMode;
-			if(e.KeyCode == Keys.Right) {
-				currentFrameID++;
-				currentFrameID = Math.Min (currentFrameID, recording.LastFrame ());
+			else if (e.KeyCode == Keys.A) {
+				recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
+			} else if(e.KeyCode == Keys.Right) {
+				timeline.CurrentPos++;
 			} else if(e.KeyCode == Keys.Left) {
-				currentFrameID--;
-				currentFrameID = Math.Max (currentFrameID, 0);
+				timeline.CurrentPos--;
 			}
 		}
 
