@@ -23,7 +23,16 @@ namespace Motion_lie_detection
 		 */
 		private MarkPoint currentMarkPoint = NONE;
 
-		public Timeline ()
+		/**
+		 * The number of frames that are expected/available.
+		 */
+		private int numberOfFrames = 1000; // FIXME: DEBUG VALUE
+
+		public Timeline() : this(0)
+		{
+		}
+
+		public Timeline (int numberOfFrames)
 		{
 			// Note: set the style to prevent flickering of the contorl.
 			SetStyle(ControlStyles.OptimizedDoubleBuffer | 
@@ -99,7 +108,11 @@ namespace Motion_lie_detection
 		}
 
 		protected void paintBody(Graphics g) {
-			int length = Recording.FrameCount;
+			// Draw the invalid area after the available frames.
+			if (numberOfFrames > Recording.FrameCount) {
+				float unavailablePos = position (Recording.FrameCount);
+				g.FillRectangle (Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 20);
+			}
 
 			// Draw the markpoint lines.
 			Pen markPen = new Pen (Color.Gray);
@@ -131,12 +144,20 @@ namespace Motion_lie_detection
 		}
 
 		/**
+		 * Method for updating the timeline to incorporate new frames.
+		 * @param margin The margin to take the new amount of numberOfFrames.
+		 */
+		public void Update(float margin) {
+			// FIXME: Did do we why no need this, perhaps?
+		}
+
+		/**
 		 * Method for converting from the integer frameId to the (pixel) position on the control.
 		 * @param frameId The frame id to compute the position for.
 		 * @return The x position corresponding to the frame id. 
 		 */
 		private float position(int frameId) {
-			return (float)frameId * ((float)Width / (float)Recording.FrameCount);
+			return (float)frameId * ((float)Width / (float)numberOfFrames);
 		}
 
 		/**
@@ -145,7 +166,7 @@ namespace Motion_lie_detection
 		 * @return The frame id corresponding to the position.
 		 */
 		private int frameId(float position) {
-			return (int)(position * (float)Recording.FrameCount / Width);
+			return (int)(position * (float)numberOfFrames / Width);
 		}
 
 		public int CurrentPos { 

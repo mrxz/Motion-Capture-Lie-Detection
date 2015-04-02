@@ -19,7 +19,7 @@ namespace Motion_lie_detection
 			/**
 			 * Suit demo code
 			 */
-			/*
+
 			SuitController controller = new XSensController ();
 			controller.Calibrate ();
 			controller.Connect();
@@ -28,12 +28,13 @@ namespace Motion_lie_detection
 			Recording recording = new Recording (provider, new FixedBodyConfiguration());
 
 			DummyStream stream = new DummyStream ();
-			stream.Start (); */
+			stream.Start (); 
 
 
 			/**
 			 * File recording demo
 			 */
+			/*
 			OpenFileDialog dialog = new OpenFileDialog ();
 			dialog.DefaultExt = "mvnx";
 			dialog.Multiselect = false;
@@ -46,7 +47,7 @@ namespace Motion_lie_detection
 			provider.Init ();
 			Recording recording = new Recording (provider);
 			recording.Update ();
-
+			*/
 			/**
 			 * Saving the recording.
 			 */
