@@ -4,14 +4,28 @@ using System.Windows.Forms;
 
 namespace Motion_lie_detection
 {
+	/**
+	 * Special control that displays the timeline of a recording.
+	 */
 	public class Timeline : Control
 	{
-		private int currentPos;
-		private MarkPoint currentMarkPoint;
+		/**
+		 * Special markpoint that represents no selected/hovered markpoint.
+		 */
+		private static readonly MarkPoint NONE = new MarkPoint(-1, null, -1);
+
+		/**
+		 * The current frame the timeline is on.
+		 */
+		private int currentFrame;
+		/**
+		 * The current mark point that is hovered over.
+		 */
+		private MarkPoint currentMarkPoint = NONE;
 
 		public Timeline ()
 		{
-			// FIXME: Prevent flickering
+			// Note: set the style to prevent flickering of the contorl.
 			SetStyle(ControlStyles.OptimizedDoubleBuffer | 
 				ControlStyles.UserPaint |
 				ControlStyles.AllPaintingInWmPaint, true);
@@ -19,17 +33,31 @@ namespace Motion_lie_detection
 
 		protected override void OnMouseMove (MouseEventArgs e)
 		{
-			// Check if it was above one of the markpoints.
-			foreach (MarkPoint mark in Recording.MarkPoints) {
-				float markPos = position (mark.Frameid);
-				if (e.Y >= 5 && e.Y <= 15 && Math.Abs (e.X - markPos) <= 5) {
-					currentMarkPoint = mark;
-					return;
+			// Two things to do:
+
+			//  1) Check for hovering over markpoints.
+			{
+				// Set the currently hovered markpoint to none.
+				currentMarkPoint = NONE;
+
+				// Check if it was above one of the markpoints.
+				foreach (MarkPoint mark in Recording.MarkPoints) {
+					float markPos = position (mark.Frameid);
+					if (e.Y >= 5 && e.Y <= 15 && Math.Abs (e.X - markPos) <= 5) {
+						currentMarkPoint = mark;
+						break;
+					}
 				}
 			}
 
-			// FIXME: Special unselected markpoint
-			currentMarkPoint = new MarkPoint (-1, null, -1);
+			//  2) Check for dragging the mouse over the timeline.
+			{
+				// If the mouse is down, move the currentFrame line.
+				if (e.Button == MouseButtons.Left) 
+				{
+					CurrentPos = frameId ((float)e.X);
+				}
+			}
 		}
 
 		protected override void OnMouseClick (MouseEventArgs e)
@@ -41,7 +69,7 @@ namespace Motion_lie_detection
 
 		protected override void OnPaint(PaintEventArgs pe)
 		{
-			Console.WriteLine ("HERE");
+			// Clear the client rectangle
 			pe.Graphics.FillRectangle (Brushes.White, ClientRectangle);
 			pe.Graphics.DrawRectangle (Pens.Black, 0, 0, Width - 1, Height - 1);
 			if (Recording == null) {
@@ -73,6 +101,15 @@ namespace Motion_lie_detection
 		protected void paintBody(Graphics g) {
 			int length = Recording.FrameCount;
 
+			// Draw the markpoint lines.
+			Pen markPen = new Pen (Color.Gray);
+			markPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+			foreach (MarkPoint mark in Recording.MarkPoints) {
+				float markPos = position (mark.Frameid);
+				g.DrawLine (markPen, (int)markPos, 20, (int)markPos, Height - 20);
+			}
+
+			// Draw the red currentFrame line
 			float timePos = position (CurrentPos);
 			g.DrawLine (Pens.Red, (int)timePos, 20, (int)timePos, Height - 20);
 		}
@@ -82,8 +119,8 @@ namespace Motion_lie_detection
 			g.DrawRectangle (Pens.Black, 0, Height - 20, Width - 1, 19);
 
 			// Draw the time.
-			int seconds = currentPos / Recording.FrameRate;
-			String time = String.Format ("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, currentPos);
+			int seconds = currentFrame / Recording.FrameRate;
+			String time = String.Format ("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, currentFrame);
 			g.DrawString (time, new Font ("Arial", 10.0f), Brushes.Black, 10, Height - 20);
 
 			// Draw the markpoint description
@@ -93,20 +130,30 @@ namespace Motion_lie_detection
 			}
 		}
 
+		/**
+		 * Method for converting from the integer frameId to the (pixel) position on the control.
+		 * @param frameId The frame id to compute the position for.
+		 * @return The x position corresponding to the frame id. 
+		 */
 		private float position(int frameId) {
 			return (float)frameId * ((float)Width / (float)Recording.FrameCount);
 		}
 
+		/**
+		 * Method for converting from the (pixel) position on the control to the frame id.
+		 * @param position The x position to compute the frame id for.
+		 * @return The frame id corresponding to the position.
+		 */
 		private int frameId(float position) {
 			return (int)(position * (float)Recording.FrameCount / Width);
 		}
 
 		public int CurrentPos { 
 			get {
-				return currentPos;
+				return currentFrame;
 			}
 			set { 
-				currentPos = Math.Max (Math.Min (value, Recording.FrameCount), 0);
+				currentFrame = Math.Max (Math.Min (value, Recording.FrameCount), 0);
 				this.Invalidate ();
 			}
 		}
