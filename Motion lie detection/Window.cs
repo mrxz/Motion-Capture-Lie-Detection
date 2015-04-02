@@ -90,16 +90,16 @@ namespace Motion_lie_detection
 			// Loop over the joints.
 			Dictionary<int, Tuple<Joint, int, int>> joints = new Dictionary<int, Tuple<Joint, int, int>>();
 			foreach (Joint joint in frame.Joints) {
-				int x = (int)(joint.Position.X * 200) + panel1.Width / 2;
-				int y = (int)(-joint.Position.Z * 200) + panel1.Height / 2;
+				int x = (int)(joint.Position.X * 200) + canvas.Width / 2;
+				int y = (int)(-joint.Position.Z * 200) + canvas.Height / 2;
 
 				joints.Add(joint.Id, Tuple.Create(joint, x, y));
 				g.DrawEllipse (Pens.Green, x - 2, y - 2, 4, 4);
 			}
 
 			g.DrawString("Current frame: " + timeline.CurrentPos + " (" + timeline.CurrentPos/recording.FrameRate + "s)", new Font ("Arial", 10.0f), Brushes.Red, 5, 560);
-			g.DrawLine (Pens.LightGray, panel1.Width / 2, 0, panel1.Width / 2, panel1.Height);
-			g.DrawLine (Pens.LightGray, 0, panel1.Height/2, panel1.Width, panel1.Height /2);
+			g.DrawLine (Pens.LightGray, canvas.Width / 2, 0, canvas.Width / 2, canvas.Height);
+			g.DrawLine (Pens.LightGray, 0, canvas.Height/2, canvas.Width, canvas.Height /2);
 
 			// Draw lines.
 			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
@@ -140,7 +140,7 @@ namespace Motion_lie_detection
 				algo.Compute (ref recording, ref context, timeline.CurrentPos - 1, timeline.CurrentPos);
 				frame = visPass.GetFrame ();
 			}
-			panel1.Refresh ();
+			canvas.Refresh ();
 		}
 
 		public void keyDown(object source, KeyEventArgs e)
