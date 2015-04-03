@@ -125,8 +125,24 @@ namespace Motion_lie_detection
 			g.DrawLine (pen, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
 		}
 
+		public Recording Recording {
+			get {
+				return this.recording;
+			}
+			set {
+				this.recording = value;
+				this.timeline.Recording = value;
+				this.timeline.CurrentPos = 0; // FIXME: should be in the setter of timeline.Recording
+				this.frame = Frame.Empty;
+				this.canvas.Invalidate ();
+			}
+		}
+
 		public void timer_Tick(Object source, EventArgs e)
 		{
+			if (recording == null)
+				return;
+
 			recording.Update ();
 			if (!stepMode) {
 				if (forward)

@@ -19,7 +19,7 @@ namespace Motion_lie_detection
 			/**
 			 * Suit demo code
 			 */
-
+			/*
 			SuitController controller = new XSensController ();
 			controller.Calibrate ();
 			controller.Connect();
@@ -29,7 +29,7 @@ namespace Motion_lie_detection
 
 			DummyStream stream = new DummyStream ();
 			stream.Start (); 
-
+			*/
 
 			/**
 			 * File recording demo
@@ -57,25 +57,26 @@ namespace Motion_lie_detection
             /**
              * DEBUG: Algorithm,
              */
+			/*
             Algorithm algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new LieDetectionAlgorithm())), 5);
             AlgorithmContext context = new AlgorithmContext();
             LieResult res = LieResult.Empty;
             while (res.NextFrameId < recording.FrameCount)
             {
                 res = algo.Compute(ref recording, ref context, res);
-            }
+            }*/
 
 			/**
 			 * DEBUG: Visualization
 			 */
-			new Thread(openWindow).Start(recording);
+			new Thread(openWindow).Start();
         }
 
-		public static void openWindow(Object data) {
+		public static void openWindow() {
 			LOG.info ("Opening window for visualization");
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Window((Recording)data));
+			Application.Run(new Window(null));
 		}
     }
 }

@@ -26,9 +26,9 @@ namespace Motion_lie_detection
 		/**
 		 * The number of frames that are expected/available.
 		 */
-		private int numberOfFrames = 1000; // FIXME: DEBUG VALUE
+		private int numberOfFrames;
 
-		public Timeline() : this(0)
+		public Timeline() : this(1000) // FIXME: DEBUG VALUE
 		{
 		}
 
@@ -38,12 +38,16 @@ namespace Motion_lie_detection
 			SetStyle(ControlStyles.OptimizedDoubleBuffer | 
 				ControlStyles.UserPaint |
 				ControlStyles.AllPaintingInWmPaint, true);
+
+			this.numberOfFrames = numberOfFrames;
 		}
 
 		protected override void OnMouseMove (MouseEventArgs e)
 		{
-			// Two things to do:
+			if (Recording == null)
+				return;
 
+			// Two things to do:
 			//  1) Check for hovering over markpoints.
 			{
 				// Set the currently hovered markpoint to none.
@@ -81,9 +85,12 @@ namespace Motion_lie_detection
 			// Clear the client rectangle
 			pe.Graphics.FillRectangle (Brushes.White, ClientRectangle);
 			pe.Graphics.DrawRectangle (Pens.Black, 0, 0, Width - 1, Height - 1);
-			if (Recording == null) {
+			pe.Graphics.FillRectangle (Brushes.LightGray, 0, 0, Width, 20);
+			pe.Graphics.DrawRectangle (Pens.Black, 0, 0, Width - 1, 19);
+			pe.Graphics.FillRectangle (Brushes.LightGray, 0, Height - 20, Width, 20);
+			pe.Graphics.DrawRectangle (Pens.Black, 0, Height - 20, Width - 1, 19);
+			if (Recording == null)
 				return;
-			}
 
 			// FIXME: Perhaps check the cliprectangle to only draw what is necessary?
 			paintHeader (pe.Graphics);
@@ -92,9 +99,6 @@ namespace Motion_lie_detection
 		}
 
 		protected void paintHeader(Graphics g) {
-			g.FillRectangle (Brushes.LightGray, 0, 0, Width, 20);
-			g.DrawRectangle (Pens.Black, 0, 0, Width - 1, 19);
-
 			// Draw the markers.
 			foreach (MarkPoint mark in Recording.MarkPoints) {
 				float markPos = position (mark.Frameid);
@@ -111,7 +115,7 @@ namespace Motion_lie_detection
 			// Draw the invalid area after the available frames.
 			if (numberOfFrames > Recording.FrameCount) {
 				float unavailablePos = position (Recording.FrameCount);
-				g.FillRectangle (Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 20);
+				g.FillRectangle (Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 40);
 			}
 
 			// Draw the markpoint lines.
@@ -128,9 +132,6 @@ namespace Motion_lie_detection
 		}
 
 		protected void paintFooter(Graphics g) {
-			g.FillRectangle (Brushes.LightGray, 0, Height - 20, Width, 20);
-			g.DrawRectangle (Pens.Black, 0, Height - 20, Width - 1, 19);
-
 			// Draw the time.
 			int seconds = currentFrame / Recording.FrameRate;
 			String time = String.Format ("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, currentFrame);
@@ -174,7 +175,10 @@ namespace Motion_lie_detection
 				return currentFrame;
 			}
 			set { 
-				currentFrame = Math.Max (Math.Min (value, Recording.FrameCount), 0);
+				if(Recording != null)
+					currentFrame = Math.Max (Math.Min (value, Recording.FrameCount), 0);
+				else
+					currentFrame = 0;
 				this.Invalidate ();
 			}
 		}

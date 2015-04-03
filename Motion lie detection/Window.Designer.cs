@@ -61,9 +61,10 @@ namespace Motion_lie_detection
 
 			// File
 			MenuItem File = mainMenu.MenuItems.Add("File");
-			File.MenuItems.Add(new MenuItem("New"));
-			File.MenuItems.Add(new MenuItem("Open"));
-			File.MenuItems.Add(new MenuItem("Exit"));
+			File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
+			File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
+			File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
+			File.MenuItems.Add(new MenuItem("Exit", new EventHandler(exit)));
 
 			// Help
 			MenuItem About = mainMenu.MenuItems.Add("Help");
@@ -95,6 +96,48 @@ namespace Motion_lie_detection
 			// Note: we call resize once to make sure there's no difference between initial layout and resized layout.
 			resize (null, null);
         }
+
+		private void openFile(object sender, EventArgs e) {
+			// Show the file open dialog
+			OpenFileDialog dialog = new OpenFileDialog ();
+			dialog.DefaultExt = "mvnx";
+			dialog.Multiselect = false;
+			dialog.CheckFileExists = true;
+			DialogResult result = dialog.ShowDialog ();
+			if (result == DialogResult.Cancel)
+				return;
+
+			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
+			provider.Init ();
+			Recording recording = new Recording (provider);
+			recording.Update ();
+
+			this.Recording = recording;
+		}
+
+		private void saveFile(object sender, EventArgs e) 
+		{
+			SaveFileDialog dialog = new SaveFileDialog ();
+			dialog.DefaultExt = "mvnx";
+			DialogResult result = dialog.ShowDialog ();
+			if (result == DialogResult.Cancel)
+				return;
+
+			// TODO: Perhaps notify the user if the recording hasn't ended or something?
+
+			RecordingSaver saver = new MVNXSaver (dialog.FileName); // FIXME: Hard-coded implementation for Recording saver.
+			saver.saveToFile (this.recording);
+		}
+
+		private void closeRecording(object sender, EventArgs e) {
+			// FIXME: Close the recording (and provider) correctly.
+			this.Recording = null;
+		}
+
+		private void exit(object sender, EventArgs e) {
+			// TODO: Cleanup
+			Environment.Exit (0);
+		}
 
 		private void resize(Object sender, EventArgs e) {
 			Size newSize = new Size(this.ClientRectangle.Width, this.ClientRectangle.Height);
