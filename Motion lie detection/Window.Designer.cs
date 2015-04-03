@@ -27,9 +27,10 @@ namespace Motion_lie_detection
 		private Timeline timeline;
 
 		/**
-		 * Side panel
+		 * Side panels
 		 */
-		private Panel sidePanel;
+		private Panel leftSidePanel;
+		private Panel rightSidePanel;
 
 		private void InitializeComponent()
         {
@@ -50,9 +51,13 @@ namespace Motion_lie_detection
 			//
 			// Side panel
 			//
-			this.sidePanel = new Panel ();
-			this.sidePanel.Name = "sidePanel";
-			this.Controls.Add (this.sidePanel);
+			this.leftSidePanel = new Panel ();
+			this.leftSidePanel.Name = "leftSidePanel";
+			this.Controls.Add (this.leftSidePanel);
+
+			this.rightSidePanel = new Panel ();
+			this.rightSidePanel.Name = "rightSidePanel";
+			this.Controls.Add (this.rightSidePanel);
 
 			//
 			// Menu bar
@@ -183,6 +188,7 @@ namespace Motion_lie_detection
 			recording.Update ();
 
 			this.Recording = recording;
+			this.Text = "Motion Lie Detection - " + connectForm.Host + ":" + connectForm.Port;
 		}
 
 		private void openFile(object sender, EventArgs e) {
@@ -201,6 +207,7 @@ namespace Motion_lie_detection
 			recording.Update ();
 
 			this.Recording = recording;
+			this.Text = "Motion Lie Detection - " + dialog.SafeFileName;
 		}
 
 		private void saveFile(object sender, EventArgs e) 
@@ -220,6 +227,7 @@ namespace Motion_lie_detection
 		private void closeRecording(object sender, EventArgs e) {
 			// FIXME: Close the recording (and provider) correctly.
 			this.Recording = null;
+			this.Text = "Motion Lie Detection";
 		}
 
 		private void exit(object sender, EventArgs e) {
@@ -235,15 +243,21 @@ namespace Motion_lie_detection
 		private void resize(Object sender, EventArgs e) {
 			Size newSize = new Size(this.ClientRectangle.Width, this.ClientRectangle.Height);
 
-			// Place and scale the sidebar.
-			sidePanel.Location = new System.Drawing.Point (ControlMargin, ControlMargin);
-			sidePanel.Width = 200;
-			sidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
+			// Place and scale the left sidebar.
+			leftSidePanel.Location = new System.Drawing.Point (ControlMargin, ControlMargin);
+			leftSidePanel.Width = 200;
+			leftSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the canvas.
-			canvas.Location = new System.Drawing.Point (sidePanel.Right + ControlMargin, ControlMargin);
-			canvas.Width = newSize.Width - 3 * ControlMargin - 200 - 200;
+			canvas.Location = new System.Drawing.Point (leftSidePanel.Right + ControlMargin, ControlMargin);
+			canvas.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
 			canvas.Height = newSize.Height - 3 * ControlMargin - 150;
+
+			// Place and scale the right sidebar.
+			leftSidePanel.Location = new System.Drawing.Point (ControlMargin, ControlMargin);
+			leftSidePanel.Width = 200;
+			leftSidePanel.Left = canvas.Left + ControlMargin;
+			leftSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the timeline.
 			timeline.Location = new System.Drawing.Point (ControlMargin, canvas.Bottom + ControlMargin);
