@@ -48,7 +48,7 @@ namespace Motion_lie_detection
 			// FIXME: Assume no out of order packets.
 
 			// Construct a frame from this packet.
-			int frameID = (int)header.timeCode; // FIXME: Perhaps induce the correct frameID instead of using the timeCode?
+			int timeCode = (int)header.timeCode;
 
 			List<Joint> joints = new List<Joint> ();
 
@@ -60,7 +60,7 @@ namespace Motion_lie_detection
 			}
 
 			// Notify the observers.
-			NotifyObservers (new Frame (frameID, joints));
+			NotifyObservers (new Frame (joints, timeCode));
 		}
 
 		public void onMXTP12(Header header, Metadata metadata)

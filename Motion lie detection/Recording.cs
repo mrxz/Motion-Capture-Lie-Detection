@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
@@ -21,7 +22,7 @@ namespace Motion_lie_detection
 		/**
 		 * List containing markpoints made in this recording.
 		 */
-		private List<MarkPoint> markpoints;
+		private SortedList<int, MarkPoint> markpoints;
 
 		/**
 		 * The recording provider that provides the frame data containing joint positions.
@@ -39,7 +40,7 @@ namespace Motion_lie_detection
 
 			frames = new List<Frame> ();
 			lastFrameID = -1;
-			markpoints = new List<MarkPoint> ();
+			markpoints = new SortedList<int, MarkPoint> ();
 
 			// Let the provider know the recording has started.
 			// FIXME: Probably better to create a Start() method in Recording and
@@ -94,7 +95,7 @@ namespace Motion_lie_detection
 			}
 		}
 
-		public List<MarkPoint> MarkPoints { get { return markpoints; } }
+		public IList<MarkPoint> MarkPoints { get { return markpoints.Values; } }
 
 		public List<Frame> Frames { get { return frames; } }
 
@@ -115,28 +116,28 @@ namespace Motion_lie_detection
 		 */
 		public void AddMarkPoint (MarkPoint markpoint)
 		{
-			markpoints.Add (markpoint);
+			markpoints.Add (markpoint.Frameid, markpoint);
 		}
 	}
 
 	public struct Frame
 	{
 		private readonly List<Joint> joints;
-		private readonly int id;
+		private readonly int timestamp;
 
-		public Frame (int frameId, List<Joint> joints)
+		public Frame (List<Joint> joints, int timestamp)
 		{
-			id = frameId;
 			this.joints = joints;
+			this.timestamp = timestamp;
 		}
 
-		public int Id { get { return id; } }
-
 		public List<Joint> Joints { get { return joints; } }
+
+		public int Timestamp { get {return timestamp; }}
         
         public static Frame Empty
         {
-            get { return new Frame(-1, null); }
+            get { return new Frame(null, -1); }
         }
 
         public static bool IsEmpty(Frame frame)
@@ -152,7 +153,7 @@ namespace Motion_lie_detection
                     joints[i].Add(frame.joints[i]);
                 }
             }
-            return new Frame(list[0].Id, joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)));
+			return new Frame(joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)), list[0].Timestamp);
         }
         
     }

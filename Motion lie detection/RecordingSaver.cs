@@ -198,7 +198,7 @@ namespace Motion_lie_detection
 
 		private void writeFrame(XmlWriter writer, Frame frame, String type) {
 			writer.WriteStartElement ("frame");
-			writer.WriteAttributeString ("time", frame.Id.ToString()); // FIXME: Id is not the frameId, but the time code ..., I did notice that to, maybe add variabele an call it time Id is used nowhere as index
+			writer.WriteAttributeString ("time", frame.Timestamp.ToString());
 			writer.WriteAttributeString ("type", type);
 
 			StringBuilder orientations = new StringBuilder ();
@@ -252,21 +252,9 @@ namespace Motion_lie_detection
 		{
 			String[] names = new String[] { 
 				"Pelvis", "L5","L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm", "RightForeArm",
-				"RightHand",
-				"LeftShoulder",
-				"LeftUpperArm",
-				"LeftForeArm",
-				"LeftHand",
-				"RightUpperLeg",
-				"RightLowerLeg",
-				"RightFoot",
-				"RightToe",
-				"LeftUpperLeg",
-				"LeftLowerLeg",
-				"LeftFoot",
-				"LeftToe"
-				};
-
+				"RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand", "RightUpperLeg",
+				"RightLowerLeg", "RightFoot", "RightToe", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "LeftToe"
+			};
 
 			return names[jointId - 1];
 		}

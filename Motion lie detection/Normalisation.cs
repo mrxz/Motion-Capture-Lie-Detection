@@ -90,7 +90,7 @@ namespace Motion_lie_detection
                     samplejoints[i] = j;
                 }
 
-                next = new Frame(next.Id, samplejoints);
+				next = new Frame(samplejoints, next.Timestamp);
                 
             }
             n++;

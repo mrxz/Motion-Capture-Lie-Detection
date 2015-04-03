@@ -111,7 +111,7 @@ namespace Motion_lie_detection
 		 * @return The Frame from the xmlReader, Frame.Empty on failure.
 		 */
 		private Frame readFrame(XmlReader reader) {
-			int frameId = int.Parse(reader.GetAttribute("time"));
+			int timeCode = int.Parse(reader.GetAttribute("time"));
 
 			reader.Read (); // orientation
 			float[] orientations = reader.ReadString().Split().Select(n => float.Parse(n, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
@@ -131,7 +131,7 @@ namespace Motion_lie_detection
 						new Microsoft.Xna.Framework.Quaternion (orientations [4 * i], orientations [4 * i + 1], orientations [4 * i + 2], orientations [4 * i + 3])));
 			}
 
-			return new Frame (frameId, joints);
+			return new Frame (joints, timeCode);
 		}
 
 		public override bool Start ()
