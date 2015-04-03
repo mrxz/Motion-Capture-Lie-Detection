@@ -66,6 +66,18 @@ namespace Motion_lie_detection
 			File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
 			File.MenuItems.Add(new MenuItem("Exit", new EventHandler(exit)));
 
+			// Markpoint.
+			MenuItem Mark = mainMenu.MenuItems.Add("Markpoint");
+			Mark.MenuItems.Add(new MenuItem("Add markpoint"));
+			Mark.MenuItems.Add(new MenuItem("Remove markpoint"));
+			Mark.MenuItems.Add(new MenuItem("Next markpoint"));
+			Mark.MenuItems.Add(new MenuItem("Previous markpoint"));
+
+			// Settings
+			MenuItem Settings = mainMenu.MenuItems.Add("Settings");
+			Settings.MenuItems.Add(new MenuItem("Something"));
+			Settings.MenuItems.Add(new MenuItem("TODO"));
+
 			// Help
 			MenuItem About = mainMenu.MenuItems.Add("Help");
 			About.MenuItems.Add(new MenuItem("About"));
