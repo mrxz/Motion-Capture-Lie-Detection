@@ -12,9 +12,15 @@ namespace Motion_lie_detection
 		 */
 		private readonly XSensListener listener;
 
-		public XSensController ()
+		public XSensController () : this("localhost", 9763)
+		{ }
+
+		public XSensController (String host) : this (host, 9763)
+		{}
+
+		public XSensController(String host, int port)
 		{
-			listener = new XSensListener ("127.0.0.1", 9763);
+			listener = new XSensListener (host, port);
 			listener.AddEventHandler (this);
 		}
 

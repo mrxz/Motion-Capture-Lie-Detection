@@ -61,6 +61,7 @@ namespace Motion_lie_detection
 
 			// File
 			MenuItem File = mainMenu.MenuItems.Add("File");
+			File.MenuItems.Add(new MenuItem("Start listening", new EventHandler(startListener), Shortcut.CtrlShiftO));
 			File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
 			File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
 			File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
@@ -76,6 +77,7 @@ namespace Motion_lie_detection
 			// Settings
 			MenuItem Settings = mainMenu.MenuItems.Add("Settings");
 			Settings.MenuItems.Add(new MenuItem("Something"));
+			Settings.MenuItems.Add(new MenuItem("Start dummy stream", new EventHandler(startDummyStream)));
 			Settings.MenuItems.Add(new MenuItem("TODO"));
 
 			// Help
@@ -108,6 +110,80 @@ namespace Motion_lie_detection
 			// Note: we call resize once to make sure there's no difference between initial layout and resized layout.
 			resize (null, null);
         }
+
+		public class ConnectForm : Form {
+
+			private TextBox input;
+
+			public ConnectForm() {
+				Size size = new Size(300, 130);
+				this.Size = size;
+				this.MinimumSize = size;
+				this.MaximumSize = size;
+				this.Text = "Start listener";
+
+				Label text = new Label();
+				text.Text = "Enter host and port:";
+				text.Width = ClientRectangle.Width - 2 * ControlMargin;
+				text.Left = ControlMargin;
+				text.TextAlign = ContentAlignment.MiddleCenter;
+				this.Controls.Add(text);
+
+				input = new TextBox();
+				input.Text = "localhost:9763";
+				input.Width = ClientRectangle.Width - 2 * ControlMargin;
+				input.Left = ControlMargin;
+				input.Top = text.Bottom + ControlMargin;
+				this.Controls.Add(input);
+
+				Button ok = new Button();
+				ok.Text = "Ok";
+				ok.Top = input.Bottom + ControlMargin;
+				ok.Left = ControlMargin;
+				ok.Click += (object sender, EventArgs e) => this.DialogResult = DialogResult.OK;
+				this.Controls.Add(ok);
+
+				Button cancel = new Button();
+				cancel.Text = "Cancel";
+				cancel.Top = input.Bottom + ControlMargin;
+				cancel.Left = ok.Right + ControlMargin;
+				cancel.Click += (object sender, EventArgs e) => this.DialogResult = DialogResult.Cancel;
+				this.Controls.Add(cancel);
+
+				this.CenterToParent();
+			}
+
+			public String Host {
+				get { 
+					return input.Text.Split (':') [0];
+				}
+			}
+
+			public int Port {
+				get {
+					return int.Parse(input.Text.Split (':') [1]);
+				}
+			}
+
+		}
+
+		private void startListener(object sender, EventArgs e) {
+			// Ask the user for the host + port.
+			ConnectForm connectForm = new ConnectForm ();
+			if (connectForm.ShowDialog (this) == DialogResult.Cancel)
+				return;
+
+			SuitController controller = new XSensController(connectForm.Host, connectForm.Port);
+			controller.Calibrate ();
+			controller.Connect();
+
+			RecordingProvider provider = new SuitRecordingProvider (controller);
+			provider.Init ();
+			Recording recording = new Recording (provider, new FixedBodyConfiguration());
+			recording.Update ();
+
+			this.Recording = recording;
+		}
 
 		private void openFile(object sender, EventArgs e) {
 			// Show the file open dialog
@@ -149,6 +225,11 @@ namespace Motion_lie_detection
 		private void exit(object sender, EventArgs e) {
 			// TODO: Cleanup
 			Environment.Exit (0);
+		}
+
+		private void startDummyStream(object sender, EventArgs e) {
+			DummyStream stream = new DummyStream ();
+			stream.Start (); 
 		}
 
 		private void resize(Object sender, EventArgs e) {
