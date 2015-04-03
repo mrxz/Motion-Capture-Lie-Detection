@@ -56,7 +56,7 @@ namespace Motion_lie_detection
 				// Check if it was above one of the markpoints.
 				foreach (MarkPoint mark in Recording.MarkPoints) {
 					float markPos = position (mark.Frameid);
-					Console.WriteLine (markPos);
+
 					if (e.Y >= 5 && e.Y <= 15 && Math.Abs (e.X - markPos) <= 5) {
 						currentMarkPoint = mark;
 						break;

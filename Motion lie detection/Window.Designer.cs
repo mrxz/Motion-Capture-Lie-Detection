@@ -55,7 +55,7 @@ namespace Motion_lie_detection
 			this.leftSidePanel.Name = "leftSidePanel";
 			this.Controls.Add (this.leftSidePanel);
 
-			this.rightSidePanel = new Panel ();
+			this.rightSidePanel = new RightSidePanel ();
 			this.rightSidePanel.Name = "rightSidePanel";
 			this.Controls.Add (this.rightSidePanel);
 
@@ -254,15 +254,57 @@ namespace Motion_lie_detection
 			canvas.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the right sidebar.
-			leftSidePanel.Location = new System.Drawing.Point (ControlMargin, ControlMargin);
-			leftSidePanel.Width = 200;
-			leftSidePanel.Left = canvas.Left + ControlMargin;
-			leftSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
+			rightSidePanel.Width = 200;
+			rightSidePanel.Left = canvas.Right + ControlMargin;
+			rightSidePanel.Top = ControlMargin;
+			rightSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the timeline.
 			timeline.Location = new System.Drawing.Point (ControlMargin, canvas.Bottom + ControlMargin);
 			timeline.Width = newSize.Width - 2 * ControlMargin;
 			timeline.Height = 150;
+		}
+
+		public class RightSidePanel : Panel
+		{
+			private ListBox markpointBox;
+			private Button addButton;
+			private Button removeButton;
+
+			public RightSidePanel()
+			{
+				markpointBox = new ListBox ();
+				this.Controls.Add (markpointBox);
+
+				addButton = new Button ();
+				addButton.Text = "Add";
+				this.Controls.Add (addButton);
+
+				removeButton = new Button ();
+				removeButton.Text = "Remove";
+				this.Controls.Add (removeButton);
+
+				this.Resize += resize;
+			}
+
+			private void resize(Object sender, EventArgs e) {
+				Size newSize = new Size (ClientRectangle.Width, ClientRectangle.Height);
+
+				markpointBox.Left = 0;
+				markpointBox.Top = 0;
+				markpointBox.Width = newSize.Width;
+				markpointBox.Height = newSize.Height - 20 - ControlMargin;
+
+				addButton.Top = markpointBox.Bottom + ControlMargin;
+				addButton.Left = ControlMargin;
+				addButton.Width = (newSize.Width - 3 * ControlMargin) / 2;
+				addButton.Height = 20;
+
+				removeButton.Top = markpointBox.Bottom + ControlMargin;
+				removeButton.Left = addButton.Right + ControlMargin;
+				removeButton.Width = (newSize.Width - 3 * ControlMargin) / 2;
+				removeButton.Height = 20;
+			}
 		}
     }
 }
