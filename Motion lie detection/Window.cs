@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Motion_lie_detection
 {
@@ -42,15 +43,18 @@ namespace Motion_lie_detection
 		private NormalizeOrientation ortPass = null;
 
 		private int prevMouseX = -1;
+		Visualizer visualizer;
+		Thread visualizerThread;
 
 		public Window(Recording recording)
 		{
+
 			this.recording = recording;
             this.context = new AlgorithmContext();
 			InitializeComponent();
 
 			// DEBUG: Render update timer thingy
-			var timer = new Timer();
+			var timer = new System.Windows.Forms.Timer();
 			timer.Interval = 1000 / 60;
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
@@ -62,6 +66,11 @@ namespace Motion_lie_detection
 
 			timeline.Recording = recording;
 			timeline.CurrentPos = 0;
+
+			this.visualizer = new Visualizer ();
+			this.visualizerThread = new Thread (visualizer.Run);
+			this.visualizerThread.Start ();
+
 		}
 
 		public void panel1_Drag(object source, MouseEventArgs e) {
@@ -124,6 +133,7 @@ namespace Motion_lie_detection
 			Pen pen = new Pen (Color.FromArgb (0, 0, intensity));
 			g.DrawLine (pen, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
 		}
+			
 
 		public Recording Recording {
 			get {
@@ -135,6 +145,8 @@ namespace Motion_lie_detection
 				this.timeline.CurrentPos = 0; // FIXME: should be in the setter of timeline.Recording
 				this.frame = Frame.Empty;
 				this.canvas.Invalidate ();
+				visualizer.Recording = value;
+
 			}
 		}
 
@@ -144,6 +156,7 @@ namespace Motion_lie_detection
 				return;
 
 			recording.Update ();
+			/*recording.Update ();
 			if (!stepMode) {
 				if (forward)
 					timeline.CurrentPos++;
@@ -157,6 +170,12 @@ namespace Motion_lie_detection
 				frame = visPass.GetFrame ();
 			}
 			canvas.Refresh ();
+=======
+			frame = recording.GetFrame (currentFrameID);
+			panel1.Refresh ();*/
+			if (visualizer == null)
+				return;
+			visualizer.Update ();
 		}
 
 		public void keyDown(object source, KeyEventArgs e)

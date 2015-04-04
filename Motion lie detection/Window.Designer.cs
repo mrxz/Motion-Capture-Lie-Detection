@@ -97,7 +97,6 @@ namespace Motion_lie_detection
 			timeline = new Timeline ();
 			this.Controls.Add (timeline);
 
-
 			// 
 			// Window
 			// 
