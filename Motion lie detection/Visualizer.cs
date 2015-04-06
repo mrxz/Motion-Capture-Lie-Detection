@@ -91,12 +91,6 @@ namespace Motion_lie_detection
 		}
 
 
-        public void Draw(BodyConfiguration bodyConfiguration, Frame frame)
-        {
-            this.bodyConfiguration = bodyConfiguration;
-            this.frame = frame;
-            Invalidate();
-        }
 
 			
 

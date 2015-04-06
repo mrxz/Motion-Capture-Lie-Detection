@@ -189,11 +189,12 @@ namespace Motion_lie_detection
 			}*/
 
 			frame = recording.GetFrame (timeline.CurrentPos);
+            visualizer.Frame = frame;
 			if(timeline.CurrentPos > 1) {
 				algo.Compute (ref recording, ref context, timeline.CurrentPos - 1, timeline.CurrentPos);
 				frame = visPass.GetFrame ();
 			}
-            visualizer.Frame = frame;
+            
 
 
 
