@@ -225,7 +225,10 @@ namespace Motion_lie_detection
 
 		private void closeRecording(object sender, EventArgs e) {
 			// FIXME: Close the recording (and provider) correctly.
-			this.Recording = null;
+			Recording = null;
+            LieResult = new LieResult();
+            timeline = new Timeline();
+            timeline.LieResult = LieResult;
 			this.Text = "Motion Lie Detection";
 		}
 

@@ -68,15 +68,16 @@ namespace Motion_lie_detection
             ortPass = new NormalizeOrientation(visPass);
             algo = new NormalizePosition(ortPass);
 
-			timeline.Recording = recording;
-			timeline.CurrentPos = 0;
-
             // Construct the algo.
             this.algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new NormalizeLength(new LieDetectionAlgorithm()))), 5);
             this.context = new AlgorithmContext();
 
             //Set Lieresult
-            this.LieResult = new LieResult(timeline.CurrentPos);
+            this.LieResult = new LieResult(0);
+
+			timeline.Recording = recording;
+            timeline.LieResult = LieResult;
+			timeline.CurrentPos = 0;
 
 			this.visualizer = new Visualizer (timeline);
 			this.visualizerThread = new Thread (visualizer.Run);
@@ -104,6 +105,7 @@ namespace Motion_lie_detection
                 forward = !forward;
             }
         }
+
         public void panel1_StopDrag(object source, MouseEventArgs e)
         {
             prevMouseX = -1;

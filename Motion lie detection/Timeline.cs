@@ -15,6 +15,11 @@ namespace Motion_lie_detection
         private Recording recording;
 
         /**
+		 * The LieResult to visualize.
+		 */
+        private LieResult lieresult;
+
+        /**
          * Special markpoint that represents no selected/hovered markpoint.
          */
         private static readonly MarkPoint NONE = new MarkPoint(-1, null, -1);
@@ -144,6 +149,13 @@ namespace Motion_lie_detection
             {
                 float unavailablePos = position(Recording.FrameCount);
                 g.FillRectangle(Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 40);
+                if (LieResult != null)
+                {
+                    float start = position(LieResult.Start);
+                    float end = position(LieResult.End);
+                    g.FillRectangle(Brushes.LightBlue, (int)start, 20, end - start, Height - 40);
+                }
+                
             }
 
             // Draw the markpoint lines.
@@ -235,6 +247,14 @@ namespace Motion_lie_detection
         {
             get { return recording.GetFrame(CurrentPos); }
         }
+
+        /**
+         * Property that gives the current BodyConfiguration in the timeline
+         */
+        public BodyConfiguration BodyConfiguration
+        {
+            get{ return (recording != null) ? recording.BodyConfiguration: null;}
+        }
         
         /**
          * Property that gets or sets recording from the timeline
@@ -243,6 +263,12 @@ namespace Motion_lie_detection
         {
             get { return recording; }
             set { recording = value; CurrentPos = 0; }
+        }
+
+        public LieResult LieResult
+        {
+            get { return lieresult; }
+            set { lieresult = value;}
         }
     }
 }

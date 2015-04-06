@@ -50,7 +50,7 @@ namespace Motion_lie_detection
         /**
          * The frame that is being drawn.
          */
-        private Frame frame = new Frame();
+        private Frame frame = Frame.Empty;
 
         /**
          * The Timeline the visualizer syncs with.
@@ -136,8 +136,13 @@ namespace Motion_lie_detection
             frame = timeline.CurrentFrame;
 	
 		}
-			
 
+        public void Reset(Timeline timeline)
+        {
+            this.timeline = timeline;
+            this.frame = Frame.Empty;
+        }
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -157,59 +162,64 @@ namespace Motion_lie_detection
             Vector3 position = Vector3.Zero;
             Matrix world = Matrix.CreateTranslation(position);
 			sphere.Draw(world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
-
-            //find the average position
-			Vector3 Centre;
-           /* foreach (Joint joint in frame.Joints)
-            {               
-                float temp = AveragePosition.Y;
-                AveragePosition.Y = AveragePosition.Z;
-                AveragePosition.Z = temp;
-                AveragePosition += joint.Position;
-                
-            }*/
-
-			Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
-
-            //jointId, joint, (x, y, z)
-            Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
-
-            //Draw each joint
-            foreach ( Joint joint in frame.Joints)
+            if (!Frame.IsEmpty(frame) && timeline != null)
             {
-				position = ConvertRealWorldPoint(joint.Position) - Centre;
-                //position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
-                joints.Add(joint.Id, Tuple.Create(joint, position));
-                world = Matrix.CreateTranslation(position);
-				sphere.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);                
+                //find the average position
+                Vector3 Centre;
+                /* foreach (Joint joint in frame.Joints)
+                 {               
+                     float temp = AveragePosition.Y;
+                     AveragePosition.Y = AveragePosition.Z;
+                     AveragePosition.Z = temp;
+                     AveragePosition += joint.Position;
+                
+                 }*/
+
+                Centre = ConvertRealWorldPoint(frame.Joints[3].Position);
+
+                //jointId, joint, (x, y, z)
+                Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
+
+                //Draw each joint
+                foreach (Joint joint in frame.Joints)
+                {
+                    position = ConvertRealWorldPoint(joint.Position) - Centre;
+                    //position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
+                    joints.Add(joint.Id, Tuple.Create(joint, position));
+                    world = Matrix.CreateTranslation(position);
+                    sphere.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);
+                }
+
+                BodyConfiguration bodyConfiguration = timeline.BodyConfiguration;
+                if (bodyConfiguration == null)
+                    return;
+                /* foreach (Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections())
+                     drawLine(joints, bodyConfiguration, connection.Item1, connection.Item2);*/
+
+
+
+                Queue<BodyNode> q = new Queue<BodyNode>();
+                q.Enqueue(bodyConfiguration.getRoot());
+                // BFS
+                while (q.Count > 0)
+                {
+                    BodyNode node = q.Dequeue();
+
+
+                    foreach (BodyNode neighbour in node.getNeighbours())
+                    {
+                        // draw cylinder
+                        q.Enqueue(neighbour);
+                        drawLine(joints, bodyConfiguration, node.JointId, neighbour.JointId);
+                    }
+                    /*				position = ConvertRealWorldPoint(node.JointId
+                                    foreach (var neighbour in node.getNeighbours())
+                                    {
+                                        drawLine(joints,bodyConfiguration,node.JointId,neighbour.JointId);
+                                        q.Enqueue (neighbour);
+                                    }*/
+                }
             }
-
-            BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
-
-           /* foreach (Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections())
-                drawLine(joints, bodyConfiguration, connection.Item1, connection.Item2);*/
-            
-
-
-			Queue<BodyNode> q = new Queue<BodyNode>();
-			q.Enqueue (bodyConfiguration.getRoot ());
-			// BFS
-			while (q.Count > 0) {
-				BodyNode node = q.Dequeue ();
-
-
-				foreach (BodyNode neighbour in node.getNeighbours()) {
-					// draw cylinder
-					q.Enqueue (neighbour);
-					drawLine (joints, bodyConfiguration, node.JointId, neighbour.JointId);
-				}
-/*				position = ConvertRealWorldPoint(node.JointId
-				foreach (var neighbour in node.getNeighbours())
-				{
-					drawLine(joints,bodyConfiguration,node.JointId,neighbour.JointId);
-					q.Enqueue (neighbour);
-				}*/
-			}
 			base.Draw(gameTime);
 		}
 
