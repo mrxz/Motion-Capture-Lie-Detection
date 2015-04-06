@@ -75,7 +75,7 @@ namespace Motion_lie_detection
             //return res; */
         }
 
-        private List<float> PairwiseDifference(List<Joint> A, List<Joint> B)
+        private List<float> PairwiseDifference(IList<Joint> A, IList<Joint> B)
         {
             if (A.Count != B.Count)
                 throw new Exception("Number of joints, is not equal");
@@ -92,7 +92,7 @@ namespace Motion_lie_detection
             return res;
         }
 
-        private float AbsoluteMovement(List<Joint> A, List<Joint> B)
+        private float AbsoluteMovement(IList<Joint> A, IList<Joint> B)
         {
             if (A.Count != B.Count)
                 throw new Exception("Number of joints, is not equal");

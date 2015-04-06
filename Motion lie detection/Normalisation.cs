@@ -19,15 +19,17 @@ namespace Motion_lie_detection
 			Vector3 rootPosition = bodyConfiguration.getRootJoint (next.Joints).Position;
 
             // Loop over the joints and re-position them.
+			List<Joint> newJoints = new List<Joint> ();
 			for (int i = 0; i < next.Joints.Count; i++) {
 				Joint joint = next.Joints [i];
-				next.Joints[i] = new Joint(
+				newJoints.Add(new Joint(
 					joint.Id,
 					joint.Position - rootPosition,
-					joint.Orientation);
+					joint.Orientation));
 			}
+			Frame newFrame = new Frame (newJoints, next.Timestamp);
 
-			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, newFrame);
         }
     }
 
@@ -53,18 +55,21 @@ namespace Motion_lie_detection
 			rotation += AdditionalRotation;
 
 			// Loop over the joints and rotate them.
+			List<Joint> newJoints = new List<Joint> ();
 			for (int i = 0; i < next.Joints.Count; i++) {
 				Joint joint = next.Joints [i];
 
 				double newX = Math.Cos (rotation) * joint.Position.X - Math.Sin (rotation) * joint.Position.Y;
 				double newY = Math.Sin (rotation) * joint.Position.X + Math.Cos (rotation) * joint.Position.Y;
 
-				next.Joints[i] = new Joint(
+				newJoints.Add(new Joint(
 					joint.Id,
 					new Vector3((float)newX, (float)newY, joint.Position.Z),
-					joint.Orientation);
+					joint.Orientation));
 			}
-			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
+			Frame newFrame = new Frame (newJoints, next.Timestamp);
+
+			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, newFrame);
         }
     }
 
@@ -82,15 +87,16 @@ namespace Motion_lie_detection
             float n = context.SampleSize;
             if (n < DownsampleRate && n > 0)
             {
-                List<Joint> samplejoints = context.SampleFrame.Joints;
+                IList<Joint> samplejoints = context.SampleFrame.Joints;
+				List<Joint> newJoints = new List<Joint> ();
                 for (int i = 0; i < samplejoints.Count; i++)
                 {
                     Joint j = samplejoints[i];
                     j.Position = j.Position * (n / (n + 1)) + next.Joints[i].Position / (n + 1);
-                    samplejoints[i] = j;
+					newJoints.Add(j);
                 }
 
-				next = new Frame(samplejoints, next.Timestamp);
+				next = new Frame(newJoints, next.Timestamp);
                 
             }
             n++;
@@ -117,9 +123,12 @@ namespace Motion_lie_detection
             if (context.Normalizeconfiguration != null)
             {
                 Vector3[] nvectors = new Vector3[next.Joints.Count];
-                bool[] normalised = new bool[next.Joints.Count]; //?? maybe we can assume that that it is not cyclic
+				bool[] normalised = new bool[next.Joints.Count]; //?? maybe we can assume that that it is not cyclic, I think we may :-)
                 Queue<BodyNode> queue = new Queue<BodyNode>();
                
+				List<Joint> newJoints = new List<Joint> ();
+				newJoints.AddRange(next.Joints);
+
                 BodyNode node = context.Normalizeconfiguration.getRoot();
                 nvectors[node.JointId] = new Vector3(0,0,0);
                 normalised[node.JointId] = true;
@@ -140,20 +149,25 @@ namespace Motion_lie_detection
                                     throw new Exception("Mismatch between classification configuration and bodyconfiguration"); //Well not lethal but would give some stange figures
                                 continue;
                             }
-                            Vector3 diff = next.Joints[node.JointId - 1].Position - next.Joints[child.JointId - 1].Position;
+							Vector3 diff = newJoints[node.JointId - 1].Position - newJoints[child.JointId - 1].Position;
                             //calculate normalise vector for the childnode
                             nvectors[child.JointId - 1] = nvectors[node.JointId - 1] + diff * ((nlength - rlength) / rlength);
                             normalised[child.JointId - 1] = true;
                             queue.Enqueue(child);
                         }
                     }
+
                     //normalise nodejoint
-                    Joint nodejoint = next.Joints[node.JointId-1];
+					Joint nodejoint = newJoints[node.JointId-1];
                     nodejoint.Position += nvectors[node.JointId - 1];
                     //put normalised joint back in the frame
-                    next.Joints[node.JointId -1] = nodejoint;
+					newJoints[node.JointId -1] = nodejoint;
                 }
+
+				next = new Frame (newJoints, next.Timestamp);
             }
+
+
 			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
         }
     }

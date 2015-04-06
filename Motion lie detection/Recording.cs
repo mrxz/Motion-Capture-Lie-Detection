@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
@@ -97,7 +98,7 @@ namespace Motion_lie_detection
 
 		public IList<MarkPoint> MarkPoints { get { return markpoints.Values; } }
 
-		public List<Frame> Frames { get { return frames; } }
+		public IList<Frame> Frames { get { return frames; } }
 
 		public int FrameCount { get { return frames.Count; } }
 
@@ -131,7 +132,7 @@ namespace Motion_lie_detection
 			this.timestamp = timestamp;
 		}
 
-		public List<Joint> Joints { get { return joints; } }
+		public ReadOnlyCollection<Joint> Joints { get { return joints != null ? joints.AsReadOnly() : null; } }
 
 		public int Timestamp { get {return timestamp; }}
         
@@ -155,7 +156,7 @@ namespace Motion_lie_detection
             }
 			return new Frame(joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)), list[0].Timestamp);
         }
-        
+
     }
 
 	public struct Joint

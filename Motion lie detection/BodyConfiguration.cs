@@ -55,7 +55,7 @@ namespace Motion_lie_detection
 			lengths.Add (key, length);
 		}
 
-		public Joint getJoint(List<Joint> joints, BodyNode node) {
+		public Joint getJoint(IList<Joint> joints, BodyNode node) {
 			// TODO: Add alternative in case the joint order is known.
 			// Loop over the joints to find the correct one.
 			foreach (Joint joint in joints) {
@@ -67,11 +67,11 @@ namespace Motion_lie_detection
 			return new Joint ();
 		}
 
-		public Joint getRootJoint(List<Joint> joints) {
+		public Joint getRootJoint(IList<Joint> joints) {
 			return getJoint (joints, root);
 		}
 
-		public Joint getOrientationJoint(List<Joint> joints) {
+		public Joint getOrientationJoint(IList<Joint> joints) {
 			return getJoint (joints, orientationNode);
 		}
 
