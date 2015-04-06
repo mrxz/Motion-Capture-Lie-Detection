@@ -35,12 +35,11 @@ namespace Motion_lie_detection
             return result;
         }
 
-        public LieResult Compute(ref Recording recording, ref AlgorithmContext context, LieResult result)
+        public void Compute(ref Recording recording, ref AlgorithmContext context, ref LieResult result)
         {
             int next = result.NextFrameId;
             if (next > -1 && next < recording.FrameCount)
                 result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
-            return result;
         }
 
         public abstract List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next);    

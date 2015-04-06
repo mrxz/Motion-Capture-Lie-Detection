@@ -19,8 +19,7 @@ namespace Motion_lie_detection
             this.frameDifferences = new List<List<float>>();
             this.framestart = framestart;
             this.framend = framestart - 1;
-        }
-        
+        }        
 
         public static LieResult Empty
         {

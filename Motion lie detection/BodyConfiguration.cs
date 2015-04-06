@@ -19,10 +19,16 @@ namespace Motion_lie_detection
 		 */
 		protected BodyNode orientationNode;
 
+		/**
+		 * Map containing the lengths between two bodyNodes.
+		 */
+		protected Dictionary<Tuple<BodyNode, BodyNode>, float> lengths;
+
 		public BodyConfiguration()
 		{
 			root = null;
 			orientationNode = null;
+			lengths = new Dictionary<Tuple<BodyNode, BodyNode>, float> ();
 		}
 
 		public BodyNode getRoot()
@@ -35,7 +41,21 @@ namespace Motion_lie_detection
 			return orientationNode;
 		}
 
-		public Joint getJoint(List<Joint> joints, BodyNode node) {
+		public float GetLength(BodyNode from, BodyNode to)
+		{
+			float result;
+			if(lengths.TryGetValue(Tuple.Create(from, to), out result))
+				return result;
+			return -1;
+		}
+
+		public void SetLength(BodyNode from, BodyNode to, float length)
+		{
+			Tuple<BodyNode, BodyNode> key = Tuple.Create (from, to);
+			lengths.Add (key, length);
+		}
+
+		public Joint getJoint(IList<Joint> joints, BodyNode node) {
 			// TODO: Add alternative in case the joint order is known.
 			// Loop over the joints to find the correct one.
 			foreach (Joint joint in joints) {
@@ -47,11 +67,11 @@ namespace Motion_lie_detection
 			return new Joint ();
 		}
 
-		public Joint getRootJoint(List<Joint> joints) {
+		public Joint getRootJoint(IList<Joint> joints) {
 			return getJoint (joints, root);
 		}
 
-		public Joint getOrientationJoint(List<Joint> joints) {
+		public Joint getOrientationJoint(IList<Joint> joints) {
 			return getJoint (joints, orientationNode);
 		}
 
@@ -62,15 +82,22 @@ namespace Motion_lie_detection
 		 */
 		public void LengthsFromNPose(Frame nposeFrame) 
 		{
-			/*
-			foreach(Tuple<BodyPart, BodyPart> connection in connections) {
-				// FIXME: At the moment we utilse the fact that the jointId -1 is the index in the Joints array.
-				Joint first = nposeFrame.Joints[mapping[connection.Item1] - 1];
-				Joint second = nposeFrame.Joints[mapping[connection.Item2] - 1];
+			Queue<BodyNode> q = new Queue<BodyNode> ();
+			q.Enqueue (root);
+			while (q.Count > 0) {
+				BodyNode node = q.Dequeue ();
 
-				float distance = Vector3.Distance (first.Position, second.Position);
-				lengths.Add (connection, distance);
-			}*/
+				foreach (BodyNode neighbour in node.getNeighbours()) { 
+					Tuple<BodyNode, BodyNode> key = Tuple.Create (node, neighbour);
+					Joint first = getJoint (nposeFrame.Joints, node);
+					Joint second = getJoint (nposeFrame.Joints, neighbour);
+
+					float length = Vector3.Distance (first.Position, second.Position);
+					lengths.Add (key, length);
+
+					q.Enqueue (neighbour);
+				}
+			}
 		}
 	}
 

@@ -39,19 +39,7 @@ namespace Motion_lie_detection
 
         private void InitializeComponent()
         {
-            // 
-            // Canvas
-            // 
-        /*    this.canvas = new Panel();
-            this.canvas.Name = "canvas";
-            this.canvas.TabIndex = 0;
-            this.canvas.BackColor = System.Drawing.SystemColors.ControlText;
-            this.canvas.Text = "canvas";
-            this.canvas.Paint += new PaintEventHandler(this.panel1_Paint);
-            this.canvas.MouseMove += this.panel1_Drag;
-            this.canvas.MouseDown += this.panel1_StartDrag;
-            this.canvas.MouseUp += this.panel1_StopDrag;
-            this.Controls.Add(this.canvas);*/
+
 
             this.visualizer = new Visualizer();
             this.visualizer.Name = "visualizer";
@@ -136,7 +124,7 @@ namespace Motion_lie_detection
             public ConnectForm()
             {
                 Size size = new Size(300, 130);
-                this.Size = size;
+
                 this.MinimumSize = size;
                 this.MaximumSize = size;
                 this.Text = "Start listener";

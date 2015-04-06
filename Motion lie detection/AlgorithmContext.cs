@@ -11,12 +11,14 @@ namespace Motion_lie_detection
         Frame lastFrame;
         Frame sampleFrame;
         int samplesize;
+        BodyConfiguration normalizeconfiguration;
 
-        public AlgorithmContext()
+        public AlgorithmContext(BodyConfiguration baseConfiguration = null)
         {
             lastFrame = Frame.Empty;
             sampleFrame = Frame.Empty;
             samplesize = 0;
+            normalizeconfiguration = baseConfiguration;
         }
 
         public Frame LastFrame
@@ -33,6 +35,12 @@ namespace Motion_lie_detection
         public Frame SampleFrame
         {
             get { return sampleFrame; }
+        }
+
+        public BodyConfiguration Normalizeconfiguration
+        {
+            get { return normalizeconfiguration; }
+            set { normalizeconfiguration = value; }
         }
 
         public void SetSample(Frame frame, int framecount)

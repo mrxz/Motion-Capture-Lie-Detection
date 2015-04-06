@@ -21,9 +21,19 @@ namespace Motion_lie_detection
 		private Recording recording;
 
         /**
-		 * The rlgorithm context.
+		 * The Algorithm object,
+		 */
+        private Algorithm algo;
+
+        /**
+		 * The Algorithm context.
 		 */
         private AlgorithmContext context;
+
+        /**
+		 * The Lieresult
+		 */
+        private LieResult LieResult;
 		/**
 		 * The frame that is being drawn.
 		 */
@@ -33,12 +43,8 @@ namespace Motion_lie_detection
 		 * Simple playback control variables.
 		 */
 		private bool forward = true;
-		private bool stepMode = false;
 
-		/**
-		 * Algorithm,
-		 */
-		private Algorithm algo = null;
+		
 		private VisualizerPass visPass = null;
 		private NormalizeOrientation ortPass = null;
 
@@ -48,80 +54,95 @@ namespace Motion_lie_detection
 		public Window(Recording recording)
 		{
 			this.recording = recording;
-            this.context = new AlgorithmContext();
 			InitializeComponent();
 
-			// DEBUG: Render update timer thingy
+			// DEBUG: Render update timer thingy, ;)
 			var timer = new System.Windows.Forms.Timer();
 			timer.Interval = 1000 / 60;
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
 
-			// Construct the algo.
-			visPass = new VisualizerPass(new LieDetectionAlgorithm ());
-			ortPass = new NormalizeOrientation (visPass);
-			algo = new NormalizePosition (ortPass);
+
+            visPass = new VisualizerPass(new LieDetectionAlgorithm());
+            ortPass = new NormalizeOrientation(visPass);
+            algo = new NormalizePosition(ortPass);
 
 			timeline.Recording = recording;
 			timeline.CurrentPos = 0;
 
-			//this.visualizer = new Visualizer (timeline);
-			//this.visualizerThread = new Thread (visualizer.Run);
-			//this.visualizerThread.Start ();
+
+            // Construct the algo.
+            this.algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new NormalizeLength(new LieDetectionAlgorithm()))), 5);
+            this.context = new AlgorithmContext();
+
+            //Set Lieresult
+            this.LieResult = new LieResult(timeline.CurrentPos);
+
 
 		}
 
-		public void panel1_Drag(object source, MouseEventArgs e) {
-			if (prevMouseX != -1) {
-				ortPass.AdditionalRotation += (float)(MousePosition.X - prevMouseX) * 0.05f;
-				prevMouseX = MousePosition.X;
-			}
-		}
-		public void panel1_StartDrag(object source, MouseEventArgs e) {
-			if (e.Button == MouseButtons.Left) {
-				prevMouseX = MousePosition.X;
-			} else {
-				forward = !forward;
-			}
-		}
-		public void panel1_StopDrag(object source, MouseEventArgs e) {
-			prevMouseX = -1;
-		}
+        public void panel1_Drag(object source, MouseEventArgs e)
+        {
+            if (prevMouseX != -1)
+            {
+                ortPass.AdditionalRotation += (float)(MousePosition.X - prevMouseX) * 0.05f;
+                prevMouseX = MousePosition.X;
+            }
+        }
 
-		public void panel1_Paint(Object source, PaintEventArgs e)
-		{
-			Graphics g = e.Graphics;
-			if (frame.Joints == null)
-				return;
+        public void panel1_StartDrag(object source, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                prevMouseX = MousePosition.X;
+            }
+            else
+            {
+                forward = !forward;
+            }
+        }
+        public void panel1_StopDrag(object source, MouseEventArgs e)
+        {
+            prevMouseX = -1;
+        }
 
-			// Loop over the joints.
-			Dictionary<int, Tuple<Joint, int, int>> joints = new Dictionary<int, Tuple<Joint, int, int>>();
-			foreach (Joint joint in frame.Joints) {
-				int x = (int)(joint.Position.X * 200) + canvas.Width / 2;
-				int y = (int)(-joint.Position.Z * 200) + canvas.Height / 2;
+        public void panel1_Paint(Object source, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            if (frame.Joints == null)
+                return;
 
-				joints.Add(joint.Id, Tuple.Create(joint, x, y));
-				g.DrawEllipse (Pens.Green, x - 2, y - 2, 4, 4);
-			}
+            // Loop over the joints.
+            Dictionary<int, Tuple<Joint, int, int>> joints = new Dictionary<int, Tuple<Joint, int, int>>();
+            foreach (Joint joint in frame.Joints)
+            {
+                int x = (int)(joint.Position.X * 200) + canvas.Width / 2;
+                int y = (int)(-joint.Position.Z * 200) + canvas.Height / 2;
 
-			g.DrawString("Current frame: " + timeline.CurrentPos + " (" + timeline.CurrentPos/recording.FrameRate + "s)", new Font ("Arial", 10.0f), Brushes.Red, 5, 560);
-			g.DrawLine (Pens.LightGray, canvas.Width / 2, 0, canvas.Width / 2, canvas.Height);
-			g.DrawLine (Pens.LightGray, 0, canvas.Height/2, canvas.Width, canvas.Height /2);
+                joints.Add(joint.Id, Tuple.Create(joint, x, y));
+                g.DrawEllipse(Pens.Green, x - 2, y - 2, 4, 4);
+            }
 
-			// Draw lines.
-			BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
-			Queue<BodyNode> q = new Queue<BodyNode> ();
-			q.Enqueue (bodyConfiguration.getRoot ());
-			while (q.Count > 0) {
-				BodyNode node = q.Dequeue ();
+            g.DrawString("Current frame: " + timeline.CurrentPos + " (" + timeline.CurrentPos / recording.FrameRate + "s)", new Font("Arial", 10.0f), Brushes.Red, 5, 560);
+            g.DrawLine(Pens.LightGray, canvas.Width / 2, 0, canvas.Width / 2, canvas.Height);
+            g.DrawLine(Pens.LightGray, 0, canvas.Height / 2, canvas.Width, canvas.Height / 2);
 
-				foreach (BodyNode neighbour in node.getNeighbours()) { 
-					drawLine (joints, bodyConfiguration, g, node.JointId, neighbour.JointId, 255);
+            // Draw lines.
+            BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
+            Queue<BodyNode> q = new Queue<BodyNode>();
+            q.Enqueue(bodyConfiguration.getRoot());
+            while (q.Count > 0)
+            {
+                BodyNode node = q.Dequeue();
 
-					q.Enqueue (neighbour);
-				}
-			}
-		}
+                foreach (BodyNode neighbour in node.getNeighbours())
+                {
+                    drawLine(joints, bodyConfiguration, g, node.JointId, neighbour.JointId, 255);
+
+                    q.Enqueue(neighbour);
+                }
+            }
+        }
 
 		private void drawLine(Dictionary<int, Tuple<Joint, int, int>> joints, BodyConfiguration configuration, Graphics g, int first, int second, int intensity)
 		{
@@ -131,7 +152,7 @@ namespace Motion_lie_detection
 			Pen pen = new Pen (Color.FromArgb (0, 0, intensity));
 			g.DrawLine (pen, firstJoint.Item2, firstJoint.Item3, secondJoint.Item2, secondJoint.Item3);
 		}
-			
+		
 
 		public Recording Recording {
 			get {
@@ -140,6 +161,8 @@ namespace Motion_lie_detection
 			set {
 				this.recording = value;
 				this.timeline.Recording = value;
+                if(value != null)
+                    this.context.Normalizeconfiguration = recording.BodyConfiguration;
 				this.frame = Frame.Empty;
 				//this.canvas.Invalidate ();
                 this.visualizer.Frame = frame;
@@ -154,15 +177,16 @@ namespace Motion_lie_detection
 
 			recording.Update();
             timeline.Update(); //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
-			
+            algo.Compute(ref recording, ref context, ref LieResult);
+
             //remove??
-            recording.Update ();
+           /* recording.Update ();
 			if (!stepMode) {
 				if (forward)
 					timeline.CurrentPos++;
 				else
 					timeline.CurrentPos--;
-			}
+			}*/
 
 			frame = recording.GetFrame (timeline.CurrentPos);
 			if(timeline.CurrentPos > 1) {
@@ -171,14 +195,7 @@ namespace Motion_lie_detection
 			}
             visualizer.Frame = frame;
 
-			//canvas.Refresh ();
-		/*	frame = recording.GetFrame (currentFrameID);
-			panel1.Refresh ();*/
-		/**	if (visualizer == null)
-				return;
-			visualizer.Update ();*/
 
-            // TODO Refresh the Visualizer
 
 		}
 
