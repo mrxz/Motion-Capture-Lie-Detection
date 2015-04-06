@@ -43,8 +43,7 @@ namespace Motion_lie_detection
 		private NormalizeOrientation ortPass = null;
 
 		private int prevMouseX = -1;
-		Visualizer visualizer;
-		Thread visualizerThread;
+
 
 		public Window(Recording recording)
 		{
@@ -66,9 +65,9 @@ namespace Motion_lie_detection
 			timeline.Recording = recording;
 			timeline.CurrentPos = 0;
 
-			this.visualizer = new Visualizer (timeline);
-			this.visualizerThread = new Thread (visualizer.Run);
-			this.visualizerThread.Start ();
+			//this.visualizer = new Visualizer (timeline);
+			//this.visualizerThread = new Thread (visualizer.Run);
+			//this.visualizerThread.Start ();
 
 		}
 
@@ -142,7 +141,9 @@ namespace Motion_lie_detection
 				this.recording = value;
 				this.timeline.Recording = value;
 				this.frame = Frame.Empty;
-				this.canvas.Invalidate ();
+				//this.canvas.Invalidate ();
+                this.visualizer.Frame = frame;
+                this.visualizer.BodyConfiguration = recording.BodyConfiguration;
 			}
 		}
 
@@ -155,7 +156,7 @@ namespace Motion_lie_detection
             timeline.Update(); //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
 			
             //remove??
-            /*recording.Update ();
+            recording.Update ();
 			if (!stepMode) {
 				if (forward)
 					timeline.CurrentPos++;
@@ -168,13 +169,17 @@ namespace Motion_lie_detection
 				algo.Compute (ref recording, ref context, timeline.CurrentPos - 1, timeline.CurrentPos);
 				frame = visPass.GetFrame ();
 			}
-			canvas.Refresh ();
-=======
-			frame = recording.GetFrame (currentFrameID);
+            visualizer.Frame = frame;
+
+			//canvas.Refresh ();
+		/*	frame = recording.GetFrame (currentFrameID);
 			panel1.Refresh ();*/
-			if (visualizer == null)
+		/**	if (visualizer == null)
 				return;
-			visualizer.Update ();
+			visualizer.Update ();*/
+
+            // TODO Refresh the Visualizer
+
 		}
 
 		public void keyDown(object source, KeyEventArgs e)
@@ -182,7 +187,7 @@ namespace Motion_lie_detection
 			if (e.KeyCode == Keys.Space)
                 timeline.StepMode = !timeline.StepMode;
 			else if (e.KeyCode == Keys.A) {
-				recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
+			//	recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
 			} else if(e.KeyCode == Keys.Right) {
 				timeline.CurrentPos++;
 			} else if(e.KeyCode == Keys.Left) {
