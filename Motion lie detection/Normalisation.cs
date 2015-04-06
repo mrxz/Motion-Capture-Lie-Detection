@@ -105,17 +105,55 @@ namespace Motion_lie_detection
         }
     }
 
-
-
 	/**
 	 * Filter pass that normalizes the lengths of the body parts/segments.
 	 */
     public class NormalizeLength : FilterPass
-    {
+    {        
 		public NormalizeLength(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
         public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
-        {
+        {            
+            if (context.Normalizeconfiguration != null)
+            {
+                Vector3[] nvectors = new Vector3[next.Joints.Count];
+                bool[] normalised = new bool[next.Joints.Count]; //?? maybe we can assume that that it is not cyclic
+                Queue<BodyNode> queue = new Queue<BodyNode>();
+               
+                BodyNode node = context.Normalizeconfiguration.getRoot();
+                nvectors[node.JointId] = new Vector3(0,0,0);
+                normalised[node.JointId] = true;
+                queue.Enqueue(node);
+                while (queue.Count > 0)
+                {
+                    node = queue.Dequeue();
+                    //look at all child nodes
+                    foreach (BodyNode child in node.getNeighbours())
+                    {
+                        if (!normalised[child.JointId - 1])
+                        {
+                            float nlength = context.Normalizeconfiguration.GetLength(node, child);
+                            float rlength = bodyConfiguration.GetLength(node, child);
+                            if (nlength == -1 || rlength == -1)
+                            {
+                                if (nlength != rlength)
+                                    throw new Exception("Mismatch between classification configuration and bodyconfiguration"); //Well not lethal but would give some stange figures
+                                continue;
+                            }
+                            Vector3 diff = next.Joints[node.JointId - 1].Position - next.Joints[child.JointId - 1].Position;
+                            //calculate normalise vector for the childnode
+                            nvectors[child.JointId - 1] = nvectors[node.JointId - 1] + diff * ((nlength - rlength) / rlength);
+                            normalised[child.JointId - 1] = true;
+                            queue.Enqueue(child);
+                        }
+                    }
+                    //normalise nodejoint
+                    Joint nodejoint = next.Joints[node.JointId-1];
+                    nodejoint.Position += nvectors[node.JointId - 1];
+                    //put normalised joint back in the frame
+                    next.Joints[node.JointId -1] = nodejoint;
+                }
+            }
 			return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
         }
     }
