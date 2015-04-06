@@ -149,15 +149,16 @@ namespace Motion_lie_detection
             {
                 float unavailablePos = position(Recording.FrameCount);
                 g.FillRectangle(Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 40);
-                if (LieResult != null)
-                {
-                    float start = position(LieResult.Start);
-                    float end = position(LieResult.End);
-                    g.FillRectangle(Brushes.LightBlue, (int)start, 20, end - start, Height - 40);
-                }
+                
                 
             }
 
+            if (LieResult != null)
+            {
+                float start = position(LieResult.Start);
+                float end = position(LieResult.End);
+                g.FillRectangle(Brushes.LightBlue, (int)start, 20, end - start, Height - 40);
+            }
             // Draw the markpoint lines.
             Pen markPen = new Pen(Color.Gray);
             markPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;

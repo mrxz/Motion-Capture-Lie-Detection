@@ -71,34 +71,23 @@ namespace Motion_lie_detection
             this.KeyDown +=visualizer_KeyDown;
         }
 
-
-
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-
         	camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Vector3.Forward);
             camera.LookAt = Vector3.Forward;
             camera.Zoom = 50;
 
             sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
-            cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
-
-	
-		}
-
-
-
-			
+            cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);	
+		}		
 
         protected override void Draw()
         {
-
             if (bodyConfiguration == null)
                 return;
             GraphicsDevice.Clear(Color.CornflowerBlue);
             if (frame.Joints == null)
                 return;
-
 
 			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
 
@@ -125,6 +114,11 @@ namespace Motion_lie_detection
 			}
 		}
 
+        public void Reset()
+        {
+            GraphicsDevice.Clear(Color.Purple);
+            bodyConfiguration = null;
+        }
         private void drawJoint(Vector3 position)
         {
             sphere.Draw(Matrix.CreateTranslation(position), camera.ViewMatrix, camera.ProjectionMatrix, drawColor);  

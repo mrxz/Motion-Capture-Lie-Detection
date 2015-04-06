@@ -51,32 +51,35 @@ namespace Motion_lie_detection
 		private int prevMouseX = -1;
 
 
-		public Window(Recording recording)
+		public Window()
 		{
-			this.recording = recording;
+			
 			InitializeComponent();
 
 			// DEBUG: Render update timer thingy, ;)
+            //Used for drawing and calculation speed, those should be done as often as possible only needed for play speed
 			var timer = new System.Windows.Forms.Timer();
 			timer.Interval = 1000 / 60;
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
 
-
-            visPass = new VisualizerPass(new LieDetectionAlgorithm());
+            //For camera?
             ortPass = new NormalizeOrientation(visPass);
-            algo = new NormalizePosition(ortPass);
 
-            // Construct the algo.
+            // Construct the algorithm
             this.algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new NormalizeLength(new LieDetectionAlgorithm()))), 5);
+
+            //Set Algorithmcontext
             this.context = new AlgorithmContext();
+
+            //Set recording
+            this.Recording = null;
 
             //Set Lieresult
             this.LieResult = new LieResult(0);
 
-			timeline.Recording = recording;
+            //Set Timeline
             timeline.LieResult = LieResult;
-			timeline.CurrentPos = 0;
 
 		}
 
@@ -161,12 +164,13 @@ namespace Motion_lie_detection
 			set {
 				this.recording = value;
 				this.timeline.Recording = value;
-                if(value != null)
-                    this.context.Normalizeconfiguration = recording.BodyConfiguration;
 				this.frame = Frame.Empty;
-				//this.canvas.Invalidate ();
                 this.visualizer.Frame = frame;
-                this.visualizer.BodyConfiguration = recording.BodyConfiguration;
+                if (value != null)
+                {
+                    this.context.Normalizeconfiguration = recording.BodyConfiguration;
+                    this.visualizer.BodyConfiguration = recording.BodyConfiguration;
+                }
 			}
 		}
 
@@ -177,26 +181,10 @@ namespace Motion_lie_detection
 
 			recording.Update();
             timeline.Update(); //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
+
+            visualizer.Frame = timeline.CurrentFrame;
+
             algo.Compute(ref recording, ref context, ref LieResult);
-
-            //remove??
-           /* recording.Update ();
-			if (!stepMode) {
-				if (forward)
-					timeline.CurrentPos++;
-				else
-					timeline.CurrentPos--;
-			}*/
-
-			frame = recording.GetFrame (timeline.CurrentPos);
-            visualizer.Frame = frame;
-			if(timeline.CurrentPos > 1) {
-				algo.Compute (ref recording, ref context, timeline.CurrentPos - 1, timeline.CurrentPos);
-				frame = visPass.GetFrame ();
-			}
-            
-
-
 
 		}
 

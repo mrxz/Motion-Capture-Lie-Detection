@@ -11,7 +11,6 @@ namespace Motion_lie_detection
     {
 		public static readonly Logger LOG = Logger.getInstance("Main");
         public static Visualizer visualizer;
-        public static Recording recording;
 
 		[STAThread]
         public static void Main()
@@ -76,7 +75,7 @@ namespace Motion_lie_detection
             LOG.info("Opening window for visualization");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Window(recording));
+            Application.Run(new Window());
             //new Thread(openWindow).Start();
         }
 
