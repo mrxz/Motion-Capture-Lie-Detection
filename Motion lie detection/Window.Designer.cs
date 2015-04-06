@@ -19,45 +19,44 @@ namespace Motion_lie_detection
 		/**
 		 * The canvas in which the display is drawn.
 		 */
-		private Panel canvas;
+        Panel canvas;
 
 		/**
 		 * The timeline control that lets the user control the timeline.
 		 */
-		private Timeline timeline;
+        Timeline timeline;
 
 		/**
+         * the visualizer in which our subject is shown. and any other visualizations
+         */
+        Visualizer visualizer;
+
+        /**
 		 * Side panels
 		 */
-		private Panel leftSidePanel;
-		private Panel rightSidePanel;
+        Panel leftSidePanel;
+        Panel rightSidePanel;
 
 		private void InitializeComponent()
         {
-            // 
-            // Canvas
-            // 
-			this.canvas = new Panel();
-            this.canvas.Name = "canvas";
-            this.canvas.TabIndex = 0;
-            this.canvas.BackColor = System.Drawing.SystemColors.ControlText;
-            this.canvas.Text = "canvas";
-            this.canvas.Paint += new PaintEventHandler(this.panel1_Paint);
-            this.canvas.MouseMove += this.panel1_Drag;
-            this.canvas.MouseDown += this.panel1_StartDrag;
-            this.canvas.MouseUp += this.panel1_StopDrag;
-			this.Controls.Add(this.canvas);
+
+
+            this.visualizer = new Visualizer();
+            this.visualizer.Name = "visualizer";
+            this.visualizer.TabIndex = 0;
+            this.Controls.Add(this.visualizer);
+
 
 			//
 			// Side panel
 			//
-			this.leftSidePanel = new Panel ();
+            this.leftSidePanel = new Panel();
 			this.leftSidePanel.Name = "leftSidePanel";
-			this.Controls.Add (this.leftSidePanel);
+            this.Controls.Add(this.leftSidePanel);
 
-			this.rightSidePanel = new RightSidePanel ();
+            this.rightSidePanel = new RightSidePanel();
 			this.rightSidePanel.Name = "rightSidePanel";
-			this.Controls.Add (this.rightSidePanel);
+            this.Controls.Add(this.rightSidePanel);
 
 			//
 			// Menu bar
@@ -94,15 +93,15 @@ namespace Motion_lie_detection
 			//
 			// Timeline
 			//
-			timeline = new Timeline ();
-			this.Controls.Add (timeline);
+            timeline = new Timeline();
+            this.Controls.Add(timeline);
 
 			// 
 			// Window
 			// 
 			this.Name = "Window";
 			this.ClientSize = new Size(1200, 830);
-			this.MinimumSize = new Size (800, 600);
+            this.MinimumSize = new Size(800, 600);
 			this.Text = "Motion Lie Detection";
 			this.FormClosing += this.form_Closed;
 			this.DoubleBuffered = true;
@@ -112,16 +111,20 @@ namespace Motion_lie_detection
 
 
 			// Note: we call resize once to make sure there's no difference between initial layout and resized layout.
-			resize (null, null);
+            resize(null, null);
         }
 
-		public class ConnectForm : Form {
+
+
+        public class ConnectForm : Form
+        {
 
 			private TextBox input;
 
-			public ConnectForm() {
+            public ConnectForm()
+            {
 				Size size = new Size(300, 130);
-				this.Size = size;
+
 				this.MinimumSize = size;
 				this.MaximumSize = size;
 				this.Text = "Start listener";
@@ -157,53 +160,59 @@ namespace Motion_lie_detection
 				this.CenterToParent();
 			}
 
-			public String Host {
-				get { 
-					return input.Text.Split (':') [0];
+            public String Host
+            {
+                get
+                {
+                    return input.Text.Split(':')[0];
 				}
 			}
 
-			public int Port {
-				get {
-					return int.Parse(input.Text.Split (':') [1]);
+            public int Port
+            {
+                get
+                {
+                    return int.Parse(input.Text.Split(':')[1]);
 				}
 			}
 
 		}
 
-		private void startListener(object sender, EventArgs e) {
+        private void startListener(object sender, EventArgs e)
+        {
 			// Ask the user for the host + port.
-			ConnectForm connectForm = new ConnectForm ();
-			if (connectForm.ShowDialog (this) == DialogResult.Cancel)
+            ConnectForm connectForm = new ConnectForm();
+            if (connectForm.ShowDialog(this) == DialogResult.Cancel)
 				return;
 
 			SuitController controller = new XSensController(connectForm.Host, connectForm.Port);
-			controller.Calibrate ();
+            controller.Calibrate();
 			controller.Connect();
 
-			RecordingProvider provider = new SuitRecordingProvider (controller);
-			provider.Init ();
-			Recording recording = new Recording (provider, new FixedBodyConfiguration());
-			recording.Update ();
+            RecordingProvider provider = new SuitRecordingProvider(controller);
+            provider.Init();
+            Recording recording = new Recording(provider, new FixedBodyConfiguration());
+            recording.Update();
 
 			this.Recording = recording;
 			this.Text = "Motion Lie Detection - " + connectForm.Host + ":" + connectForm.Port;
 		}
 
-		private void openFile(object sender, EventArgs e) {
+        private void openFile(object sender, EventArgs e)
+        {
 			// Show the file open dialog
-			OpenFileDialog dialog = new OpenFileDialog ();
+            OpenFileDialog dialog = new OpenFileDialog();
 			dialog.DefaultExt = "mvnx";
 			dialog.Multiselect = false;
 			dialog.CheckFileExists = true;
-			DialogResult result = dialog.ShowDialog ();
+            DialogResult result = dialog.ShowDialog();
 			if (result == DialogResult.Cancel)
 				return;
 
-			RecordingProvider provider = new FileRecordingProvider (dialog.FileName);
-			provider.Init ();
-			Recording recording = new Recording (provider);
-			recording.Update ();
+            RecordingProvider provider = new FileRecordingProvider(dialog.FileName);
+            provider.Init();
+            Recording recording = new Recording(provider);
+            recording.Update();
 
 			this.Recording = recording;
 			this.Text = "Motion Lie Detection - " + dialog.SafeFileName;
@@ -211,19 +220,20 @@ namespace Motion_lie_detection
 
 		private void saveFile(object sender, EventArgs e) 
 		{
-			SaveFileDialog dialog = new SaveFileDialog ();
+            SaveFileDialog dialog = new SaveFileDialog();
 			dialog.DefaultExt = "mvnx";
-			DialogResult result = dialog.ShowDialog ();
+            DialogResult result = dialog.ShowDialog();
 			if (result == DialogResult.Cancel)
 				return;
 
 			// TODO: Perhaps notify the user if the recording hasn't ended or something?
 
-			RecordingSaver saver = new MVNXSaver (dialog.FileName); // FIXME: Hard-coded implementation for Recording saver.
-			saver.saveToFile (this.recording);
+            RecordingSaver saver = new MVNXSaver(dialog.FileName); // FIXME: Hard-coded implementation for Recording saver.
+            saver.saveToFile(this.recording);
 		}
 
-		private void closeRecording(object sender, EventArgs e) {
+        private void closeRecording(object sender, EventArgs e)
+        {
 			// FIXME: Close the recording (and provider) correctly.
 			Recording = null;
             LieResult = new LieResult();
@@ -232,37 +242,44 @@ namespace Motion_lie_detection
 			this.Text = "Motion Lie Detection";
 		}
 
-		private void exit(object sender, EventArgs e) {
+        private void exit(object sender, EventArgs e)
+        {
 			// TODO: Cleanup
-			Environment.Exit (0);
+            Environment.Exit(0);
 		}
 
-		private void startDummyStream(object sender, EventArgs e) {
-			DummyStream stream = new DummyStream ();
-			stream.Start (); 
+        private void startDummyStream(object sender, EventArgs e)
+        {
+            DummyStream stream = new DummyStream();
+            stream.Start();
 		}
 
-		private void resize(Object sender, EventArgs e) {
+        private void resize(Object sender, EventArgs e)
+        {
 			Size newSize = new Size(this.ClientRectangle.Width, this.ClientRectangle.Height);
 
 			// Place and scale the left sidebar.
-			leftSidePanel.Location = new System.Drawing.Point (ControlMargin, ControlMargin);
+            leftSidePanel.Location = new System.Drawing.Point(ControlMargin, ControlMargin);
 			leftSidePanel.Width = 200;
 			leftSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the canvas.
-			canvas.Location = new System.Drawing.Point (leftSidePanel.Right + ControlMargin, ControlMargin);
+          /*  canvas.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
 			canvas.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
-			canvas.Height = newSize.Height - 3 * ControlMargin - 150;
+            canvas.Height = newSize.Height - 3 * ControlMargin - 150;*/
+
+            visualizer.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
+            visualizer.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
+            visualizer.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the right sidebar.
 			rightSidePanel.Width = 200;
-			rightSidePanel.Left = canvas.Right + ControlMargin;
+            rightSidePanel.Left = visualizer.Right + ControlMargin;
 			rightSidePanel.Top = ControlMargin;
 			rightSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
 
 			// Place and scale the timeline.
-			timeline.Location = new System.Drawing.Point (ControlMargin, canvas.Bottom + ControlMargin);
+            timeline.Location = new System.Drawing.Point(ControlMargin, visualizer.Bottom + ControlMargin);
 			timeline.Width = newSize.Width - 2 * ControlMargin;
 			timeline.Height = 150;
 		}
@@ -275,22 +292,23 @@ namespace Motion_lie_detection
 
 			public RightSidePanel()
 			{
-				markpointBox = new ListBox ();
-				this.Controls.Add (markpointBox);
+                markpointBox = new ListBox();
+                this.Controls.Add(markpointBox);
 
-				addButton = new Button ();
+                addButton = new Button();
 				addButton.Text = "Add";
-				this.Controls.Add (addButton);
+                this.Controls.Add(addButton);
 
-				removeButton = new Button ();
+                removeButton = new Button();
 				removeButton.Text = "Remove";
-				this.Controls.Add (removeButton);
+                this.Controls.Add(removeButton);
 
 				this.Resize += resize;
 			}
 
-			private void resize(Object sender, EventArgs e) {
-				Size newSize = new Size (ClientRectangle.Width, ClientRectangle.Height);
+            private void resize(Object sender, EventArgs e)
+            {
+                Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);
 
 				markpointBox.Left = 0;
 				markpointBox.Top = 0;

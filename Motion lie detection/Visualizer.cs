@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
-
+using WinFormsGraphicsDevice;
+using System.Windows.Forms;
 
 
 
@@ -27,212 +27,123 @@ namespace Motion_lie_detection
      */
 
 
-    public class Visualizer : Game
+
+    public class Visualizer : GraphicsDeviceControl
     {
-        BodyModel bodyModel;
-        //Camera camera;
-        TrafficLight trafficLight;
-        Color DrawColor = Color.Green;
+
+        Frame frame;
+
+        public Frame Frame
+        {
+            get { return frame; }
+            set
+            {
+                frame = value;
+                Invalidate();
+            }
+        }
+        BodyConfiguration bodyConfiguration;
+
+        public BodyConfiguration BodyConfiguration
+        {
+            get { return bodyConfiguration; }
+
+            set
+            {
+                bodyConfiguration = value;
+                Invalidate();
+            }
+        }
+       // TrafficLight trafficLight;
+        
+        static Color drawColor = Color.Green;
         GeometricPrimitive sphere;
 		CylinderPrimitive cylinder;
-		GraphicsDevice graphics;
-        KeyboardState keyboardState;
-        BasicEffect basicEffect;
 
-		private Vector3 position;
-		private Vector3 target;
-		public Matrix viewMatrix, projectionMatrix;
+		Camera camera;
 
-		Matrix World = Matrix.Identity;
-
-		Camera camera ;
-		        
-        /**
-         * The frame that is being drawn.
-         */
-        private Frame frame = Frame.Empty;
-
-        /**
-         * The Timeline the visualizer syncs with.
-         */
-        private Timeline timeline;
-
-        /**
-         * Simple playback control variables.
-         */
-        private int currentFrameID = 0;
-        private bool forward = true;
-        private bool stepMode = false;
-
-
-        public Visualizer(Timeline Timeline)
+        public Visualizer()
         {
-			new GraphicsDeviceManager (this);
-            keyboardState = new KeyboardState();
-            timeline = Timeline;
+            this.MouseMove += visualizer_Drag;
+            this.MouseUp += visualizer_StopDrag;
+            this.MouseDown += visualizer_StartDrag;
+            this.MouseWheel += visualizer_Zoom;
+            this.KeyDown +=visualizer_KeyDown;
         }
+
+
 
 		protected override void Initialize ()
 		{
-			// FIXME: This code doesn't work for some reason, the time_Tick method is never invoked.
 
+        	camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Vector3.Forward);
+            camera.LookAt = Vector3.Forward;
+            camera.Zoom = 50;
 
-			//camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Matrix.CreateLookAt (new Vector3 (0, 0, -50), new Vector3 (0, 0, 0), Vector3.Up));
+            sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
+            cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
 
-			camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Vector3.Left);
-			camera.Zoom = 10;
-			base.Initialize ();		
-		}
-        
-        protected override void LoadContent()
-        {
-			graphics = this.GraphicsDevice;
-
-			sphere = new SpherePrimitive(graphics, 0.5f, 16);
-			cylinder = new CylinderPrimitive (graphics, 1, 0.5f, 16);
-
-            basicEffect = new BasicEffect(GraphicsDevice);
-			basicEffect.View = camera.ViewMatrix;
-			basicEffect.Projection = camera.ProjectionMatrix;
-            //basicEffect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.Viewport.AspectRatio, 1f, 1000f);
-			base.LoadContent();
-        }
-
-        protected override void Update(GameTime gameTime)
-        {	
-
-			var state = Keyboard.GetState ();
-
-			if (state.IsKeyDown (Keys.Left)) {
-				camera.Yaw += 0.1f;
-			}
-			if (state.IsKeyDown (Keys.Right)) {
-				camera.Yaw -= 0.1f;
-			}
-			if (state.IsKeyDown (Keys.Up)) {
-				camera.Pitch += 0.1f;
-			}
-			if (state.IsKeyDown (Keys.Down)) {
-				camera.Pitch -= 0.1f;
-			}
-
-			if (state.IsKeyDown (Keys.OemPlus)) {
-				camera.Zoom -= 1;
-			}
-			if (state.IsKeyDown (Keys.OemMinus)) {
-				camera.Zoom += 1;
-			}
-            
-            base.Update(gameTime);
-        }
-
-		public void Update ()
-		{
-
-			//recording.Update();
-
-			if (timeline == null)
-				return;
-            frame = timeline.CurrentFrame;
 	
 		}
 
-        public void Reset(Timeline timeline)
+
+        public void Draw(BodyConfiguration bodyConfiguration, Frame frame)
         {
-            this.timeline = timeline;
-            this.frame = Frame.Empty;
+            this.bodyConfiguration = bodyConfiguration;
+            this.frame = frame;
+            Invalidate();
         }
-        
-        protected override void Draw(GameTime gameTime)
+
+			
+
+        protected override void Draw()
         {
+
+            if (bodyConfiguration == null)
+                return;
             GraphicsDevice.Clear(Color.CornflowerBlue);
             if (frame.Joints == null)
                 return;
 
-            //update the view matrix
-           /* Matrix view = Matrix.CreateLookAt(eye, focus, up);
-            basicEffect.View = Matrix.CreateLookAt(eye, focus, up);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.Viewport.AspectRatio, 1f, 1000f);
-*/
 
-			basicEffect.View = camera.ViewMatrix;
-			basicEffect.Projection = camera.ProjectionMatrix;
-            //draw a red sphere at the center of the world.
-	
-            Vector3 position = Vector3.Zero;
-            Matrix world = Matrix.CreateTranslation(position);
-			sphere.Draw(world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
-            if (!Frame.IsEmpty(frame) && timeline != null)
+			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
+
+            //jointId, joint, (x, y, z)
+            Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
+
+            //Draw each joint
+            foreach (Joint joint in frame.Joints)
             {
-                //find the average position
-                Vector3 Centre;
-                /* foreach (Joint joint in frame.Joints)
-                 {               
-                     float temp = AveragePosition.Y;
-                     AveragePosition.Y = AveragePosition.Z;
-                     AveragePosition.Z = temp;
-                     AveragePosition += joint.Position;
-                
-                 }*/
-
-                Centre = ConvertRealWorldPoint(frame.Joints[3].Position);
-
-                //jointId, joint, (x, y, z)
-                Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
-
-                //Draw each joint
-                foreach (Joint joint in frame.Joints)
-                {
-                    position = ConvertRealWorldPoint(joint.Position) - Centre;
-                    //position = Vector3.Transform(position, Matrix.CreateTranslation(-AveragePosition));
-                    joints.Add(joint.Id, Tuple.Create(joint, position));
-                    world = Matrix.CreateTranslation(position);
-                    sphere.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);
-                }
-
-                BodyConfiguration bodyConfiguration = timeline.BodyConfiguration;
-                if (bodyConfiguration == null)
-                    return;
-                /* foreach (Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections())
-                     drawLine(joints, bodyConfiguration, connection.Item1, connection.Item2);*/
-
-
-
-                Queue<BodyNode> q = new Queue<BodyNode>();
-                q.Enqueue(bodyConfiguration.getRoot());
-                // BFS
-                while (q.Count > 0)
-                {
-                    BodyNode node = q.Dequeue();
-
-
-                    foreach (BodyNode neighbour in node.getNeighbours())
-                    {
-                        // draw cylinder
-                        q.Enqueue(neighbour);
-                        drawLine(joints, bodyConfiguration, node.JointId, neighbour.JointId);
-                    }
-                    /*				position = ConvertRealWorldPoint(node.JointId
-                                    foreach (var neighbour in node.getNeighbours())
-                                    {
-                                        drawLine(joints,bodyConfiguration,node.JointId,neighbour.JointId);
-                                        q.Enqueue (neighbour);
-                                    }*/
-                }
+				var position = ConvertRealWorldPoint(joint.Position) - Centre;
+                joints.Add(joint.Id, Tuple.Create(joint, position));          
+                drawJoint(position);              
             }
-			base.Draw(gameTime);
+
+			Queue<BodyNode> q = new Queue<BodyNode>();
+			q.Enqueue (bodyConfiguration.getRoot ());
+			// BFS
+			while (q.Count > 0) {
+				BodyNode node = q.Dequeue ();
+				foreach (BodyNode neighbour in node.getNeighbours()) {
+					q.Enqueue (neighbour);
+					drawBone (joints, bodyConfiguration, node.JointId, neighbour.JointId);
+				}
+			}
 		}
 
-		private void drawLine(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, int first, int second)
+        private void drawJoint(Vector3 position)
+        {
+            sphere.Draw(Matrix.CreateTranslation(position), camera.ViewMatrix, camera.ProjectionMatrix, drawColor);  
+        }
+
+		private void drawBone(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, int first, int second)
         {
 			if (first== -1 || second == -1)
                 return;
 
             Tuple<Joint, Vector3> firstJoint = joints[first];
 			Tuple<Joint, Vector3> secondJoint = joints[second];
-            
-            //Draw the lines between the joints
-            basicEffect.CurrentTechnique.Passes[0].Apply();
+
 
 			Matrix initTrans = Matrix.CreateTranslation (0, 0.5f, 0);
 
@@ -252,10 +163,99 @@ namespace Motion_lie_detection
 			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
         }
 
-        private Vector3 ConvertRealWorldPoint(Vector3 position)
+        #region events
+        private static Vector3 ConvertRealWorldPoint(Vector3 position)
         {
 			return new Vector3 (position.X, position.Z, position.Y) * 10;
         }
 
+
+        void visualizer_Zoom(object sender, MouseEventArgs e)
+        {
+            camera.Zoom -= e.Delta / 100;
+        }
+
+        int prevMouseX = -1;
+        int prevMouseY = -1;
+ 
+        void visualizer_StopDrag(object sender, MouseEventArgs e)
+        {
+            prevMouseX = -1;
+            prevMouseY = -1;
+        }
+
+        void visualizer_StartDrag(object sender, MouseEventArgs e)
+        {
+            prevMouseX = e.X;
+            prevMouseY = e.Y;
+        }
+
+        void visualizer_Drag(object sender, MouseEventArgs e)
+        {
+            float dx = (prevMouseX - e.X) / 400f;
+            float dy = (prevMouseY - e.Y) / 400f;
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+                    camera.Yaw += dx;
+                    camera.Pitch += dy;
+                    break;
+                case MouseButtons.Right:
+                    camera.MoveCameraRight(-dx);
+                    camera.MoveCameraForward(dy);
+                    Invalidate();
+                    break;
+
+
+            }
+        }
+
+        void visualizer_KeyDown(object sender, KeyEventArgs e)
+        {
+            // this is buggy for some reason
+         /*   switch (e.KeyCode)
+            {
+                case Keys.W:
+
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        camera.MoveCameraForward(0.1f);
+                    }
+                    else
+                    {
+                        camera.Pitch += 0.1f;
+                    }
+
+                    break;
+                case Keys.S:
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        camera.MoveCameraForward(-0.1f);
+                    }
+                    else
+                    {
+                        camera.Pitch -= 0.1f;
+                    }
+                    break;
+                case Keys.A:
+                    if (e.Modifiers == Keys.Shift)
+                    { camera.MoveCameraRight(-0.1f); }
+                    { camera.Yaw += 0.1f; }
+                    break;
+                case Keys.D:
+                    if (e.Modifiers == Keys.Shift)
+                    { camera.MoveCameraRight(0.1f); }
+                    { camera.Yaw -= 0.1f; }
+                    break;
+                case Keys.Space:
+                    camera.Yaw = 0;
+                    camera.Pitch = 0;
+                    camera.Zoom = 50;
+                    camera.LookAt = Vector3.Forward;
+                    break;
+            }*/
+        }
+       
+        #endregion
     }
 }

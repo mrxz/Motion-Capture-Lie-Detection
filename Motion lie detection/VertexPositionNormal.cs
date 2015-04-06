@@ -8,6 +8,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+
 namespace Motion_lie_detection
 {
     public struct VertexPositionNormal : IVertexType
