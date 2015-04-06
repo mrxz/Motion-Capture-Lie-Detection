@@ -29,9 +29,6 @@ namespace Motion_lie_detection
 
     public class Visualizer : Game
     {
-
-	
-
         BodyModel bodyModel;
         //Camera camera;
         TrafficLight trafficLight;
@@ -49,16 +46,16 @@ namespace Motion_lie_detection
 		Matrix World = Matrix.Identity;
 
 		Camera camera ;
-		
-
-        /**
-		 * The recording to visualize.
-		 */
-        private Recording recording;
+		        
         /**
          * The frame that is being drawn.
          */
         private Frame frame = new Frame();
+
+        /**
+         * The Timeline the visualizer syncs with.
+         */
+        private Timeline timeline;
 
         /**
          * Simple playback control variables.
@@ -68,10 +65,11 @@ namespace Motion_lie_detection
         private bool stepMode = false;
 
 
-        public Visualizer()
+        public Visualizer(Timeline Timeline)
         {
 			new GraphicsDeviceManager (this);
             keyboardState = new KeyboardState();
+            timeline = Timeline;
         }
 
 		protected override void Initialize ()
@@ -83,20 +81,9 @@ namespace Motion_lie_detection
 
 			camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Vector3.Left);
 			camera.Zoom = 10;
-			base.Initialize ();
-
-		
+			base.Initialize ();		
 		}
-
-
-		public Recording Recording {
-			get {
-				return this.recording;
-			}
-			set {
-				this.recording = value;
-			}
-		}
+        
         protected override void LoadContent()
         {
 			graphics = this.GraphicsDevice;
@@ -112,8 +99,7 @@ namespace Motion_lie_detection
         }
 
         protected override void Update(GameTime gameTime)
-        {
-		
+        {	
 
 			var state = Keyboard.GetState ();
 
@@ -145,9 +131,9 @@ namespace Motion_lie_detection
 
 			//recording.Update();
 
-			if (recording == null)
+			if (timeline == null)
 				return;
-			frame = recording.GetFrame(recording.LastFrame());
+            frame = timeline.CurrentFrame;
 	
 		}
 			
@@ -198,7 +184,7 @@ namespace Motion_lie_detection
 				sphere.Draw(world, basicEffect.View, basicEffect.Projection, DrawColor);                
             }
 
-            BodyConfiguration bodyConfiguration = recording.BodyConfiguration;
+            BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
 
            /* foreach (Tuple<BodyPart, BodyPart> connection in bodyConfiguration.GetConnections())
                 drawLine(joints, bodyConfiguration, connection.Item1, connection.Item2);*/

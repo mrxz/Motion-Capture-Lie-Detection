@@ -48,7 +48,6 @@ namespace Motion_lie_detection
 
 		public Window(Recording recording)
 		{
-
 			this.recording = recording;
             this.context = new AlgorithmContext();
 			InitializeComponent();
@@ -67,7 +66,7 @@ namespace Motion_lie_detection
 			timeline.Recording = recording;
 			timeline.CurrentPos = 0;
 
-			this.visualizer = new Visualizer ();
+			this.visualizer = new Visualizer (timeline);
 			this.visualizerThread = new Thread (visualizer.Run);
 			this.visualizerThread.Start ();
 
@@ -142,11 +141,8 @@ namespace Motion_lie_detection
 			set {
 				this.recording = value;
 				this.timeline.Recording = value;
-				this.timeline.CurrentPos = 0; // FIXME: should be in the setter of timeline.Recording
 				this.frame = Frame.Empty;
 				this.canvas.Invalidate ();
-				visualizer.Recording = value;
-
 			}
 		}
 
@@ -155,8 +151,11 @@ namespace Motion_lie_detection
 			if (recording == null)
 				return;
 
-			recording.Update ();
-			/*recording.Update ();
+			recording.Update();
+            timeline.Update(); //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
+			
+            //remove??
+            /*recording.Update ();
 			if (!stepMode) {
 				if (forward)
 					timeline.CurrentPos++;
@@ -181,7 +180,7 @@ namespace Motion_lie_detection
 		public void keyDown(object source, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Space)
-				stepMode = !stepMode;
+                timeline.StepMode = !timeline.StepMode;
 			else if (e.KeyCode == Keys.A) {
 				recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
 			} else if(e.KeyCode == Keys.Right) {

@@ -49,7 +49,7 @@ namespace Motion_lie_detection
 			provider.Init ();
 		    recording = new Recording (provider);
 			recording.Update ();
-			*/
+			*
 			/**
 			 * Saving the recording.
 			 */
@@ -73,15 +73,19 @@ namespace Motion_lie_detection
 			 */
             
             //new Thread(updateVisualizer).Start();
-			new Thread(openWindow).Start(recording);
+            LOG.info("Opening window for visualization");
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Window(recording));
+            //new Thread(openWindow).Start();
         }
 
-		public static void openWindow() {
-			LOG.info ("Opening window for visualization");
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Window(recording));
-		}
+        //public static void openWindow() {
+        //    LOG.info ("Opening window for visualization");
+        //    Application.EnableVisualStyles();
+        //    Application.SetCompatibleTextRenderingDefault(false);
+        //    Application.Run(new Window(recording));
+        //}
 
         public static void updateVisualizer()
         {
