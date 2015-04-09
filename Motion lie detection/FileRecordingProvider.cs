@@ -52,6 +52,8 @@ namespace Motion_lie_detection
             string ext = Path.GetExtension(fname);
             switch (ext) // bad code smell
             {
+                case ".bmocap":
+                    return new BinaryMocapReader(fname);
                 case ".mvnx":
                     return new MVNXReader(fname);
                 default:
@@ -189,6 +191,8 @@ namespace Motion_lie_detection
 
     public class BinaryMocapReader : FileRecordingProvider
     {
+        private int jCount = 0;
+
         public BinaryMocapReader(string f) : base(f) { }
 
         public override bool Init()
@@ -204,6 +208,7 @@ namespace Motion_lie_detection
 
                     // Read frames
                     int frameCount = br.ReadInt32();
+                    jCount = br.ReadInt32();
                     newFrames = new List<Frame>(frameCount);
                     for (int f = 0; f < frameCount; ++f) {
                         // Nposes are used to determine the lengths of body parts,
@@ -235,10 +240,9 @@ namespace Motion_lie_detection
         private Frame readFrame(BinaryReader br)
         {
             int timeCode = br.ReadInt32();
-            int jointCount = br.ReadInt32();
 
-            List<Joint> joints = new List<Joint>(jointCount);
-            for (int i = 0; i < jointCount; ++i) {
+            List<Joint> joints = new List<Joint>(jCount);
+            for (int i = 0; i < jCount; ++i) {
                 joints.Add(
                     new Joint(
                         i + 1,
