@@ -288,18 +288,18 @@ namespace Motion_lie_detection
             // Place the visualizer
             visualizer.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
             visualizer.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
-            visualizer.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
+            visualizer.Height = newSize.Height - 4 * ControlMargin - 150 - 40;
 
 			// Place and scale the right sidebar.
 			rightSidePanel.Width = 200;
             rightSidePanel.Left = visualizer.Right + ControlMargin;
 			rightSidePanel.Top = ControlMargin;
-			rightSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
+			rightSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 40;
 
             // Place and scale the playback controls.
             playbackPanel.Location = new System.Drawing.Point(ControlMargin, visualizer.Bottom + ControlMargin);
             playbackPanel.Width = newSize.Width - 2 * ControlMargin;
-            playbackPanel.Height = 50;
+            playbackPanel.Height = 40;
 
 			// Place and scale the timeline.
             timeline.Location = new System.Drawing.Point(ControlMargin, playbackPanel.Bottom + ControlMargin);
@@ -314,6 +314,9 @@ namespace Motion_lie_detection
             private Button pause;
             private Button toNextMarker;
             private Button toEnd;
+
+            private CheckBox loop;
+            private TextBox speed;
 
             public PlaybackPanel()
             {
@@ -336,6 +339,16 @@ namespace Motion_lie_detection
                 toEnd = new Button();
                 toEnd.Text = "<<";
                 this.Controls.Add(toEnd);
+
+                loop = new CheckBox();
+                loop.Text = "loop";
+                this.Controls.Add(loop);
+
+                speed = new TextBox();
+                speed.Text = "1.00";
+                speed.Top = 15;
+                speed.Height = 20;
+                this.Controls.Add(speed);
             }
 
             protected override void OnResize(EventArgs eventargs)
@@ -368,6 +381,15 @@ namespace Motion_lie_detection
                 toEnd.Top = 0;
                 toEnd.Width = buttonWidth;
                 toEnd.Height = newSize.Height;
+
+                loop.Left = toEnd.Right + ControlMargin;
+                loop.Top = 0;
+                loop.Width = buttonWidth;
+                loop.Height = newSize.Height;
+
+                speed.Left = newSize.Width - buttonWidth;
+                speed.Top = 15;
+                speed.Width = buttonWidth;
             }
         }
 
