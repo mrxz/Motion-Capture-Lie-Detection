@@ -27,11 +27,20 @@ namespace Motion_lie_detection
         /**
          * The current frame the timeline is on.
          */
-        private int currentFrame;
+        private double currentFrame;
         /**
          * The current mark point that is hovered over.
          */
         private MarkPoint currentMarkPoint = NONE;
+
+        /**
+         * Previous update time.
+         */
+        private double previouseUpdateTime = -1.0;
+        /**
+         * Playback speed.
+         */
+        private float playBackSpeed = 1.0f;
 
         /**
          * The number of frames that are expected/available.
@@ -41,7 +50,7 @@ namespace Motion_lie_detection
         /**
          * Bool that shows if stepping mode is on
          */
-        public bool StepMode = true;
+        public bool Playing = true;
 
 
         public Timeline()
@@ -176,8 +185,8 @@ namespace Motion_lie_detection
         protected void paintFooter(Graphics g)
         {
             // Draw the time.
-            int seconds = currentFrame / Recording.FrameRate;
-            String time = String.Format("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, currentFrame);
+            int seconds = (int)(currentFrame / Recording.FrameRate);
+            String time = String.Format("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, (int)currentFrame);
             g.DrawString(time, new Font("Arial", 10.0f), Brushes.Black, 10, Height - 20);
 
             // Draw the markpoint description
@@ -188,14 +197,43 @@ namespace Motion_lie_detection
             }
         }
 
+        private double totalSeconds()
+        {
+            DateTime Jan1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan span = DateTime.UtcNow - Jan1970;
+            return span.TotalSeconds;
+        }
+
         /**
          * Method for updating the timeline to incorporate new frames.
          * @param margin The margin to take the new amount of numberOfFrames.
          */
         public new void Update()
         {
-            if (StepMode)
-                CurrentPos++;
+            // Determine the delta between the updates.
+            if (previouseUpdateTime == -1)
+            {
+                // FIXME: At this rate the first update will be a dummy.
+                // Perhaps let the timeline prepare in case of play/start?
+                previouseUpdateTime = totalSeconds();
+                return;
+            }
+
+            // Check if the timeline is playing.
+            if (Playing)
+            {
+                // TODO: Special method to snap to the end in case it's a live recording.
+
+                // Determine the time delta since the last update.
+                double nowSeconds = totalSeconds();
+                double deltaSeconds = nowSeconds - previouseUpdateTime;
+                previouseUpdateTime = nowSeconds;
+
+                currentFrame += (deltaSeconds * Recording.FrameRate) * playBackSpeed;
+
+            }
+
+            // Let the timeline be redrawn and update the control.
             this.Invalidate();
             base.Update();
         }
@@ -229,7 +267,7 @@ namespace Motion_lie_detection
         {
             get
             {
-                return currentFrame;
+                return (int)currentFrame;
             }
             set
             {

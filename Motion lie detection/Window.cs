@@ -117,7 +117,7 @@ namespace Motion_lie_detection
 		public void keyDown(object source, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Space)
-                timeline.StepMode = !timeline.StepMode;
+                timeline.Playing = !timeline.Playing;
 			else if (e.KeyCode == Keys.A) {
 			//	recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
 			} else if(e.KeyCode == Keys.Right) {
