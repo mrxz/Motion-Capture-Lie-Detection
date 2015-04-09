@@ -230,6 +230,11 @@ namespace Motion_lie_detection
                 double deltaSeconds = nowUpdateTime - previouseUpdateTime;
                 currentFrame += (deltaSeconds * Recording.FrameRate) * playBackSpeed;
 
+                // Clamp the value
+                if (currentFrame < 0.0)
+                    currentFrame = 0.0;
+                else if (currentFrame > recording.FrameCount)
+                    currentFrame = recording.FrameCount;
             }
 
             // Regardless if we're playing or not, update the previous update time.
@@ -275,7 +280,7 @@ namespace Motion_lie_detection
             set
             {
                 if (Recording != null)
-                    currentFrame = Math.Max(Math.Min(value, Recording.FrameCount), 0);
+                    currentFrame = Math.Max(Math.Min(value, Recording.FrameCount), 0.0);
                 else
                     currentFrame = 0;
                 this.Invalidate();

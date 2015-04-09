@@ -155,7 +155,12 @@ namespace Motion_lie_detection
 				ok.Top = input.Bottom + ControlMargin;
 				ok.Left = ControlMargin;
 				ok.Click += (object sender, EventArgs e) => this.DialogResult = DialogResult.OK;
-				this.Controls.Add(ok);
+                input.KeyPress += (obj, e) =>
+                {
+                    if (e.KeyChar == (char)13)
+                        ok.PerformClick();
+                };
+                this.Controls.Add(ok);
 
 				Button cancel = new Button();
 				cancel.Text = "Cancel";
