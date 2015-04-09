@@ -210,12 +210,14 @@ namespace Motion_lie_detection
          */
         public new void Update()
         {
+            double nowUpdateTime = totalSeconds();
+
             // Determine the delta between the updates.
             if (previouseUpdateTime == -1)
             {
                 // FIXME: At this rate the first update will be a dummy.
                 // Perhaps let the timeline prepare in case of play/start?
-                previouseUpdateTime = totalSeconds();
+                previouseUpdateTime = nowUpdateTime;
                 return;
             }
 
@@ -225,13 +227,14 @@ namespace Motion_lie_detection
                 // TODO: Special method to snap to the end in case it's a live recording.
 
                 // Determine the time delta since the last update.
-                double nowSeconds = totalSeconds();
-                double deltaSeconds = nowSeconds - previouseUpdateTime;
-                previouseUpdateTime = nowSeconds;
-
+                double deltaSeconds = nowUpdateTime - previouseUpdateTime;
                 currentFrame += (deltaSeconds * Recording.FrameRate) * playBackSpeed;
 
             }
+
+            // Regardless if we're playing or not, update the previous update time.
+            // Note: this prevents large time delta's to occur due to pausing/playing.
+            previouseUpdateTime = nowUpdateTime;
 
             // Let the timeline be redrawn and update the control.
             this.Invalidate();

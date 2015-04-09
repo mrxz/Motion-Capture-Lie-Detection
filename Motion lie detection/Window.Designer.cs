@@ -90,19 +90,19 @@ namespace Motion_lie_detection
 
 			this.Menu = mainMenu;
 
-            //
-            // Playback controls
-            //
-            playbackPanel = new PlaybackPanel();
-            this.Controls.Add(playbackPanel);
-
 			//
 			// Timeline
 			//
             timeline = new Timeline();
             this.Controls.Add(timeline);
 
-			// 
+            //
+            // Playback controls
+            //
+            playbackPanel = new PlaybackPanel(timeline);
+            this.Controls.Add(playbackPanel);
+            
+            // 
 			// Window
 			// 
 			this.Name = "Window";
@@ -309,6 +309,14 @@ namespace Motion_lie_detection
 
         public class PlaybackPanel : Panel
         {
+            /**
+             * The timeline control that is influenced by these playback controls.
+             */
+            private Timeline timeline;
+
+            /**
+             * The different playback buttons.
+             */
             private Button toStart;
             private Button toPrevMarker;
             private Button pause;
@@ -318,8 +326,10 @@ namespace Motion_lie_detection
             private CheckBox loop;
             private TextBox speed;
 
-            public PlaybackPanel()
+            public PlaybackPanel(Timeline timeline)
             {
+                this.timeline = timeline;
+
                 toStart = new Button();
                 toStart.Text = "|<<";
                 this.Controls.Add(toStart);
@@ -330,6 +340,10 @@ namespace Motion_lie_detection
 
                 pause = new Button();
                 pause.Text = "||";
+                pause.Click += ((obj, e) => { 
+                    timeline.Playing = !timeline.Playing;
+                    ((Button)obj).Text = timeline.Playing ? "||" : ">";
+                });
                 this.Controls.Add(pause);
 
                 toNextMarker = new Button();
