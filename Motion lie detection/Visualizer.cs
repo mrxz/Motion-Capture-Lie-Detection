@@ -56,7 +56,7 @@ namespace Motion_lie_detection
         }
        // TrafficLight trafficLight;
         
-        static Color drawColor = Color.Green;
+        static Color drawColor = Color.LightBlue;
         GeometricPrimitive sphere;
 		CylinderPrimitive cylinder;
 
@@ -78,14 +78,14 @@ namespace Motion_lie_detection
             camera.Zoom = 50;
 
             sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
-            cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);	
+            cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
 		}		
 
         protected override void Draw()
         {
             if (bodyConfiguration == null)
                 return;
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             if (frame.Joints == null)
                 return;
 
@@ -148,7 +148,7 @@ namespace Motion_lie_detection
 			Matrix trans = Matrix.CreateTranslation (firstJoint.Item2);
 
 			Matrix world = initTrans * scale * rot * trans;
-			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.Red);
+			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.LightGray);
         }
 
         #region events

@@ -366,7 +366,7 @@ namespace Motion_lie_detection
                 this.Controls.Add(toNextMarker);
 
                 toEnd = new Button();
-                toEnd.Text = "<<";
+                toEnd.Text = ">>|";
                 toEnd.Click += (obj, e) =>
                 {
                     // FIXME: Somehow signal the timeline that the timeline should follow the end.

@@ -14,7 +14,7 @@ namespace Motion_lie_detection
          * Constant to prevent some weird problems in case the algoritm suddenly has to do a lot of work.
          * Note: this will most likely not be a problem, given that it will probably run fast enough on most decent machines.
          */
-        public static readonly int MaxFrameExpand = 1000;
+        public static readonly int MaxFrameExpand = 100;
 
 
         /**
@@ -87,11 +87,13 @@ namespace Motion_lie_detection
             // FIXME: Perhaps ensure that the recording corresponds with the context and lieresult, etc?
 
             int next = result.NextFrameId;
-            while(next < frameEnd)
+            int number = 0;
+            while(next < frameEnd && number < MaxFrameExpand)
             {
                 if (next > -1 && next < recording.FrameCount)
                     result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
                 next = result.NextFrameId;
+                number++;
             }
         }
 
