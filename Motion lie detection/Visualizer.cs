@@ -180,8 +180,9 @@ namespace Motion_lie_detection
 
         void visualizer_Drag(object sender, MouseEventArgs e)
         {
-            float dx = (prevMouseX - e.X) / 400f;
-            float dy = (prevMouseY - e.Y) / 400f;
+            float dx = (prevMouseX - e.X) / 200f;
+            float dy = (prevMouseY - e.Y) / 200f;
+            visualizer_StartDrag(sender, e);
             switch (e.Button)
             {
                 case MouseButtons.Left:
