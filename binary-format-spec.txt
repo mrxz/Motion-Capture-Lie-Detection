@@ -1,0 +1,23 @@
+.bmocap (binary motion capture format)
+
+int32	FrameRate
+int32	SegmentCount
+int32	FrameCount
+
+After that, for each frame:
+
+boolean	FrameType (0 = normal, 1 = npose)
+int32 	TimeCode
+int32	JointCount
+
+After that, for each joint:
+
+single	Position x
+single	Position y
+single	Position z
+single  Orientation x
+single	Orientation y
+single	Orientation z
+single	Orientation w
+
+
