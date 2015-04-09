@@ -16,10 +16,10 @@ namespace Motion_lie_detection
 		 */
 		private MainMenu mainMenu;
 
-		/**
-		 * The canvas in which the display is drawn.
-		 */
-        Panel canvas;
+        /**
+         * Panel containing the playback controls.
+         */
+        Panel playbackPanel;
 
 		/**
 		 * The timeline control that lets the user control the timeline.
@@ -89,6 +89,12 @@ namespace Motion_lie_detection
 			About.MenuItems.Add(new MenuItem("About"));
 
 			this.Menu = mainMenu;
+
+            //
+            // Playback controls
+            //
+            playbackPanel = new PlaybackPanel();
+            this.Controls.Add(playbackPanel);
 
 			//
 			// Timeline
@@ -277,28 +283,93 @@ namespace Motion_lie_detection
 			// Place and scale the left sidebar.
             leftSidePanel.Location = new System.Drawing.Point(ControlMargin, ControlMargin);
 			leftSidePanel.Width = 200;
-			leftSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
+			leftSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
 
-			// Place and scale the canvas.
-          /*  canvas.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
-			canvas.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
-            canvas.Height = newSize.Height - 3 * ControlMargin - 150;*/
-
+            // Place the visualizer
             visualizer.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
             visualizer.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
-            visualizer.Height = newSize.Height - 3 * ControlMargin - 150;
+            visualizer.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
 
 			// Place and scale the right sidebar.
 			rightSidePanel.Width = 200;
             rightSidePanel.Left = visualizer.Right + ControlMargin;
 			rightSidePanel.Top = ControlMargin;
-			rightSidePanel.Height = newSize.Height - 3 * ControlMargin - 150;
+			rightSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
+
+            // Place and scale the playback controls.
+            playbackPanel.Location = new System.Drawing.Point(ControlMargin, visualizer.Bottom + ControlMargin);
+            playbackPanel.Width = newSize.Width - 2 * ControlMargin;
+            playbackPanel.Height = 50;
 
 			// Place and scale the timeline.
-            timeline.Location = new System.Drawing.Point(ControlMargin, visualizer.Bottom + ControlMargin);
+            timeline.Location = new System.Drawing.Point(ControlMargin, playbackPanel.Bottom + ControlMargin);
 			timeline.Width = newSize.Width - 2 * ControlMargin;
 			timeline.Height = 150;
 		}
+
+        public class PlaybackPanel : Panel
+        {
+            private Button toStart;
+            private Button toPrevMarker;
+            private Button pause;
+            private Button toNextMarker;
+            private Button toEnd;
+
+            public PlaybackPanel()
+            {
+                toStart = new Button();
+                toStart.Text = "|<<";
+                this.Controls.Add(toStart);
+
+                toPrevMarker = new Button();
+                toPrevMarker.Text = "<<";
+                this.Controls.Add(toPrevMarker);
+
+                pause = new Button();
+                pause.Text = "||";
+                this.Controls.Add(pause);
+
+                toNextMarker = new Button();
+                toNextMarker.Text = ">>";
+                this.Controls.Add(toNextMarker);
+
+                toEnd = new Button();
+                toEnd.Text = "<<";
+                this.Controls.Add(toEnd);
+            }
+
+            protected override void OnResize(EventArgs eventargs)
+            {
+                Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);
+
+                int controlsWidth = newSize.Width / 2;
+                int buttonWidth = controlsWidth / 5;
+                toStart.Left = controlsWidth / 2;
+                toStart.Top = 0;
+                toStart.Width = buttonWidth;
+                toStart.Height = newSize.Height;
+
+                toPrevMarker.Left = controlsWidth / 2 + buttonWidth;
+                toPrevMarker.Top = 0;
+                toPrevMarker.Width = buttonWidth;
+                toPrevMarker.Height = newSize.Height;
+
+                pause.Left = controlsWidth / 2 + 2 * buttonWidth;
+                pause.Top = 0;
+                pause.Width = buttonWidth;
+                pause.Height = newSize.Height;
+
+                toNextMarker.Left = controlsWidth / 2 + 3 * buttonWidth;
+                toNextMarker.Top = 0;
+                toNextMarker.Width = buttonWidth;
+                toNextMarker.Height = newSize.Height;
+
+                toEnd.Left = controlsWidth / 2 + 4 * buttonWidth;
+                toEnd.Top = 0;
+                toEnd.Width = buttonWidth;
+                toEnd.Height = newSize.Height;
+            }
+        }
 
 		public class RightSidePanel : Panel
 		{
