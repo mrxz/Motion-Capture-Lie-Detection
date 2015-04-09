@@ -332,10 +332,20 @@ namespace Motion_lie_detection
 
                 toStart = new Button();
                 toStart.Text = "|<<";
+                toStart.Click += (obj, e) =>
+                {
+                    // Simply reset the timeline to the initial point.
+                    timeline.CurrentPos = 0;
+                };
                 this.Controls.Add(toStart);
 
                 toPrevMarker = new Button();
                 toPrevMarker.Text = "<<";
+                toPrevMarker.Click += (obj, e) =>
+                {
+                    // TODO: Somehow determine the previous mark point and move the timeline.
+                    // Note: probably best to move to the start if no markpoints are present between start and now.
+                };
                 this.Controls.Add(toPrevMarker);
 
                 pause = new Button();
@@ -348,20 +358,45 @@ namespace Motion_lie_detection
 
                 toNextMarker = new Button();
                 toNextMarker.Text = ">>";
+                toNextMarker.Click += (obj, e) =>
+                {
+                    // TODO: Somehow determine the next mark point and move the timeline.
+                    // Note: probably best to move to the end if no markpoints are present between now and end.
+                };
                 this.Controls.Add(toNextMarker);
 
                 toEnd = new Button();
                 toEnd.Text = "<<";
+                toEnd.Click += (obj, e) =>
+                {
+                    // FIXME: Somehow signal the timeline that the timeline should follow the end.
+                    timeline.CurrentPos = timeline.Recording.FrameCount;
+                };
                 this.Controls.Add(toEnd);
 
                 loop = new CheckBox();
                 loop.Text = "loop";
+                loop.CheckedChanged += (obj, e) =>
+                {
+
+                };
                 this.Controls.Add(loop);
 
                 speed = new TextBox();
                 speed.Text = "1.00";
                 speed.Top = 15;
                 speed.Height = 20;
+                speed.TextChanged += (obj, e) =>
+                {
+                    // Try to convert the text to a float.
+                    float playSpeed;
+                    // Behold! This nice way C# allows you to specifiy the float number format.
+                    if (float.TryParse(speed.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out playSpeed))
+                    {
+                        timeline.PlayBackSpeed = playSpeed;
+                    }
+                    //float playSpeed = Float.speed.Text
+                };
                 this.Controls.Add(speed);
             }
 

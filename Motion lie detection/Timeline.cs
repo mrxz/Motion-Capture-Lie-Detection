@@ -312,6 +312,12 @@ namespace Motion_lie_detection
             get { return lieresult; }
             set { lieresult = value;}
         }
+
+        public float PlayBackSpeed
+        {
+            get { return playBackSpeed; }
+            set { playBackSpeed = value; }
+        }
     }
 }
 
