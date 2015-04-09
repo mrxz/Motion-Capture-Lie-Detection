@@ -234,7 +234,7 @@ namespace Motion_lie_detection
 			if (result == DialogResult.Cancel)
 				return;
 
-            RecordingProvider provider = new FileRecordingProvider(dialog.FileName);
+            RecordingProvider provider = FileRecordingProvider.AppropriateReader(dialog.FileName);
             provider.Init();
             Recording recording = new Recording(provider);
             recording.Update();
