@@ -11,7 +11,7 @@ using System.Threading;
 namespace Motion_lie_detection
 {
 	/**
-	 * DEBUG CLASS
+	 * DEBUG CLASS, not anymore :P
 	 */
 	public partial class Window : Form
 	{
@@ -38,17 +38,9 @@ namespace Motion_lie_detection
 		 * The frame that is being drawn.
 		 */
         private Frame frame;
-
-		/**
-		 * Simple playback control variables.
-		 */
-		private bool forward = true;
-
 		
 		private VisualizerPass visPass = null;
 		private NormalizeOrientation ortPass = null;
-
-		private int prevMouseX = -1;
 
 
 		public Window()
@@ -106,12 +98,13 @@ namespace Motion_lie_detection
 				return;
 
 			recording.Update();
-            timeline.Update(); //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
+            //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
+            // WONT FIX => The timeline requires to know a correct delta time during updates, besides the timeline now also handles the playback, so...
+            timeline.Update(); 
 
             visualizer.Frame = timeline.CurrentFrame;
-
-            algo.Compute(ref recording, ref context, ref LieResult);
-
+            // TODO: Implement a better method for buffering ahead in the algoritm computation.
+            algo.Compute(ref recording, ref context, ref LieResult, timeline.CurrentPos + 20);
 		}
 
 		public void keyDown(object source, KeyEventArgs e)
