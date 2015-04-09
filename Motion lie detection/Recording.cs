@@ -117,8 +117,16 @@ namespace Motion_lie_detection
 		 */
 		public void AddMarkPoint (MarkPoint markpoint)
 		{
+            // FIXME: Perhaps disallow multiple markpoints at the exact same frame id.
 			markpoints.Add (markpoint.Frameid, markpoint);
 		}
+
+        public void RemoveMarkPoint(MarkPoint markpoint)
+        {
+            markpoints.Remove(markpoint.Frameid);
+        }
+
+
 	}
 
 	public struct Frame
@@ -211,5 +219,10 @@ namespace Motion_lie_detection
 		public String Description { get { return description; } }
 
 		public int Frameid { get { return frameId; } }
+
+        public override string ToString()
+        {
+            return description;
+        }
 	}
 }

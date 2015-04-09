@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -19,7 +20,7 @@ namespace Motion_lie_detection
         /**
          * Panel containing the playback controls.
          */
-        Panel playbackPanel;
+        PlaybackPanel playbackPanel;
 
 		/**
 		 * The timeline control that lets the user control the timeline.
@@ -35,7 +36,7 @@ namespace Motion_lie_detection
 		 * Side panels
 		 */
         Panel leftSidePanel;
-        Panel rightSidePanel;
+        RightSidePanel rightSidePanel;
 
 		private void InitializeComponent()
         {
@@ -46,19 +47,7 @@ namespace Motion_lie_detection
             this.visualizer.TabIndex = 0;
             this.Controls.Add(this.visualizer);
 
-
-			//
-			// Side panel
-			//
-            this.leftSidePanel = new Panel();
-			this.leftSidePanel.Name = "leftSidePanel";
-            this.Controls.Add(this.leftSidePanel);
-
-            this.rightSidePanel = new RightSidePanel();
-			this.rightSidePanel.Name = "rightSidePanel";
-            this.Controls.Add(this.rightSidePanel);
-
-			//
+    		//
 			// Menu bar
 			//
 			mainMenu = new MainMenu();
@@ -101,7 +90,18 @@ namespace Motion_lie_detection
             //
             playbackPanel = new PlaybackPanel(timeline);
             this.Controls.Add(playbackPanel);
-            
+
+            //
+            // Side panels
+            //
+            this.leftSidePanel = new Panel();
+            this.leftSidePanel.Name = "leftSidePanel";
+            this.Controls.Add(this.leftSidePanel);
+
+            this.rightSidePanel = new RightSidePanel(timeline);
+            this.rightSidePanel.Name = "rightSidePanel";
+            this.Controls.Add(this.rightSidePanel);
+
             // 
 			// Window
 			// 
@@ -120,30 +120,31 @@ namespace Motion_lie_detection
             resize(null, null);
         }
 
-
-
-        public class ConnectForm : Form
+        /**
+         * Special form that can be used as dialog to ask the user for a text value.
+         */
+        public class InputForm : Form
         {
 
 			private TextBox input;
 
-            public ConnectForm()
+            public InputForm(String title, String prompt, String placeholder)
             {
 				Size size = new Size(300, 130);
 
 				this.MinimumSize = size;
 				this.MaximumSize = size;
-				this.Text = "Start listener";
+				this.Text = title;
 
 				Label text = new Label();
-				text.Text = "Enter host and port:";
+				text.Text = prompt;
 				text.Width = ClientRectangle.Width - 2 * ControlMargin;
 				text.Left = ControlMargin;
 				text.TextAlign = ContentAlignment.MiddleCenter;
 				this.Controls.Add(text);
 
 				input = new TextBox();
-				input.Text = "localhost:9763";
+				input.Text = placeholder;
 				input.Width = ClientRectangle.Width - 2 * ControlMargin;
 				input.Left = ControlMargin;
 				input.Top = text.Bottom + ControlMargin;
@@ -165,12 +166,25 @@ namespace Motion_lie_detection
 
 				this.CenterToParent();
 			}
+            
+            public String Value
+            {
+                get { return input.Text;  }
+            }
+
+        }
+
+        public class ConnectForm : InputForm
+        {
+            public ConnectForm()
+                : base("Start listener", "Enter host and port:", "localhost:9763")
+            { }
 
             public String Host
             {
                 get
                 {
-                    return input.Text.Split(':')[0];
+                    return Value.Split(':')[0];
 				}
 			}
 
@@ -178,7 +192,7 @@ namespace Motion_lie_detection
             {
                 get
                 {
-                    return int.Parse(input.Text.Split(':')[1]);
+                    return int.Parse(Value.Split(':')[1]);
 				}
 			}
 
@@ -249,7 +263,7 @@ namespace Motion_lie_detection
             visualizer.Reset();
 
             //Set recording
-            this.recording = null;
+            this.Recording = null;
 
             //Set Lieresult
             this.LieResult = new LieResult(0);
@@ -258,8 +272,12 @@ namespace Motion_lie_detection
 
             //Set Timeline
             timeline.LieResult = LieResult;
+            timeline.CurrentPos = 0;
             timeline.Invalidate();
             visualizer.Invalidate();
+
+            // Set the markpoint panel.
+            rightSidePanel.Reset();
 
 			this.Text = "Motion Lie Detection";
 		}
@@ -370,7 +388,8 @@ namespace Motion_lie_detection
                 toEnd.Click += (obj, e) =>
                 {
                     // FIXME: Somehow signal the timeline that the timeline should follow the end.
-                    timeline.CurrentPos = timeline.Recording.FrameCount;
+                    if(timeline.Recording != null)
+                      timeline.CurrentPos = timeline.Recording.FrameCount;
                 };
                 this.Controls.Add(toEnd);
 
@@ -444,34 +463,84 @@ namespace Motion_lie_detection
 
 		public class RightSidePanel : Panel
 		{
+            private Timeline timeline;
+
+            private Label title;
 			private ListBox markpointBox;
 			private Button addButton;
 			private Button removeButton;
 
-			public RightSidePanel()
+			public RightSidePanel(Timeline timeline)
 			{
+                this.timeline = timeline;
+
+                title = new Label();
+                title.Text = "Markpoints";
+                title.TextAlign = ContentAlignment.MiddleCenter;
+                this.Controls.Add(title);
+
                 markpointBox = new ListBox();
+                markpointBox.MouseDoubleClick += (obj, e) =>
+                {
+                    int index = markpointBox.IndexFromPoint(e.Location);
+                    if (index != System.Windows.Forms.ListBox.NoMatches)
+                    {
+                        // Jump to the markpoint on the timeline.
+                        MarkPoint markpoint = (MarkPoint)markpointBox.Items[index];
+
+                        timeline.CurrentPos = markpoint.Frameid;
+                    }
+                };
                 this.Controls.Add(markpointBox);
 
                 addButton = new Button();
 				addButton.Text = "Add";
+                addButton.Click += (obj, e) =>
+                {
+                    if (timeline.Recording == null)
+                        return;
+
+                    // Show dialog for description.
+                    InputForm dialog = new InputForm("Add markpoint", "Enter description:", "");
+                    if (dialog.ShowDialog(this) == DialogResult.Cancel)
+                        return;
+
+                    MarkPoint newPoint = new MarkPoint(timeline.Recording.MarkPoints.Count, dialog.Value, timeline.CurrentPos);
+                    timeline.Recording.AddMarkPoint(newPoint);
+                    markpointBox.Items.Add(newPoint);
+                };
                 this.Controls.Add(addButton);
 
                 removeButton = new Button();
 				removeButton.Text = "Remove";
+                removeButton.Click += (obj, e) =>
+                {
+                    if(timeline.Recording == null)
+                        return;
+
+                    // Get the selected items.
+                    MarkPoint markPoint = (MarkPoint)markpointBox.SelectedItem;
+                    timeline.Recording.RemoveMarkPoint(markPoint);
+                    markpointBox.Items.Remove(markPoint);
+                };
                 this.Controls.Add(removeButton);
 
 				this.Resize += resize;
 			}
-
+            
             private void resize(Object sender, EventArgs e)
             {
                 Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);
 
+                title.Left = 0;
+                title.Top = 0;
+                title.Width = newSize.Width;
+                title.Height = 20;
+
 				markpointBox.Left = 0;
-				markpointBox.Top = 0;
+				markpointBox.Top = 20 + ControlMargin;
 				markpointBox.Width = newSize.Width;
-				markpointBox.Height = newSize.Height - 20 - ControlMargin;
+				markpointBox.Height = newSize.Height - 40 - 2 * ControlMargin;
 
 				addButton.Top = markpointBox.Bottom + ControlMargin;
 				addButton.Left = ControlMargin;
@@ -483,6 +552,11 @@ namespace Motion_lie_detection
 				removeButton.Width = (newSize.Width - 3 * ControlMargin) / 2;
 				removeButton.Height = 20;
 			}
+
+            public void Reset() {
+                // Clear out the markpoints.
+                markpointBox.Items.Clear();
+            }
 		}
     }
 }
