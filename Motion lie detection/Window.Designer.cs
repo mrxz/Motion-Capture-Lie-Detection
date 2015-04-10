@@ -418,13 +418,25 @@ namespace Motion_lie_detection
                 speed.Text = "1.00";
                 speed.Top = 15;
                 speed.Height = 20;
-                speed.TextChanged += (obj, e) =>
+                speed.LostFocus += (obj, e) =>
                 {
                     // Try to convert the text to a float.
                     float playSpeed;
                     // Behold! This nice way C# allows you to specifiy the float number format.
                     if (float.TryParse(speed.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out playSpeed))
+                        timeline.PlayBackSpeed = playSpeed;
+                };
+                speed.KeyPress += (obj, e) =>
+                {
+                    if (e.KeyChar != 13)
+                        return;
+
+                    // Try to convert the text to a float.
+                    float playSpeed;
+                    // Behold! This nice way C# allows you to specifiy the float number format.
+                    if (float.TryParse(speed.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out playSpeed))
                     {
+                        // Note: it's possible for parsing an empty string as a speed, we 
                         timeline.PlayBackSpeed = playSpeed;
                     }
                     //float playSpeed = Float.speed.Text

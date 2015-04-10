@@ -55,8 +55,11 @@ namespace Motion_lie_detection
         /**
          * Bool that shows if stepping mode is on
          */
-        public bool Playing = true;
-
+        private bool playing = true;
+        /**
+         * Flag indicating that the timeline is at the end of a recording.
+         */
+        public bool atEnd = true;
 
         public Timeline()
             : this(1000) // FIXME: DEBUG VALUE
@@ -227,19 +230,20 @@ namespace Motion_lie_detection
             }
 
             // Check if the timeline is playing.
-            if (Playing)
+            if (playing)
             {
                 // TODO: Special method to snap to the end in case it's a live recording.
-
-                // Determine the time delta since the last update.
-                double deltaSeconds = nowUpdateTime - previouseUpdateTime;
-                currentFrame += (deltaSeconds * Recording.FrameRate) * playBackSpeed;
-
-                // Clamp the value
-                if (currentFrame < 0.0)
-                    currentFrame = 0.0;
-                else if (currentFrame > recording.FrameCount - 1)
+                if (atEnd)
+                {
                     currentFrame = recording.FrameCount - 1;
+                }
+                else
+                {
+                    // Determine the time delta since the last update.
+                    double deltaSeconds = nowUpdateTime - previouseUpdateTime;
+                    float newCurrentFrame = (float)(currentFrame + (deltaSeconds * Recording.FrameRate) * playBackSpeed);
+                    setCurrentFrame(newCurrentFrame);
+                }
             }
 
             // Regardless if we're playing or not, update the previous update time.
@@ -277,7 +281,25 @@ namespace Motion_lie_detection
         {
             return (int)(position * (float)numberOfFrames / Width);
         }
-        
+
+        private void setCurrentFrame(float value)
+        {
+            // Initially set the current frame to the dictated value.
+            currentFrame = value;
+            atEnd = false;
+
+            // Now clamp the value between 0 and the frame count.
+            if (currentFrame < 0.0)
+                currentFrame = 0.0;
+            else if (currentFrame >= Recording.FrameCount - 1)
+            {
+                currentFrame = Recording.FrameCount - 1;
+                // Note: only set AtEnd if the playing speed is above 1.00 (and actually playing)
+                atEnd = playBackSpeed >= 1.0 && playing;
+            }
+
+        }
+
         /**
          * Property that gives the current frameid selected in the timeline
          * Or sets current id to given value and makes sure the set value is limited between min and max frames
@@ -292,7 +314,7 @@ namespace Motion_lie_detection
             set
             {
                 if (Recording != null)
-                    currentFrame = Math.Max(Math.Min(value, Recording.FrameCount), 0.0);
+                    setCurrentFrame(value);
                 else
                     currentFrame = 0;
                 this.Invalidate();
@@ -333,7 +355,21 @@ namespace Motion_lie_detection
         public float PlayBackSpeed
         {
             get { return playBackSpeed; }
-            set { playBackSpeed = value; }
+            set { 
+                playBackSpeed = value;
+                // The playback will only stay at the end if the playback speed is greater than or equal to one.
+                if (atEnd && playBackSpeed < 1.0)
+                    atEnd = false;
+            }
+        }
+
+        public bool Playing
+        {
+            get { return playing; }
+            set {
+                playing = value;
+                atEnd &= playing;
+            }
         }
     }
 }
