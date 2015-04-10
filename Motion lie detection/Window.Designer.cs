@@ -228,14 +228,14 @@ namespace Motion_lie_detection
         {
 			// Show the file open dialog
             OpenFileDialog dialog = new OpenFileDialog();
-			dialog.DefaultExt = "mvnx";
+            dialog.Filter = "MVNX File Format|*.mvnx|Binary MoCap Format|*.bmocap";
 			dialog.Multiselect = false;
 			dialog.CheckFileExists = true;
             DialogResult result = dialog.ShowDialog();
 			if (result == DialogResult.Cancel)
 				return;
 
-            RecordingProvider provider = new FileRecordingProvider(dialog.FileName);
+            RecordingProvider provider = FileRecordingProvider.AppropriateReader(dialog.FileName);
             provider.Init();
             Recording recording = new Recording(provider);
             recording.Update();
@@ -247,14 +247,14 @@ namespace Motion_lie_detection
 		private void saveFile(object sender, EventArgs e) 
 		{
             SaveFileDialog dialog = new SaveFileDialog();
-			dialog.DefaultExt = "mvnx";
+            dialog.Filter = "MVNX File Format|*.mvnx;|Binary MoCap Format|*.bmocap";
             DialogResult result = dialog.ShowDialog();
 			if (result == DialogResult.Cancel)
 				return;
 
 			// TODO: Perhaps notify the user if the recording hasn't ended or something?
 
-            RecordingSaver saver = new MVNXSaver(dialog.FileName); // FIXME: Hard-coded implementation for Recording saver.
+            RecordingSaver saver = RecordingSaver.AppropriateSaver(dialog.FileName);
             saver.saveToFile(this.recording);
 		}
 
