@@ -48,10 +48,10 @@ namespace Motion_lie_detection
 			
 			InitializeComponent();
 
-			// DEBUG: Render update timer thingy, ;)
-            //Used for drawing and calculation speed, those should be done as often as possible only needed for play speed
+            // Used for drawing and calculation speed, those should be done as often as possible only needed for play speed
+            // Note: I decreased the interval to ensure we can handle 120 fps, but this isn't the nicest solution.
 			var timer = new System.Windows.Forms.Timer();
-			timer.Interval = 1000 / 60;
+			timer.Interval = 1000 / 150;
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
 
@@ -98,10 +98,10 @@ namespace Motion_lie_detection
 				return;
 
 			recording.Update();
-            //FIXME update should only have to be done if recording update has new frames maybe make some kind of event on new frames.
-            // WONT FIX => The timeline requires to know a correct delta time during updates, besides the timeline now also handles the playback, so...
-            timeline.Update(); 
+            timeline.Update();
 
+            // Note: it might be worthwhile to ensure the frame is valid and contains joint data.
+            // It shouldn't be a problem since the timeline should ensure that CurrentPos is within the recordings bound.
             visualizer.Frame = timeline.CurrentFrame;
             // TODO: Implement a better method for buffering ahead in the algoritm computation.
             algo.Compute(ref recording, ref context, ref LieResult, timeline.CurrentPos + 20);
@@ -111,13 +111,6 @@ namespace Motion_lie_detection
 		{
 			if (e.KeyCode == Keys.Space)
                 timeline.Playing = !timeline.Playing;
-			else if (e.KeyCode == Keys.A) {
-			//	recording.AddMarkPoint(new MarkPoint(recording.MarkPoints.Count, "This is a description", timeline.CurrentPos));
-			} else if(e.KeyCode == Keys.Right) {
-				timeline.CurrentPos++;
-			} else if(e.KeyCode == Keys.Left) {
-				timeline.CurrentPos--;
-			}
 		}
 
 		public void form_Closed(Object source, EventArgs e)

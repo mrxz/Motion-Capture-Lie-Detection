@@ -83,11 +83,16 @@ namespace Motion_lie_detection
 
         protected override void Draw()
         {
-            if (bodyConfiguration == null)
+            // Make sure a body configuration and joints are present.
+            if (bodyConfiguration == null || frame.Joints == null)
+            {
+                // Not available so display the inactive/disabled color.
+                GraphicsDevice.Clear(Color.DarkGray);
                 return;
+            }
+
+            // Start the normal drawing procedure.
             GraphicsDevice.Clear(Color.Black);
-            if (frame.Joints == null)
-                return;
 
 			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
 
@@ -116,14 +121,22 @@ namespace Motion_lie_detection
 
         public void Reset()
         {
-            GraphicsDevice.Clear(Color.Purple);
+            GraphicsDevice.Clear(Color.DarkGray);
             bodyConfiguration = null;
         }
+
         private void drawJoint(Vector3 position)
         {
             sphere.Draw(Matrix.CreateTranslation(position), camera.ViewMatrix, camera.ProjectionMatrix, drawColor);  
         }
 
+        /**
+         * Method for drawing the connection between two joints.
+         * @param joints Dictionary containing the joints by joint id with their position
+         * @param configuration The bodyconfiguration to draw.
+         * @param first The index of the first joint of the bone.
+         * @param second The index of the second joint of the bone.
+         */
 		private void drawBone(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, int first, int second)
         {
 			if (first== -1 || second == -1)

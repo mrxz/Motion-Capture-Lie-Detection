@@ -374,6 +374,7 @@ namespace Motion_lie_detection
                 pause = new Button();
                 pause.Text = "||";
                 pause.Click += ((obj, e) => { 
+                    // Simply invert the playing status of the timeline.
                     timeline.Playing = !timeline.Playing;
                     ((Button)obj).Text = timeline.Playing ? "||" : ">";
                 });

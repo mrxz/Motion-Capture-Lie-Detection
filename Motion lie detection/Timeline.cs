@@ -233,8 +233,8 @@ namespace Motion_lie_detection
                 // Clamp the value
                 if (currentFrame < 0.0)
                     currentFrame = 0.0;
-                else if (currentFrame > recording.FrameCount)
-                    currentFrame = recording.FrameCount;
+                else if (currentFrame > recording.FrameCount - 1)
+                    currentFrame = recording.FrameCount - 1;
             }
 
             // Regardless if we're playing or not, update the previous update time.
