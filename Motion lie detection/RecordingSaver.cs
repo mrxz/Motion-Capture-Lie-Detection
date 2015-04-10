@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -52,6 +53,16 @@ namespace Motion_lie_detection
 		 */
 		public abstract bool saveToFile(Recording recording, int start, int end);
 
+        public static RecordingSaver AppropriateSaver(string fname) {
+            string ext = Path.GetExtension(fname);
+            switch (ext) // bad code smell
+            {
+                case ".bmocap":
+                    return new BinaryMocapSaver(fname);
+                default:
+                    return new MVNXSaver(fname);
+            }
+        }
 	}
 
 	/**
@@ -259,5 +270,66 @@ namespace Motion_lie_detection
 			return names[jointId - 1];
 		}
 	}
-}
 
+    /**
+     * Implementation for saving a recording to an .bmocap file.
+     */
+    public class BinaryMocapSaver : RecordingSaver
+    {
+        private int jCount = 0;
+        public BinaryMocapSaver(String file)
+            : base(file)
+        {
+
+        }
+
+        public override bool saveToFile(Recording recording, int start, int end) {
+            Console.WriteLine("Saving from {0} to {1}", start, end);
+
+            using (FileStream fs = new FileStream(file, FileMode.Create)) {
+                using (BinaryWriter bw = new BinaryWriter(fs)) {
+
+                    // Write FrameRate, SegmentCount and FrameCount
+                    bw.Write(recording.FrameRate);
+                    bw.Write(segmentCount);
+                    int fcount = end - start;
+                    bw.Write(fcount);
+                    bw.Write(jCount = recording.GetFrame(start).Joints.Count); // close enough
+
+                    // Write all individual frames
+                    for (int frameId = start; frameId < end; ++frameId) {
+                        Frame frame = recording.GetFrame(frameId);
+                        writeFrame(bw, frame, false);
+                    }
+                    Console.WriteLine("Written {0} frames", fcount);
+                }
+            }
+
+            return true;
+        }
+
+        private void writeFrame(BinaryWriter bw, Frame frame, bool isNPose = false)
+        {
+            // Frame data
+            bw.Write(isNPose);
+            bw.Write(frame.Timestamp);
+
+            // For all Joints
+            for (int i = 0; i < jCount; ++i) {
+                Joint j = frame.Joints[i];
+
+                // Write the position
+                bw.Write(j.Position.X);
+                bw.Write(j.Position.Y);
+                bw.Write(j.Position.Z);
+
+                // Write Orientation
+                bw.Write(j.Orientation.X);
+                bw.Write(j.Orientation.Y);
+                bw.Write(j.Orientation.Z);
+                bw.Write(j.Orientation.W);
+            }
+        }
+    }
+// */
+}
