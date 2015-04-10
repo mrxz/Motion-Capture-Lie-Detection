@@ -373,8 +373,23 @@ namespace Motion_lie_detection
                 toPrevMarker.Text = "<<";
                 toPrevMarker.Click += (obj, e) =>
                 {
-                    // TODO: Somehow determine the previous mark point and move the timeline.
-                    // Note: probably best to move to the start if no markpoints are present between start and now.
+                    if(timeline.Recording == null)
+                        return;
+
+                    // Seek the best fitting markpoint.
+                    MarkPoint markpoint = null;
+                    int now = timeline.CurrentPos;
+                    foreach (MarkPoint point in timeline.Recording.MarkPoints)
+                    {
+                        if (point.Frameid < now)
+                            markpoint = point;
+                        else
+                            break;
+                    }
+                    if (markpoint != null)
+                        timeline.CurrentPos = markpoint.Frameid;
+                    else
+                        timeline.CurrentPos = 0;
                 };
                 this.Controls.Add(toPrevMarker);
 
@@ -391,8 +406,24 @@ namespace Motion_lie_detection
                 toNextMarker.Text = ">>";
                 toNextMarker.Click += (obj, e) =>
                 {
-                    // TODO: Somehow determine the next mark point and move the timeline.
-                    // Note: probably best to move to the end if no markpoints are present between now and end.
+                    if(timeline.Recording == null)
+                        return;
+
+                    // Seek the best fitting markpoint.
+                    MarkPoint markpoint = null;
+                    int now = timeline.CurrentPos;
+                    foreach (MarkPoint point in timeline.Recording.MarkPoints)
+                    {
+                        if (point.Frameid > now)
+                        {
+                            markpoint = point;
+                            break;
+                        }
+                    }
+                    if(markpoint != null)
+                        timeline.CurrentPos = markpoint.Frameid;
+                    else
+                        timeline.CurrentPos = timeline.Recording.FrameCount;
                 };
                 this.Controls.Add(toNextMarker);
 
