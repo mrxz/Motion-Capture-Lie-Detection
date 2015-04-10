@@ -71,7 +71,8 @@ namespace Motion_lie_detection
 			MenuItem Settings = mainMenu.MenuItems.Add("Settings");
 			Settings.MenuItems.Add(new MenuItem("Something"));
 			Settings.MenuItems.Add(new MenuItem("Start dummy stream", new EventHandler(startDummyStream)));
-			Settings.MenuItems.Add(new MenuItem("TODO"));
+            Settings.MenuItems.Add(new MenuItem("Start endless dummy stream", new EventHandler(startEndlessDummyStream)));
+            Settings.MenuItems.Add(new MenuItem("TODO"));
 
 			// Help
 			MenuItem About = mainMenu.MenuItems.Add("Help");
@@ -296,8 +297,14 @@ namespace Motion_lie_detection
         private void startDummyStream(object sender, EventArgs e)
         {
             DummyStream stream = new DummyStream();
-            stream.Start();
+            stream.Start(false);
 		}
+
+        private void startEndlessDummyStream(object sender, EventArgs e)
+        {
+            DummyStream stream = new DummyStream();
+            stream.Start(true);
+        }
 
         private void resize(Object sender, EventArgs e)
         {

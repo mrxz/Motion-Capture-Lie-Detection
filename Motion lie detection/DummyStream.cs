@@ -22,7 +22,7 @@ namespace Motion_lie_detection
 			init();
 		}
 
-		public void Start() 
+		public void Start(bool endless) 
 		{
 			if (client == null) {
 				client = new UdpClient (new IPEndPoint (IPAddress.Any, 48962));
@@ -31,18 +31,19 @@ namespace Motion_lie_detection
 			currentPacket = 0;
 
 			LOG.info ("Starting streaming thread");
-			new Thread (send).Start();
+			new Thread (send).Start(endless);
 		}
 
-		private void send()
+		private void send(object data)
 		{
-			while(currentPacket < packets.Length)
+            bool endless = (bool)data;
+			while(currentPacket < packets.Length || endless)
 			{
 				LOG.fine ("Sending packet #" + currentPacket);
 				client.Send (packets [currentPacket], packets [currentPacket].Length);
 
 				Thread.Sleep (1000 / frameRate);
-				currentPacket++;
+                currentPacket = (currentPacket + 1) % packets.Length;
 			}
 
 		}
