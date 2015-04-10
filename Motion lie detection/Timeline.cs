@@ -10,6 +10,11 @@ namespace Motion_lie_detection
     public class Timeline : Control
     {
         /**
+         * Margin that is applied once the number of frames in the recording exceed the capacity of the timeline.
+         */
+        public static readonly double FramesMargin = 0.3;
+
+        /**
 		 * The recording to visualize.
 		 */
         private Recording recording;
@@ -240,6 +245,13 @@ namespace Motion_lie_detection
             // Regardless if we're playing or not, update the previous update time.
             // Note: this prevents large time delta's to occur due to pausing/playing.
             previouseUpdateTime = nowUpdateTime;
+
+            // -------
+            // Check if the number of frames has exceeded the capacity.
+            if (recording.FrameCount > numberOfFrames)
+            {
+                numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
+            }
 
             // Let the timeline be redrawn and update the control.
             this.Invalidate();
