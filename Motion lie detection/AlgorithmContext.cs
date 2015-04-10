@@ -12,13 +12,18 @@ namespace Motion_lie_detection
         Frame sampleFrame;
         int samplesize;
         BodyConfiguration normalizeconfiguration;
+        BodyNode[] rootnodes;
 
-        public AlgorithmContext(BodyConfiguration baseConfiguration = null)
+        public AlgorithmContext(ClassificationConfiguration ClassConfiguration = null)
         {
             lastFrame = Frame.Empty;
             sampleFrame = Frame.Empty;
             samplesize = 0;
-            normalizeconfiguration = baseConfiguration;
+            if (ClassConfiguration != null)
+            {
+                normalizeconfiguration = ClassConfiguration.NormalBodyconfiguration;
+                rootnodes = ClassConfiguration.Rootnodes;
+            }
         }
 
         public Frame LastFrame
@@ -41,6 +46,11 @@ namespace Motion_lie_detection
         {
             get { return normalizeconfiguration; }
             set { normalizeconfiguration = value; }
+        }
+
+        public BodyNode[] RootNodes
+        {
+            get { return rootnodes; }
         }
 
         public void SetSample(Frame frame, int framecount)

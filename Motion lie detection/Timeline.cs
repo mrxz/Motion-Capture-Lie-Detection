@@ -33,6 +33,7 @@ namespace Motion_lie_detection
          * The current frame the timeline is on.
          */
         private double currentFrame;
+
         /**
          * The current mark point that is hovered over.
          */
@@ -75,6 +76,8 @@ namespace Motion_lie_detection
 
             this.numberOfFrames = numberOfFrames;
         }
+
+        public float trafficclassif;
 
         /**
          * Methods for handling events
@@ -166,8 +169,6 @@ namespace Motion_lie_detection
             {
                 float unavailablePos = position(Recording.FrameCount);
                 g.FillRectangle(Brushes.DarkGray, (int)unavailablePos, 20, Width - (int)unavailablePos - 1, Height - 40);
-                
-                
             }
 
             if (LieResult != null)
@@ -176,6 +177,7 @@ namespace Motion_lie_detection
                 float end = position(LieResult.End);
                 g.FillRectangle(Brushes.LightBlue, (int)start, 20, end - start, Height - 40);
             }
+
             // Draw the markpoint lines.
             Pen markPen = new Pen(Color.Gray);
             markPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
@@ -192,6 +194,11 @@ namespace Motion_lie_detection
 
         protected void paintFooter(Graphics g)
         {
+            if(recording != null && CurrentPos < lieresult.End){
+                Brush trafficbrush = new SolidBrush(Color.FromArgb((int)(((trafficclassif + 1) / 2) * 256), (int)((1 - (trafficclassif + 1) / 2) * 256), 0));
+                g.FillEllipse(trafficbrush, 250, Height - 20 , 10, 10);
+                g.DrawString(trafficclassif.ToString(), new Font("Arial", 10.0f), Brushes.Black, 300, Height - 20);
+            }
             // Draw the time.
             int seconds = (int)(currentFrame / Recording.FrameRate);
             String time = String.Format("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, (int)currentFrame);
@@ -256,6 +263,9 @@ namespace Motion_lie_detection
             {
                 numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
             }
+
+            if(recording != null && CurrentPos < lieresult.End)
+                trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
 
             // Let the timeline be redrawn and update the control.
             this.Invalidate();

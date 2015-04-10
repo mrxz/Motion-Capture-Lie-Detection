@@ -72,10 +72,12 @@ namespace Motion_lie_detection
 			 */
             
             //new Thread(updateVisualizer).Start();
+            Algorithm algo= new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new NormalizeLength(new LieDetectionAlgorithm()))), 5);
+            
             LOG.info("Opening window for visualization");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Window());
+            Application.Run(new Window(algo));
             //new Thread(openWindow).Start();
         }
 

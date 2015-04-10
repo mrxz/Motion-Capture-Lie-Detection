@@ -64,8 +64,9 @@
     <Compile Include="Algorithm.cs" />
     <Compile Include="AlgorithmContext.cs" />
     <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="BodyModel.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Classification.cs" />
+    <Compile Include="ClassificationConfiguration.cs" />
     <Compile Include="GraphicsDeviceService.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="GraphicsDeviceControl.cs">

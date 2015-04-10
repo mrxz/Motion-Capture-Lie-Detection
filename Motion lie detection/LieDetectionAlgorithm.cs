@@ -9,20 +9,12 @@ namespace Motion_lie_detection
 	 */
     public class LieDetectionAlgorithm : Algorithm
     {
-        protected List<BodyNode> calculationnodes;
-
-        public LieDetectionAlgorithm(List<BodyNode> rootnodes = null)
-        {
-            calculationnodes = (rootnodes == null) ? new List<BodyNode>() : rootnodes;
-        }
-
         /**
 		 * Method for computing the result for one single frame.
 		 * @param result
 		 * @param next
 		 * @return
 		 */
-
 		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
             Frame last = context.LastFrame;
@@ -31,48 +23,34 @@ namespace Motion_lie_detection
                 return null;
 
             List<float> res = PairwiseDifference(last.Joints, next.Joints);
-            Queue<BodyNode> queue = new Queue<BodyNode>();
-            BodyNode current;
-            foreach (BodyNode node in calculationnodes)
+            if (context.RootNodes != null)
             {
-                if(node.getRoot() == node){
-                    res.Add(AbsoluteMovement(last.Joints, next.Joints));
-                    continue;
-                }
-                int normal = node.getRoot().JointId;
-                queue.Enqueue(node);
-                float totdiff = 0;
-                while(queue.Count > 0)
+                Queue<BodyNode> queue = new Queue<BodyNode>();
+                BodyNode current;
+                foreach (BodyNode node in context.RootNodes)
                 {
-                    current = queue.Dequeue();
-                    foreach (BodyNode v in current.getNeighbours())
+                    if (node.getRoot() == node)
                     {
-                        queue.Enqueue(v);
+                        res.Add(AbsoluteMovement(last.Joints, next.Joints));
+                        continue;
                     }
-                    totdiff += Vector3.Distance(last.Joints[current.JointId].Position - last.Joints[normal].Position, next.Joints[current.JointId].Position - next.Joints[normal].Position);
+                    int normal = node.getRoot().JointId;
+                    queue.Enqueue(node);
+                    float totdiff = 0;
+                    while (queue.Count > 0)
+                    {
+                        current = queue.Dequeue();
+                        foreach (BodyNode v in current.getNeighbours())
+                        {
+                            queue.Enqueue(v);
+                        }
+                        totdiff += Vector3.Distance(last.Joints[current.JointId].Position - last.Joints[normal].Position, next.Joints[current.JointId].Position - next.Joints[normal].Position);
+                    }
+                    //return sum of pairwise differences
+                    res.Add(totdiff);
                 }
-                //return sum of pairwise differences
-                res.Add(totdiff);
             }
             return res;
-
-            /*full body
-            //res.Add(AbsoluteMovement(last.Joints, next.Joints));
-            ////left arm
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.LEFT_SHOULDER, 4), 0));
-            ////right arm
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), next.Joints.GetRange((int)BodyPart.RIGHT_SHOULDER, 4), 0));
-            ////left leg
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.LEFT_UPPER_LEG, 4), 0));
-            ////right leg
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), next.Joints.GetRange((int)BodyPart.RIGHT_UPPER_LEG, 4), 0));
-            ////head
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.T8, 3), next.Joints.GetRange((int)BodyPart.T8, 3), 0));
-            ////body
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 4), next.Joints.GetRange((int)BodyPart.PELVIS, 4), 0));
-            ////upper body
-            //res.Add(NAbsoluteMovement(last.Joints.GetRange((int)BodyPart.PELVIS, 15), next.Joints.GetRange((int)BodyPart.PELVIS, 15), 0));
-            //return res; */
         }
 
         private List<float> PairwiseDifference(IList<Joint> A, IList<Joint> B)

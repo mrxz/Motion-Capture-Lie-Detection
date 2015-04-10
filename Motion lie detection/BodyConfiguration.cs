@@ -24,10 +24,10 @@ namespace Motion_lie_detection
 		 */
 		protected Dictionary<Tuple<BodyNode, BodyNode>, float> lengths;
 
-		public BodyConfiguration()
+		public BodyConfiguration(BodyNode rootnode = null)
 		{
-			root = null;
-			orientationNode = null;
+            root = rootnode;
+			orientationNode = rootnode;
 			lengths = new Dictionary<Tuple<BodyNode, BodyNode>, float> ();
 		}
 
@@ -99,64 +99,82 @@ namespace Motion_lie_detection
 				}
 			}
 		}
+
+        public int Size{get{return (root != null) ? root.Size : 0;}}
 	}
 
 	/**
 	 * A node in the body tree.
 	 */
-	public class BodyNode 
-	{
-		/**
-		 * The bodyNode this node should be normalized against.
-		 */
-		private BodyNode root;
+    public class BodyNode
+    {
+        /**
+         * The bodyNode this node should be normalized against.
+         */
+        private BodyNode root;
 
-		/**
-		 * List containing the adjacent body nodes. 
-		 */
-		private List<BodyNode> adjacent;
+        /**
+         * List containing the adjacent body nodes. 
+         */
+        private List<BodyNode> adjacent;
 
-		/**
-		 * The joint id that corresponds with this bodypart.
-		 */
-		private int jointId;
-		/**
-		 * The name of the bodyNode.
-		 */
-		private String name;
+        /**
+         * The joint id that corresponds with this bodypart.
+         */
+        private int jointId;
+        /**
+         * The name of the bodyNode.
+         */
+        private String name;
 
-		public BodyNode(int jointId, String name) 
-		{
-			root = null;
-			adjacent = new List<BodyNode> ();
-			this.jointId = jointId;
-			this.name = name;
-		}
+        public BodyNode(int jointId, String name)
+        {
+            root = null;
+            adjacent = new List<BodyNode>();
+            this.jointId = jointId;
+            this.name = name;
+        }
 
-		public List<BodyNode> getNeighbours() {
-			return adjacent;
-		}
+        public List<BodyNode> getNeighbours()
+        {
+            return adjacent;
+        }
 
-		public void addNeighbour(BodyNode node) {
-			adjacent.Add (node);
-		}
+        public void addNeighbour(BodyNode node)
+        {
+            adjacent.Add(node);
+        }
 
-		public BodyNode getRoot() {
-			return root != null ? root : this;
-		}
+        public BodyNode getRoot()
+        {
+            return root != null ? root : this;
+        }
 
-		public void setRoot(BodyNode node) {
-			this.root = node;
-		}
+        public void setRoot(BodyNode node)
+        {
+            this.root = node;
+        }
 
         public int JointId { get { return jointId; } }
 
-		public String getName() {
-			return name;
-		}
+        public String getName()
+        {
+            return name;
+        }
 
-	}
-
+        public int Size
+        {
+            get
+            {
+                int res = 1;
+                foreach (BodyNode node in adjacent)
+                {
+                    res += node.Size;
+                }
+                return res;
+            }
+        }
+    }
 	/**
 	 * Simple body configuration that provides a static mapping and configuration of the body.
 	 * This mapping is based on the default segment layout of XSens hardware.

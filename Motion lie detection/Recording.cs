@@ -29,20 +29,27 @@ namespace Motion_lie_detection
 		 * The recording provider that provides the frame data containing joint positions.
 		 */
 		private readonly RecordingProvider provider;
+
 		/**
 		 * The configuration of the body in this recording.
 		 */
 		private readonly BodyConfiguration bodyConfiguration;
 
         /**
+		 * The configuration that contains the classification model.
+		 */
+        private ClassificationConfiguration classificationconfig;
+
+        /**
          * Simple counter for generating unique markpoint ids.
          */
         private int markpointId = 0;
         
-		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration)
+		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration, ClassificationConfiguration classconfig = null)
 		{
 			this.provider = provider;
 			this.bodyConfiguration = bodyConfiguration;
+            this.classificationconfig = FixedClassification.Create();
 
 			frames = new List<Frame> ();
 			lastFrameID = -1;
@@ -108,6 +115,17 @@ namespace Motion_lie_detection
 		public int FrameCount { get { return frames.Count; } }
 
 		public BodyConfiguration BodyConfiguration { get { return bodyConfiguration; } }
+
+        public ClassificationConfiguration ClassificationConfiguration {
+            get { return classificationconfig; }
+            set
+            {
+                if (value != null)
+                    classificationconfig = value;
+                else                
+                    throw new Exception("Classification model cannot be set to null");
+            }
+        }
 
 		public void AddFrame (Frame frame)
 		{

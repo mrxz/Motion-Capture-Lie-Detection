@@ -52,7 +52,9 @@ namespace Motion_lie_detection
                 int next = result.NextFrameId;
                 if (next >= recording.FrameCount)
                     break;
-                result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
+                List<float> res = ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]);
+                if(res != null)
+                    result.AddFrameDiff(res, next);
                 framestart++;
             }
             return result;
