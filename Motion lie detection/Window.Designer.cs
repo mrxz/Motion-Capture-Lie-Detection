@@ -495,6 +495,11 @@ namespace Motion_lie_detection
 			private Button addButton;
 			private Button removeButton;
 
+            /**
+             * Special text box that is normally hidden, but shows to let the user edit the description of a markpoint.
+             */
+            private TextBox editBox;
+
 			public RightSidePanel(Timeline timeline)
 			{
                 this.timeline = timeline;
@@ -505,6 +510,16 @@ namespace Motion_lie_detection
                 this.Controls.Add(title);
 
                 markpointBox = new ListBox();
+                markpointBox.KeyPress += (obj, e) =>
+                {
+                    if(e.KeyChar == 13)
+                        CreateEditBox();
+                };
+                markpointBox.KeyDown += (obj, e) =>
+                {
+                    if (e.KeyCode == Keys.F2)
+                        CreateEditBox();
+                };
                 markpointBox.MouseDoubleClick += (obj, e) =>
                 {
                     int index = markpointBox.IndexFromPoint(e.Location);
@@ -525,12 +540,11 @@ namespace Motion_lie_detection
                     if (timeline.Recording == null)
                         return;
 
-                    // Show dialog for description.
-                    InputForm dialog = new InputForm("Add markpoint", "Enter description:", "");
-                    if (dialog.ShowDialog(this) == DialogResult.Cancel)
-                        return;
-
-                    MarkPoint newPoint = new MarkPoint(timeline.Recording.MarkPoints.Count, dialog.Value, timeline.CurrentPos);
+                    // Insert the markpoint with an automatic description.
+                    // FIXME: Use a better way to ensure increasing markpoint id?
+                    // Or wait... is id even needed?
+                    int id = timeline.Recording.MarkpointId;
+                    MarkPoint newPoint = new MarkPoint(id, "Markpoint #" + (id + 1), timeline.CurrentPos);
                     timeline.Recording.AddMarkPoint(newPoint);
                     markpointBox.Items.Add(newPoint);
                 };
@@ -550,9 +564,61 @@ namespace Motion_lie_detection
                 };
                 this.Controls.Add(removeButton);
 
+                // Create the edit box.
+                editBox = new TextBox();
+                editBox.Left = 0;
+                editBox.Top = 0;
+                editBox.Size = new Size(0,0);
+                editBox.Hide();
+                markpointBox.Controls.Add(editBox);
+                editBox.Text = "";
+                editBox.BackColor = Color.Beige;
+                editBox.ForeColor = Color.Blue;
+                editBox.BorderStyle = BorderStyle.FixedSingle;
+                editBox.KeyPress += (obj, e) =>
+                {
+                    if (e.KeyChar == 13)
+                    {
+                        int index = markpointBox.SelectedIndex;
+                        MarkPoint markPoint = (MarkPoint)markpointBox.Items[index];
+                        markPoint.Description = editBox.Text;
+                        editBox.Hide();
+
+                        markpointBox.DisplayMember = DateTime.UtcNow.ToString();
+                    }
+
+                };
+                editBox.LostFocus += (obj, e) =>
+                {
+                    int index = markpointBox.SelectedIndex;
+                    MarkPoint markPoint = (MarkPoint)markpointBox.Items[index];
+                    markPoint.Description = editBox.Text;
+                    editBox.Hide();
+
+                    markpointBox.DisplayMember = DateTime.UtcNow.ToString();
+                };
+
 				this.Resize += resize;
 			}
-            
+
+            private void CreateEditBox()
+            {
+                int itemSelected = markpointBox.SelectedIndex ;
+                Rectangle r = markpointBox.GetItemRectangle(itemSelected);
+                string itemText = ((MarkPoint)markpointBox.Items[itemSelected]).Description;
+
+                editBox.Left = r.X;// + delta;
+                editBox.Top = r.Y;// + delta;
+                editBox.Width = r.Width - 10;
+                editBox.Height = r.Height;// - delta;
+                editBox.Show();
+
+                markpointBox.Controls.Add(editBox);
+                editBox.Text = itemText ;
+                editBox.Focus();
+                editBox.SelectAll();
+            }
+                        
             private void resize(Object sender, EventArgs e)
             {
                 Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);

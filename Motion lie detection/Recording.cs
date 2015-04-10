@@ -33,6 +33,11 @@ namespace Motion_lie_detection
 		 * The configuration of the body in this recording.
 		 */
 		private readonly BodyConfiguration bodyConfiguration;
+
+        /**
+         * Simple counter for generating unique markpoint ids.
+         */
+        private int markpointId = 0;
         
 		public Recording (RecordingProvider provider, BodyConfiguration bodyConfiguration)
 		{
@@ -119,10 +124,19 @@ namespace Motion_lie_detection
 		{
             // FIXME: Perhaps disallow multiple markpoints at the exact same frame id.
 			markpoints.Add (markpoint.Frameid, markpoint);
+            markpointId++;
 		}
+
+        public int MarkpointId
+        {
+            get { return markpointId; }
+        }
 
         public void RemoveMarkPoint(MarkPoint markpoint)
         {
+            // Make sure the markpoint isn't null.
+            if (markpoint == null)
+                return;
             markpoints.Remove(markpoint.Frameid);
         }
 
@@ -201,11 +215,11 @@ namespace Motion_lie_detection
         }
 	}
 
-	public struct MarkPoint
+	public class MarkPoint
 	{
 		private readonly int id;
-		private readonly String description;
-		private readonly int frameId;
+		private String description;
+		private int frameId;
 
 		public MarkPoint (int id, string description, int frameId)
 		{
@@ -216,9 +230,19 @@ namespace Motion_lie_detection
 
 		public int Id { get { return id; } }
 
-		public String Description { get { return description; } }
+		public String Description { 
+            get { return description; }
+            set {
+                this.description = value;
+            }
+        }
 
-		public int Frameid { get { return frameId; } }
+		public int Frameid { 
+            get { return frameId; }
+            set {
+                this.frameId = value;
+            }
+        }
 
         public override string ToString()
         {
