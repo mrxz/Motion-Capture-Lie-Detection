@@ -63,9 +63,15 @@ namespace Motion_lie_detection
         {
             if (id < framestart || id > framend)
                 throw new Exception("Id out of range of the Lieresult, must be greater than Framestart and smaller or equal to Framend");
+
             //TODO: make finding right framedifference for given frameid better
             int m = (framend - framestart) / frameDifferences.Count;
             return frameDifferences[((id - framestart) / m)];
+        }
+
+        public IList<List<float>> FrameDifferences
+        {
+            get { return frameDifferences.AsReadOnly(); }
         }
 
         public List<float> this[int frameid] { get { return FrameDifference(frameid); } }

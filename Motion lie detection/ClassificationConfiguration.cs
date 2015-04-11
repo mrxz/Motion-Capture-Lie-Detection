@@ -8,10 +8,10 @@ namespace Motion_lie_detection
 {
     public class ClassificationConfiguration
     {
-        BodyConfiguration normalisationconfiguration;
-        BodyNode[] rootnodes;
-        Dictionary<BodyNode, int> partindex;
-        float[][] rootparam, jointparam;
+        private BodyConfiguration normalisationconfiguration;
+        private BodyNode[] rootnodes;
+        private Dictionary<BodyNode, int> partindex;
+        private float[][] rootparam, jointparam;
 
         public ClassificationConfiguration(BodyConfiguration config, BodyNode[] rootnodes, float[][] rootparam, float[][] jointparam = null)
         {   
@@ -79,17 +79,31 @@ namespace Motion_lie_detection
         }
     }
 
-    public class FixedClassification{
+    /**
+     * Fixed classification model that can be used in combination with XSens hard/software.
+     */
+    public class FixedClassification {
 
         public static ClassificationConfiguration Create(){
+            // Create a fixed body configuration as basis.
+            BodyConfiguration bodyConfiguration = new FixedBodyConfiguration();
+            BodyNode[] rootNodes = new BodyNode[6];
+            String[] names = new String[] { "Pelvis", "LeftShoulder", "RightShoulder", "LeftUpperLeg", "RightUpperLeg", "T8"};
 
-            // Spine
-			BodyNode pelvis = new BodyNode (1, "Pelvis");
-            BodyNode lS = new BodyNode(12, "LeftShoulder");
-            BodyNode rS = new BodyNode(8, "RightShoulder");
-            BodyNode lU = new BodyNode(20, "LeftUpperLeg");
-            BodyNode rU = new BodyNode(16, "RightUpperLeg");
-            BodyNode t8 = new BodyNode(5, "T8");
+            // BFS over the body configuration in search of the root nodes.
+            Queue<BodyNode> queue = new Queue<BodyNode>();
+            queue.Enqueue(bodyConfiguration.getRoot());
+            while (queue.Count > 0)
+            {
+                BodyNode current = queue.Dequeue();
+                foreach (BodyNode v in current.getNeighbours())
+                    queue.Enqueue(v);
+
+                // Check if the node is one of the requested root nodes.
+                int index = Array.IndexOf(names, current.getName());
+                if (index != -1)
+                    rootNodes[index] = current;
+            }
 
             float[][] param = new float[6][];
             param[0] = new float[] { 123.1333f, 50001.310f, 235.8511f, 14329.630f };
@@ -99,8 +113,7 @@ namespace Motion_lie_detection
             param[4] = new float[] { 15.6422f, 128.037f, 22.2667f, 987.294f};
             param[5] = new float[] { 15.0489f, 50.747f, 19.3667f, 54.922f};
 
-            return new ClassificationConfiguration(new FixedBodyConfiguration(), new BodyNode[] { pelvis, lS, rS, lU, rU, t8 }, param);
-            
+            return new ClassificationConfiguration(new FixedBodyConfiguration(), rootNodes, param);
         }
     }
 }

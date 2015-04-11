@@ -216,7 +216,7 @@ namespace Motion_lie_detection
 				lT.setRoot (lU);
 				lF.setRoot (lU);
 				lL.setRoot (lU);
-				lU.setRoot (pelvis);
+				lU.setRoot (lU);
 
 				lF.addNeighbour (lT);
 				lL.addNeighbour (lF);
@@ -233,7 +233,7 @@ namespace Motion_lie_detection
 				rT.setRoot (rU);
 				rF.setRoot (rU);
 				rL.setRoot (rU);
-				rU.setRoot (pelvis);
+				rU.setRoot (rU);
 
 				rF.addNeighbour (rT);
 				rL.addNeighbour (rF);
@@ -253,7 +253,7 @@ namespace Motion_lie_detection
 				lH.setRoot (lS);
 				lF.setRoot (lS);
 				lU.setRoot (lS);
-				lS.setRoot (t8);
+				lS.setRoot (lS);
 
 				lF.addNeighbour (lH);
 				lU.addNeighbour (lF);
@@ -270,7 +270,7 @@ namespace Motion_lie_detection
 				rH.setRoot (rS);
 				rF.setRoot (rS);
 				rU.setRoot (rS);
-				rS.setRoot (t8);
+				rS.setRoot (rS);
 
 				rF.addNeighbour (rH);
 				rU.addNeighbour (rF);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -195,10 +196,11 @@ namespace Motion_lie_detection
         protected void paintFooter(Graphics g)
         {
             if(recording != null && CurrentPos < lieresult.End){
-                Brush trafficbrush = new SolidBrush(Color.FromArgb((int)(((trafficclassif + 1) / 2) * 256), (int)((1 - (trafficclassif + 1) / 2) * 256), 0));
-                g.FillEllipse(trafficbrush, 250, Height - 20 , 10, 10);
+                //Brush trafficbrush = new SolidBrush(Color.FromArgb((int)(((trafficclassif + 1) / 2) * 256), (int)((1 - (trafficclassif + 1) / 2) * 256), 0));
+                //g.FillEllipse(trafficbrush, 250, Height - 20 , 10, 10);
                 g.DrawString(trafficclassif.ToString(), new Font("Arial", 10.0f), Brushes.Black, 300, Height - 20);
             }
+
             // Draw the time.
             int seconds = (int)(currentFrame / Recording.FrameRate);
             String time = String.Format("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, (int)currentFrame);
@@ -264,8 +266,19 @@ namespace Motion_lie_detection
                 numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
             }
 
-            if(recording != null && CurrentPos < lieresult.End)
-                trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
+            if (recording != null && CurrentPos < lieresult.End)
+            {
+                trafficclassif = 0f;
+                foreach (List<float> diff in lieresult.FrameDifferences)
+                {
+                    if (diff == null)
+                        continue;
+                    trafficclassif += diff[diff.Count - 1];
+                }
+                trafficclassif /= lieresult.FrameDifferences.Count;
+                trafficclassif *= 500;
+                //trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
+            }
 
             // Let the timeline be redrawn and update the control.
             this.Invalidate();
