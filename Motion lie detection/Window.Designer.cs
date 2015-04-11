@@ -629,12 +629,11 @@ namespace Motion_lie_detection
                         return;
 
                     // Insert the markpoint with an automatic description.
-                    // FIXME: Use a better way to ensure increasing markpoint id?
-                    // Or wait... is id even needed?
                     int id = timeline.Recording.MarkpointId;
                     MarkPoint newPoint = new MarkPoint(id, "Markpoint #" + (id + 1), timeline.CurrentPos);
                     timeline.Recording.AddMarkPoint(newPoint);
-                    markpointBox.Items.Add(newPoint);
+                    int index = timeline.Recording.MarkPoints.IndexOf(newPoint);
+                    markpointBox.Items.Insert(index, newPoint);
                 };
                 this.Controls.Add(addButton);
 
