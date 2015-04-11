@@ -9,14 +9,14 @@ namespace Motion_lie_detection
     {
         private int framestart;
         private int framend;
-        private List<List<float>> frameDifferences;
-        private List<float> means;
-        private float meancount = 0;
+        private List<List<double>> frameDifferences;
+        private List<double> means;
+        private int meancount = 0;
 
         public LieResult(int framestart = 0)
         {
-            this.means = new List<float>();
-            this.frameDifferences = new List<List<float>>();
+            this.means = new List<double>();
+            this.frameDifferences = new List<List<double>>();
             this.framestart = framestart;
             this.framend = framestart - 1;
         }        
@@ -26,7 +26,7 @@ namespace Motion_lie_detection
             get { return new LieResult(); }
         }
 
-        public void AddFrameDiff(List<float> diff, int next)
+        public void AddFrameDiff(List<double> diff, int next)
         {            
             framend = next;
             if (diff != null) {
@@ -54,12 +54,12 @@ namespace Motion_lie_detection
 
         public int End { get { return framend; } }
 
-        public List<float> Means
+        public List<double> Means
         {
             get { return means; }
         }
 
-        public List<float> ComputeAbsoluteMovements(int start, int end)
+        public List<double> ComputeAbsoluteMovements(int start, int end)
         {
             if (frameDifferences.Count == 0 || start >= end)
                 return null;
@@ -72,7 +72,7 @@ namespace Motion_lie_detection
                 return null;
 
             // Sum all the framedifferences between start and end.
-            List<float> result = new List<float>();
+            List<double> result = new List<double>();
             for (int i = startIndex; i < endIndex; i++)
             {
                 for (int j = 0; j < frameDifferences[i].Count; j++)
@@ -92,7 +92,7 @@ namespace Motion_lie_detection
             return result;
         }
 
-        public List<float> FrameDifference(int id)
+        public List<double> FrameDifference(int id)
         {
             if (id < framestart || id > framend)
                 throw new Exception("Id out of range of the Lieresult, must be greater than Framestart and smaller or equal to Framend");
@@ -100,8 +100,8 @@ namespace Motion_lie_detection
             //TODO: make finding right framedifference for given frameid better
             if (frameDifferences.Count > 0)
             {
-                float m = (float)(framend - framestart) / frameDifferences.Count;
-                return frameDifferences[(int)((float)(id - framestart) / m)];
+                double m = (double)(framend - framestart) / frameDifferences.Count;
+                return frameDifferences[(int)((double)(id - framestart) / m)];
             }
             else
             {
@@ -109,11 +109,11 @@ namespace Motion_lie_detection
             }
         }
 
-        public IList<List<float>> FrameDifferences
+        public IList<List<double>> FrameDifferences
         {
             get { return frameDifferences.AsReadOnly(); }
         }
 
-        public List<float> this[int frameid] { get { return FrameDifference(frameid); } }
+        public List<double> this[int frameid] { get { return FrameDifference(frameid); } }
     }
 }

@@ -181,7 +181,7 @@ namespace Motion_lie_detection
                 joints.Add(
                     new Joint(
                         i + 1,
-                        new mxf.Vector3(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]),
+                        new Vector3d(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]),
                         new mxf.Quaternion(orientations[4 * i], orientations[4 * i + 1], orientations[4 * i + 2], orientations[4 * i + 3])));
             }
 
@@ -246,7 +246,7 @@ namespace Motion_lie_detection
                 joints.Add(
                     new Joint(
                         i + 1,
-                        new mxf.Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle()),
+                        new Vector3d(br.ReadSingle(), br.ReadSingle(), br.ReadSingle()),
                         new mxf.Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle())));
             }
 

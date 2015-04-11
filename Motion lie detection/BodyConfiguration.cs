@@ -22,13 +22,13 @@ namespace Motion_lie_detection
 		/**
 		 * Map containing the lengths between two bodyNodes.
 		 */
-		protected Dictionary<Tuple<BodyNode, BodyNode>, float> lengths;
+		protected Dictionary<Tuple<BodyNode, BodyNode>, double> lengths;
 
 		public BodyConfiguration(BodyNode rootnode = null)
 		{
             root = rootnode;
 			orientationNode = rootnode;
-			lengths = new Dictionary<Tuple<BodyNode, BodyNode>, float> ();
+			lengths = new Dictionary<Tuple<BodyNode, BodyNode>, double> ();
 		}
 
 		public BodyNode getRoot()
@@ -41,9 +41,9 @@ namespace Motion_lie_detection
 			return orientationNode;
 		}
 
-		public float GetLength(BodyNode from, BodyNode to)
+		public double GetLength(BodyNode from, BodyNode to)
 		{
-			float result;
+			double result;
 			if(lengths.TryGetValue(Tuple.Create(from, to), out result))
 				return result;
 			return -1;
@@ -92,7 +92,7 @@ namespace Motion_lie_detection
 					Joint first = getJoint (nposeFrame.Joints, node);
 					Joint second = getJoint (nposeFrame.Joints, neighbour);
 
-					float length = Vector3.Distance (first.Position, second.Position);
+					double length = Vector3d.Distance (first.Position, second.Position);
 					lengths.Add (key, length);
 
 					q.Enqueue (neighbour);

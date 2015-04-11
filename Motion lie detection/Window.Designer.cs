@@ -538,16 +538,16 @@ namespace Motion_lie_detection
                 String text = "";
                 if (timeline.Recording != null)
                 {
-                    List<float> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
+                    List<double> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
                     if (result != null)
                     {
                         BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
                         int index = bodyConfiguration.Size;
 
-                        text += String.Format("Abs. movement\t: {0} \n", result[index++]);
+                        text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            text += String.Format("Limb {0}: {1} \n", node.getName(), result[index++]);
+                            text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), result[index++]);
                         }
                     }
                 }

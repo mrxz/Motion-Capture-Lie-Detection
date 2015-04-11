@@ -55,7 +55,7 @@ namespace Motion_lie_detection
 			foreach(Segment segment in segments) {
 				joints.Add(new Joint(
 					segment.id,
-					new Microsoft.Xna.Framework.Vector3(segment.x, segment.y, segment.z),
+					new Vector3d(segment.x, segment.y, segment.z),
 					new Microsoft.Xna.Framework.Quaternion(segment.q1, segment.q2, segment.q3, segment.q4)));
 			}
 

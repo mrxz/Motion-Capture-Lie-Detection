@@ -52,7 +52,7 @@ namespace Motion_lie_detection
                 int next = result.NextFrameId;
                 if (next >= recording.FrameCount)
                     break;
-                List<float> res = ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]);
+                List<double> res = ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]);
                 if(res != null)
                     result.AddFrameDiff(res, next);
                 framestart++;
@@ -99,7 +99,7 @@ namespace Motion_lie_detection
             }
         }
 
-        public abstract List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next);    
+        public abstract List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next);    
     }
 
 	/**

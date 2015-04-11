@@ -13,10 +13,10 @@ namespace Motion_lie_detection
     {
 		public NormalizePosition(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+		public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
 			// Get the position of the root joint.
-			Vector3 rootPosition = bodyConfiguration.getRootJoint (next.Joints).Position;
+			Vector3d rootPosition = bodyConfiguration.getRootJoint (next.Joints).Position;
 
             // Loop over the joints and re-position them.
 			List<Joint> newJoints = new List<Joint> ();
@@ -42,17 +42,12 @@ namespace Motion_lie_detection
     {
 		public NormalizeOrientation(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-		// DEBUG: this variable is used for debugging purposes to rotate the visualization, i know, UGLY...
-		public float AdditionalRotation = 0.0f;
-
-        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+        public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
-			Vector3 reference = bodyConfiguration.getOrientationJoint(next.Joints).Position;
+			Vector3d reference = bodyConfiguration.getOrientationJoint(next.Joints).Position;
 
             // Get the rotation of the body.
 			double rotation = Math.Atan2 (reference.X, reference.Y);
-			// DEBUG:
-			rotation += AdditionalRotation;
 
 			// Loop over the joints and rotate them.
 			List<Joint> newJoints = new List<Joint> ();
@@ -64,7 +59,7 @@ namespace Motion_lie_detection
 
 				newJoints.Add(new Joint(
 					joint.Id,
-					new Vector3((float)newX, (float)newY, joint.Position.Z),
+					new Vector3d(newX, newY, joint.Position.Z),
 					joint.Orientation));
 			}
 			Frame newFrame = new Frame (newJoints, next.Timestamp);
@@ -82,9 +77,9 @@ namespace Motion_lie_detection
 
         public int DownsampleRate;
 
-        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+        public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
-            float n = context.SampleSize;
+            double n = context.SampleSize;
             if (n < DownsampleRate && n > 0)
             {
                 IList<Joint> samplejoints = context.SampleFrame.Joints;
@@ -118,11 +113,11 @@ namespace Motion_lie_detection
     {        
 		public NormalizeLength(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
 
-        public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+        public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {            
             if (context.Normalizeconfiguration != null)
             {
-                Vector3[] nvectors = new Vector3[next.Joints.Count];
+                Vector3d[] nvectors = new Vector3d[next.Joints.Count];
 				bool[] normalised = new bool[next.Joints.Count]; //?? maybe we can assume that that it is not cyclic, I think we may :-)
                 Queue<BodyNode> queue = new Queue<BodyNode>();
                
@@ -130,7 +125,7 @@ namespace Motion_lie_detection
 				newJoints.AddRange(next.Joints);
 
                 BodyNode node = context.Normalizeconfiguration.getRoot();
-                nvectors[node.JointId] = new Vector3(0,0,0);
+                nvectors[node.JointId] = new Vector3d(0,0,0);
                 normalised[node.JointId] = true;
                 queue.Enqueue(node);
                 while (queue.Count > 0)
@@ -141,15 +136,15 @@ namespace Motion_lie_detection
                     {
                         if (!normalised[child.JointId - 1])
                         {
-                            float nlength = context.Normalizeconfiguration.GetLength(node, child);
-                            float rlength = bodyConfiguration.GetLength(node, child);
+                            double nlength = context.Normalizeconfiguration.GetLength(node, child);
+                            double rlength = bodyConfiguration.GetLength(node, child);
                             if (nlength == -1 || rlength == -1)
                             {
                                 if (nlength != rlength)
                                     throw new Exception("Mismatch between classification configuration and bodyconfiguration"); //Well not lethal but would give some stange figures
                                 continue;
                             }
-							Vector3 diff = newJoints[node.JointId - 1].Position - newJoints[child.JointId - 1].Position;
+							Vector3d diff = newJoints[node.JointId - 1].Position - newJoints[child.JointId - 1].Position;
                             //calculate normalise vector for the childnode
                             nvectors[child.JointId - 1] = nvectors[node.JointId - 1] + diff * ((nlength - rlength) / rlength);
                             normalised[child.JointId - 1] = true;

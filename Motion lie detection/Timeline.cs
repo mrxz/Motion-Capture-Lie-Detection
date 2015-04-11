@@ -78,7 +78,8 @@ namespace Motion_lie_detection
             this.numberOfFrames = numberOfFrames;
         }
 
-        public List<float> trafficclassif, meanclassif;
+        public List<double> trafficclassif, meanclassif;
+        
         /**
          * Methods for handling events
          * @param e EventArgs object
@@ -160,6 +161,7 @@ namespace Motion_lie_detection
                 g.FillEllipse(colorBrush, (int)markPos - 5, 5, 10, 10);
                 g.DrawEllipse(Pens.Black, (int)markPos - 5, 5, 10, 10);
             }
+
             if (meanclassif != null)
             {
                 Brush meanbrush = Brushes.Orange;

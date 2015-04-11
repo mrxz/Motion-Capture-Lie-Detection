@@ -19,7 +19,7 @@ namespace Motion_lie_detection
 		 * @param next
 		 * @return
 		 */
-		public override List<float> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
+		public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
             // Get the last frame to compute the diff.
             Frame last = context.LastFrame;
@@ -30,7 +30,7 @@ namespace Motion_lie_detection
                 return null;
 
             // Pairwise compare the joints of the last and next frames.
-            List<float> res = PairwiseDifference(last.Joints, next.Joints);
+            List<double> res = PairwiseDifference(last.Joints, next.Joints);
             // Check if rootnodes are specified, needed for the classification
             if (context.RootNodes != null)
             {
@@ -48,7 +48,7 @@ namespace Motion_lie_detection
                     // Actual BFS
                     BodyNode normalNode = node.getRoot();
                     queue.Enqueue(node);
-                    float totdiff = 0;
+                    double totdiff = 0;
                     while (queue.Count > 0)
                     {
                         BodyNode current = queue.Dequeue();
@@ -60,18 +60,18 @@ namespace Motion_lie_detection
                         Joint lastNode = bodyConfiguration.getJoint(last.Joints, current);
                         Joint lastNormal = bodyConfiguration.getJoint(last.Joints, normalNode);
                         Joint nextNode = bodyConfiguration.getJoint(next.Joints, current);
-                        Joint nextNormal = bodyConfiguration.getJoint(last.Joints, normalNode);
-                        Vector3 A = lastNode.Position - lastNormal.Position;
-                        Vector3 B = nextNode.Position - nextNormal.Position;
+                        Joint nextNormal = bodyConfiguration.getJoint(next.Joints, normalNode);
+                        Vector3d A = lastNode.Position - lastNormal.Position;
+                        Vector3d B = nextNode.Position - nextNormal.Position;
 
-                        float diffX = A.X - B.X;
-                        float diffY = A.Y - B.Y;
-                        float diffZ = A.Z - B.Z;
-                        float diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
+                        double diffX = A.X - B.X;
+                        double diffY = A.Y - B.Y;
+                        double diffZ = A.Z - B.Z;
+                        double diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
 
                         totdiff += diff;
                     }
-                    totdiff = (float)Math.Sqrt(totdiff);
+                    totdiff = Math.Sqrt(totdiff);
 
                     // return sum of pairwise differences
                     res.Add(totdiff);
@@ -81,48 +81,48 @@ namespace Motion_lie_detection
             return res;
         }
 
-        private List<float> PairwiseDifference(IList<Joint> A, IList<Joint> B)
+        private List<double> PairwiseDifference(IList<Joint> A, IList<Joint> B)
         {
             // Make sure the lengths of the joint lists match.
             if (A.Count != B.Count)
                 throw new Exception("Number of joints, is not equal");
 
             // Iterate over the joints and compute the distance.
-            List<float> res = new List<float>();
-            float totdiff = 0;
+            List<double> res = new List<double>();
+            double totdiff = 0;
             for (int i = 0; i < A.Count; i++)
             {
-                float diffX = A[i].Position.X - B[i].Position.X;
-                float diffY = A[i].Position.Y - B[i].Position.Y;
-                float diffZ = A[i].Position.Z - B[i].Position.Z;
-                float diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
+                double diffX = A[i].Position.X - B[i].Position.X;
+                double diffY = A[i].Position.Y - B[i].Position.Y;
+                double diffZ = A[i].Position.Z - B[i].Position.Z;
+                double diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
 
                 res.Add(diff);
                 totdiff += diff;
             }
-            totdiff = (float)Math.Sqrt(totdiff);
+            totdiff = Math.Sqrt(totdiff);
 
             // Add sum of pairwise differences
             res.Add(totdiff);
             return res;
         }
 
-        private float AbsoluteMovement(IList<Joint> A, IList<Joint> B)
+        private double AbsoluteMovement(IList<Joint> A, IList<Joint> B)
         {
             // Make sure the lengths of the joint lists match.
             if (A.Count != B.Count)
                 throw new Exception("Number of joints, is not equal");
 
             // Iterate over the joints and sum the distances
-            float totdiff = 0;
+            double totdiff = 0;
             for (int i = 0; i < A.Count; i++)
             {
-                float diffX = A[i].Position.X - B[i].Position.X;
-                float diffY = A[i].Position.Y - B[i].Position.Y;
-                float diffZ = A[i].Position.Z - B[i].Position.Z;
+                double diffX = A[i].Position.X - B[i].Position.X;
+                double diffY = A[i].Position.Y - B[i].Position.Y;
+                double diffZ = A[i].Position.Z - B[i].Position.Z;
                 totdiff += diffX * diffX + diffY * diffY + diffZ * diffZ;
             }
-            totdiff = (float)Math.Sqrt(totdiff);
+            totdiff = Math.Sqrt(totdiff);
             
             // Return sum of pairwise differences
             return totdiff;

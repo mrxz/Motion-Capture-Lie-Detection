@@ -11,9 +11,10 @@ namespace Motion_lie_detection
         private BodyConfiguration normalisationconfiguration;
         private BodyNode[] rootnodes;
         private Dictionary<BodyNode, int> partindex;
-        private float[][] rootparam, jointparam;
-        private float uptreshold, lowtreshold;
-        public ClassificationConfiguration(BodyConfiguration config, BodyNode[] rootnodes, float[][] rootparam,float uptreshold = 0.5f, float lowtreshold = 0.5f, float[][] jointparam = null)
+        private double[][] rootparam, jointparam;
+        private double uptreshold, lowtreshold;
+
+        public ClassificationConfiguration(BodyConfiguration config, BodyNode[] rootnodes, double[][] rootparam, double uptreshold = 0.5, double lowtreshold = 0.5, double[][] jointparam = null)
         {   
             //Check if length match
             if (rootnodes.Length != rootparam.Length)
@@ -34,7 +35,7 @@ namespace Motion_lie_detection
             //Add jointparam if they are given
             if (jointparam != null)
             {
-                this.jointparam = new float[config.Size + 1][];
+                this.jointparam = new double[config.Size + 1][];
                 for (int i = 0; i < jointparam.Length + 1; i++)
                 {
                     this.jointparam[i] = jointparam[i];
@@ -47,7 +48,7 @@ namespace Motion_lie_detection
             get { return rootnodes; }
         }
 
-        public float[] GetPartParam(BodyNode node)
+        public double[] GetPartParam(BodyNode node)
         {
             int i;
             if (partindex.TryGetValue(node, out i))
@@ -56,7 +57,7 @@ namespace Motion_lie_detection
                 return null;
         }
 
-        public float[] this[int index]
+        public double[] this[int index]
         {
             get
             {
@@ -79,9 +80,9 @@ namespace Motion_lie_detection
             get { return normalisationconfiguration; }
         }
 
-        public float UpTreshold { get { return uptreshold; } }
+        public double UpTreshold { get { return uptreshold; } }
 
-        public float LowTreshold { get { return lowtreshold; } }
+        public double LowTreshold { get { return lowtreshold; } }
     }
 
     /**
@@ -110,13 +111,13 @@ namespace Motion_lie_detection
                     rootNodes[index] = current;
             }
 
-            float[][] param = new float[6][];
-            param[0] = new float[] { 4.0819881f, 5.488f, 4.2840368f, 4.031f};
-            param[1] = new float[] { 1.7914401f, 1.388f, 1.6371702f, 0.729f};
-            param[2] = new float[] { 1.6843104f, 1.099f, 1.6997891f, 0.973f};
-            param[3] = new float[] { 0.7801710f, 0.478f, 1.0049744f, 0.538f };
-            param[4] = new float[] { 0.8432133f, 1.026f, 1.1260909f, 1.210f};
-            param[5] = new float[] { 0.6695878f, 0.099f, 0.6819028f, 0.068f};
+            double[][] param = new double[6][];
+            param[0] = new double[] { 4.0819881, 5.488, 4.2840368, 4.031};
+            param[1] = new double[] { 1.7914401, 1.388, 1.6371702, 0.729};
+            param[2] = new double[] { 1.6843104, 1.099, 1.6997891, 0.973};
+            param[3] = new double[] { 0.7801710, 0.478, 1.0049744, 0.538};
+            param[4] = new double[] { 0.8432133, 1.026, 1.1260909, 1.210};
+            param[5] = new double[] { 0.6695878, 0.099, 0.6819028, 0.068};
 
             return new ClassificationConfiguration(new FixedBodyConfiguration(), rootNodes, param);
         }

@@ -101,7 +101,7 @@ namespace Motion_lie_detection
             grid.Draw(GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
             
 
-			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
+			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position.ToXNAVec());
 
             //jointId, joint, (x, y, z)
             Dictionary<int, Tuple<Joint, Vector3>> joints = new Dictionary<int, Tuple<Joint, Vector3>>();
@@ -109,7 +109,7 @@ namespace Motion_lie_detection
             //Draw each joint
             foreach (Joint joint in frame.Joints)
             {
-				var position = ConvertRealWorldPoint(joint.Position) - Centre;
+				var position = ConvertRealWorldPoint(joint.Position.ToXNAVec()) - Centre;
                 joints.Add(joint.Id, Tuple.Create(joint, position));          
                 drawJoint(position, 0.5f);               
             }

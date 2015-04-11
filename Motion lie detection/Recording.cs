@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
-using Microsoft.Xna.Framework;
+using mxf = Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
 {
@@ -202,10 +202,10 @@ namespace Motion_lie_detection
 	public struct Joint
 	{
 		private readonly int id;
-		private Vector3 position;
-		private Quaternion orientation;
+		private Vector3d position;
+		private mxf.Quaternion orientation;
 
-		public Joint (int jointId, Vector3 position, Quaternion orientation)
+		public Joint (int jointId, Vector3d position, mxf.Quaternion orientation)
 		{
 			id = jointId;
 			this.position = position;
@@ -214,9 +214,9 @@ namespace Motion_lie_detection
 
 		public int Id { get { return id; } }
 
-        public Vector3 Position { get { return position; } set { position = value; } }
+        public Vector3d Position { get { return position; } set { position = value; } }
 
-		public Quaternion Orientation { get { return orientation; } }
+		public mxf.Quaternion Orientation { get { return orientation; } }
 
         public static Joint MeanJoint(List<Joint> joints)
         {
