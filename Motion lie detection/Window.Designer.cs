@@ -35,13 +35,11 @@ namespace Motion_lie_detection
         /**
 		 * Side panels
 		 */
-        Panel leftSidePanel;
+        LeftSidePanel leftSidePanel;
         RightSidePanel rightSidePanel;
 
 		private void InitializeComponent()
         {
-
-
             this.visualizer = new Visualizer();
             this.visualizer.Name = "visualizer";
             this.visualizer.TabIndex = 0;
@@ -95,7 +93,7 @@ namespace Motion_lie_detection
             //
             // Side panels
             //
-            this.leftSidePanel = new Panel();
+            this.leftSidePanel = new LeftSidePanel(timeline);
             this.leftSidePanel.Name = "leftSidePanel";
             this.Controls.Add(this.leftSidePanel);
 
@@ -508,6 +506,71 @@ namespace Motion_lie_detection
                 speed.Left = newSize.Width - buttonWidth;
                 speed.Top = 15;
                 speed.Width = buttonWidth;
+            }
+        }
+
+        public class LeftSidePanel : Panel
+        {
+            private Timeline timeline;
+
+            private Label result;
+            private Label absoluteMovement;
+
+            public LeftSidePanel(Timeline timeline)
+            {
+                this.timeline = timeline;
+
+                result = new Label();
+                result.Text = "Absolute movement:";
+                result.TextAlign = ContentAlignment.MiddleCenter;
+                result.Font = new Font(result.Font.FontFamily, result.Font.Size, FontStyle.Bold);
+                this.Controls.Add(result);
+
+                absoluteMovement = new Label();
+                absoluteMovement.Text = "";
+                this.Controls.Add(absoluteMovement);
+
+                this.Resize += resize;
+            }
+
+            public new void Update()
+            {
+                String text = "";
+                if (timeline.Recording != null)
+                {
+                    List<float> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
+                    if (result != null)
+                    {
+                        BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
+                        int index = bodyConfiguration.Size;
+
+                        text += String.Format("Abs. movement\t: {0} \n", result[index++]);
+                        foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
+                        {
+                            text += String.Format("Limb {0}: {1} \n", node.getName(), result[index++]);
+                        }
+                    }
+                }
+
+                absoluteMovement.Text = text;
+                absoluteMovement.Invalidate();
+                base.Update();
+            }
+
+            private void resize(Object sender, EventArgs e)
+            {
+                Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);
+
+                result.Left = 0;
+                result.Top = newSize.Height / 2;
+                result.Width = newSize.Width;
+                result.Height = 20;
+
+                absoluteMovement.Left = 0;
+                absoluteMovement.Top = newSize.Height/2 + 20;
+                absoluteMovement.Width = newSize.Width;
+                absoluteMovement.Height = newSize.Height/2 - 20;
+
             }
         }
 

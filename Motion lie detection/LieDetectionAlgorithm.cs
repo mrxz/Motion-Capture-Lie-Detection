@@ -11,6 +11,10 @@ namespace Motion_lie_detection
     {
         /**
 		 * Method for computing the result for one single frame.
+         * The result will look as follows:
+         *  - Abs. movement x Joints
+         *  - Abs. movement
+         *  - Abs. movement x rootNodes
 		 * @param result
 		 * @param next
 		 * @return

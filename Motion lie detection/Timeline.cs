@@ -271,9 +271,12 @@ namespace Motion_lie_detection
                 trafficclassif = 0f;
 
                 List<float> results = lieresult.ComputeAbsoluteMovements(0, lieresult.End);
-                if(results != null)
+                if (results != null)
+                {
                     trafficclassif = results[results.Count - 1];
-                //trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
+                    trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
+                }
+                
             }
 
             // Let the timeline be redrawn and update the control.

@@ -100,7 +100,9 @@ namespace Motion_lie_detection
 			}
 		}
 
-        public int Size{get{return (root != null) ? root.Size : 0;}}
+        public int Size {
+            get { return (root != null) ? root.Size : 0; }
+        }
 	}
 
 	/**
@@ -175,6 +177,7 @@ namespace Motion_lie_detection
             }
         }
     }
+
 	/**
 	 * Simple body configuration that provides a static mapping and configuration of the body.
 	 * This mapping is based on the default segment layout of XSens hardware.

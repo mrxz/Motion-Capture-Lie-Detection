@@ -99,7 +99,8 @@ namespace Motion_lie_detection
 
             //TODO: make finding right framedifference for given frameid better
             int m = (framend - framestart) / frameDifferences.Count;
-            return frameDifferences[((id - framestart) / m)];
+            int index = Math.Min((id - framestart) / m, frameDifferences.Count - 1);
+            return frameDifferences[index];
         }
 
         public IList<List<float>> FrameDifferences
