@@ -21,18 +21,18 @@ namespace Motion_lie_detection
         public Grid(GraphicsDevice GraphicsDevice, float groundLevel)
         {
             Init(GraphicsDevice);
-            points = new Vector3[200];
+            points = new Vector3[300];
             Fill(groundLevel);
             
         }
 
         public void Fill(float groundLevel)
         {
-            int begin = -100;
-            int step = 10;
+            int begin = -100; //grid starts at (-100, groundLevel, -100) and ends at (100, groundLevel, 100)
+            int step = 8; //spacing for the grid
             int current = begin;
             int i = 0;
-            while(current <= -begin)
+            while(current <= -begin) //lines parallel to the x-axes
             {
                 points[i] = new Vector3(begin, groundLevel, current);
                 points[i+1] = new Vector3(-begin, groundLevel, current);
@@ -40,7 +40,7 @@ namespace Motion_lie_detection
                 current += step;
             }
             current = begin;
-            while (current <= -begin + step)
+            while (current <= -begin + step) //lines parallel to the z-axes
             {
                 points[i] = new Vector3(current, groundLevel, begin);
                 points[i + 1] = new Vector3(current, groundLevel, -begin);
@@ -59,7 +59,6 @@ namespace Motion_lie_detection
             basicEffect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), GraphicsDevice.Viewport.AspectRatio, 1f, 1000f);
         }
 
-        // Inside your Game.Draw method
         public void Draw(GraphicsDevice GraphicsDevice, Matrix view, Matrix projection)
         {
             basicEffect.View = view;
@@ -72,7 +71,7 @@ namespace Motion_lie_detection
                 vec1 = points[i];
                 vec2 = points[i + 1];
                 
-                var vertices = new[] { new VertexPositionColor(vec1, Color.White), new VertexPositionColor(vec2, Color.White) };
+                var vertices = new[] { new VertexPositionColor(vec1, Color.Yellow), new VertexPositionColor(vec2, Color.Yellow) };
                 GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
                 i+=2;
             }
