@@ -269,14 +269,10 @@ namespace Motion_lie_detection
             if (recording != null && CurrentPos < lieresult.End)
             {
                 trafficclassif = 0f;
-                foreach (List<float> diff in lieresult.FrameDifferences)
-                {
-                    if (diff == null)
-                        continue;
-                    trafficclassif += diff[diff.Count - 1];
-                }
-                trafficclassif /= lieresult.FrameDifferences.Count;
-                trafficclassif *= 500;
+
+                List<float> results = lieresult.ComputeAbsoluteMovements(0, lieresult.End);
+                if(results != null)
+                    trafficclassif = results[results.Count - 1];
                 //trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
             }
 
