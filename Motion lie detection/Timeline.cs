@@ -78,8 +78,7 @@ namespace Motion_lie_detection
             this.numberOfFrames = numberOfFrames;
         }
 
-        public List<float> trafficclassif;
-
+        public List<float> trafficclassif, meanclassif;
         /**
          * Methods for handling events
          * @param e EventArgs object
@@ -160,6 +159,16 @@ namespace Motion_lie_detection
                     colorBrush = Brushes.Red;
                 g.FillEllipse(colorBrush, (int)markPos - 5, 5, 10, 10);
                 g.DrawEllipse(Pens.Black, (int)markPos - 5, 5, 10, 10);
+            }
+            if (meanclassif != null)
+            {
+                Brush meanbrush = Brushes.Orange;
+                if (meanclassif[24] < 0.5f)
+                    meanbrush = Brushes.Red;
+                if (meanclassif[24] > 0.5f)
+                    meanbrush = Brushes.Green;
+                g.FillEllipse(meanbrush, Width - 20, 5, 10, 10);
+                g.DrawString("Mean: " + meanclassif[24].ToString(), new Font("Arial", 10.0f), Brushes.Black, Width - 200, 5);
             }
         }
 
@@ -282,7 +291,12 @@ namespace Motion_lie_detection
                 //}
                 //trafficclassif /= lieresult.FrameDifferences.Count;
                 //trafficclassif *= 500;
-                trafficclassif = Classification.ClassifyPartsTruth(recording.ClassificationConfiguration, lieresult, CurrentPos);
+                trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos);
+            }
+
+            if (CurrentPos == lieresult.End)
+            {
+                meanclassif = Classification.ClassifyMeans(recording.ClassificationConfiguration, lieresult);
             }
 
             // Let the timeline be redrawn and update the control.

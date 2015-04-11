@@ -8,64 +8,26 @@ namespace Motion_lie_detection
 {
     public static class Classification
     {          
-        public static List<float> ClassifyTruth(ClassificationConfiguration model, LieResult result, int frameId){
+        public static List<float> Classify(ClassificationConfiguration model, LieResult result, int frameId){
             List<float> res = null;
             List<float> movements = result[frameId];
             if (movements != null)
-            {
-                res = new List<float>();
-                float[] param;
-
-                for (int i = 0; i < movements.Count; i++)
-                {
-                    param = model[i];
-                    if (param != null)
-                    {
-                        float ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * 1000);
-                        float plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * 1000);
-
-                        res.Add(ptruth / (ptruth + plie));
-                    }
-                    else
-                    {
-                        res.Add(0.5f);
-                    }
-                }
-            }
+                res = Classification.classify(model, movements);
             return res;
         }
 
-        public static List<float> ClassifyPartsTruth(ClassificationConfiguration model, LieResult result, int frameId)
+        public static List<float> ClassifyParts(ClassificationConfiguration model, LieResult result, int frameId)
         {
             List<float> res = null;
             List<float> movements = result[frameId];
             if (movements != null)
-            {
-                res = new List<float>();
-                float[] param;
-
-                for (int i = model.NormalBodyconfiguration.Size + 1; i < movements.Count; i++)
-                {
-                    param = model[i];
-                    if (param != null)
-                    {
-                        float ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * 1000);
-                        float plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * 1000);
-
-                        res.Add(ptruth / (ptruth + plie));
-                    }
-                    else
-                    {
-                        res.Add(0.5f);
-                    }
-                }
-            }
+                res = Classification.classify(model, movements, model.NormalBodyconfiguration.Size + 1);
             return res;
         }
 
-        public static List<int> ClassifyDiscreteParts(ClassificationConfiguration model, LieResult result, int frameId)
+        public static List<int> ClassifyDiscrete(ClassificationConfiguration model, LieResult result, int frameId)
         {
-            List<float> prob = ClassifyPartsTruth(model, result, frameId);
+            List<float> prob = Classify(model, result, frameId);
             List<int> res = new List<int>();
             foreach (float p in prob)
             {
@@ -79,11 +41,44 @@ namespace Motion_lie_detection
             return res;
         }
 
+        public static List<float> ClassifyMeans(ClassificationConfiguration model, LieResult result)
+        {
+            List<float> res = null;
+            List<float> movements = result.Means;
+            if (movements != null)
+                res = Classification.classify(model, movements);
+            return res;
+        }
+
         private static float GaussianNaiveBayes(float average, float variance, float movement)
         {
             float diff = movement - average;
             float var2 = variance * 2;
             return (float)((1 / Math.Sqrt(Math.PI * var2)) * Math.Pow(Math.E, -(diff * diff) / var2));
-        }        
+        }
+
+        private static List<float> classify(ClassificationConfiguration model, List<float> movements, int min = 0, int max = -1)
+        {
+            List<float> res = new List<float>();
+            float[] param;
+            max = (max == -1 || max > movements.Count) ? movements.Count : max;
+
+            for (int i = min; i < max; i++)
+            {
+                param = model[i];
+                if (param != null)
+                {
+                    float ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * 1000);
+                    float plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * 1000);
+
+                    res.Add(ptruth / (ptruth + plie));
+                }
+                else
+                {
+                    res.Add(0.5f);
+                }
+            }
+            return res;
+        }
     }
 }
