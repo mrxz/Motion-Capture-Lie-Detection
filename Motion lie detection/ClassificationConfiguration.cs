@@ -12,8 +12,8 @@ namespace Motion_lie_detection
         private BodyNode[] rootnodes;
         private Dictionary<BodyNode, int> partindex;
         private float[][] rootparam, jointparam;
-
-        public ClassificationConfiguration(BodyConfiguration config, BodyNode[] rootnodes, float[][] rootparam, float[][] jointparam = null)
+        private float uptreshold, lowtreshold;
+        public ClassificationConfiguration(BodyConfiguration config, BodyNode[] rootnodes, float[][] rootparam,float uptreshold = 0.5f, float lowtreshold = 0.5f, float[][] jointparam = null)
         {   
             //Check if length match
             if (rootnodes.Length != rootparam.Length)
@@ -22,7 +22,8 @@ namespace Motion_lie_detection
             this.normalisationconfiguration = config;
             this.rootnodes = rootnodes;
             this.rootparam = rootparam;
-
+            this.uptreshold = uptreshold;
+            this.lowtreshold = lowtreshold;
             //make dictionary to make indexing possible for bodynodes
             this.partindex = new Dictionary<BodyNode, int>();
             for (int j = 0; j < rootnodes.Length; j++)
@@ -77,6 +78,10 @@ namespace Motion_lie_detection
         {
             get { return normalisationconfiguration; }
         }
+
+        public float UpTreshold { get { return uptreshold; } }
+
+        public float LowTreshold { get { return lowtreshold; } }
     }
 
     /**
@@ -106,12 +111,12 @@ namespace Motion_lie_detection
             }
 
             float[][] param = new float[6][];
-            param[0] = new float[] { 123.1333f, 50001.310f, 235.8511f, 14329.630f };
-            param[1] = new float[] { 47.3356f, 1000.482f, 116.904444f, 6314.596798f };
-            param[2] = new float[] { 73.9956f, 3295.712f, 137.3156f, 6601.916f};
-            param[3] = new float[] { 14.3289f, 81.369f, 18.7489f, 411.240f};
-            param[4] = new float[] { 15.6422f, 128.037f, 22.2667f, 987.294f};
-            param[5] = new float[] { 15.0489f, 50.747f, 19.3667f, 54.922f};
+            param[0] = new float[] { 4.0819881f, 5.488f, 4.2840368f, 4.031f};
+            param[1] = new float[] { 1.7914401f, 1.388f, 1.6371702f, 0.729f};
+            param[2] = new float[] { 1.6843104f, 1.099f, 1.6997891f, 0.973f};
+            param[3] = new float[] { 0.7801710f, 0.478f, 1.0049744f, 0.538f };
+            param[4] = new float[] { 0.8432133f, 1.026f, 1.1260909f, 1.210f};
+            param[5] = new float[] { 0.6695878f, 0.099f, 0.6819028f, 0.068f};
 
             return new ClassificationConfiguration(new FixedBodyConfiguration(), rootNodes, param);
         }

@@ -78,7 +78,7 @@ namespace Motion_lie_detection
             this.numberOfFrames = numberOfFrames;
         }
 
-        public float trafficclassif;
+        public List<float> trafficclassif;
 
         /**
          * Methods for handling events
@@ -195,10 +195,15 @@ namespace Motion_lie_detection
 
         protected void paintFooter(Graphics g)
         {
-            if(recording != null && CurrentPos < lieresult.End){
-                //Brush trafficbrush = new SolidBrush(Color.FromArgb((int)(((trafficclassif + 1) / 2) * 256), (int)((1 - (trafficclassif + 1) / 2) * 256), 0));
-                //g.FillEllipse(trafficbrush, 250, Height - 20 , 10, 10);
-                g.DrawString(trafficclassif.ToString(), new Font("Arial", 10.0f), Brushes.Black, 300, Height - 20);
+            if(trafficclassif != null && recording != null && CurrentPos < lieresult.End){
+                Brush trafficbrush = Brushes.Orange;
+                if(trafficclassif[0]<0.5f)
+                    trafficbrush = Brushes.Red;
+                if (trafficclassif[0] > 0.5f)
+                    trafficbrush = Brushes.Green;
+                g.FillEllipse(trafficbrush, 250, Height - 20, 10, 10);
+
+                g.DrawString("Truth likeliness: " + trafficclassif[0].ToString(), new Font("Arial", 10.0f), Brushes.Black, 400, Height - 20);
             }
 
             // Draw the time.
@@ -268,16 +273,16 @@ namespace Motion_lie_detection
 
             if (recording != null && CurrentPos < lieresult.End)
             {
-                trafficclassif = 0f;
-                foreach (List<float> diff in lieresult.FrameDifferences)
-                {
-                    if (diff == null)
-                        continue;
-                    trafficclassif += diff[diff.Count - 1];
-                }
-                trafficclassif /= lieresult.FrameDifferences.Count;
-                trafficclassif *= 500;
-                //trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos)[0];
+                //trafficclassif = 0f;
+                //foreach (List<float> diff in lieresult.FrameDifferences)
+                //{
+                //    if (diff == null)
+                //        continue;
+                //    trafficclassif += diff[diff.Count - 1];
+                //}
+                //trafficclassif /= lieresult.FrameDifferences.Count;
+                //trafficclassif *= 500;
+                trafficclassif = Classification.ClassifyPartsTruth(recording.ClassificationConfiguration, lieresult, CurrentPos);
             }
 
             // Let the timeline be redrawn and update the control.
