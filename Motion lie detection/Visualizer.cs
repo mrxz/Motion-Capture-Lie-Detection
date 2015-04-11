@@ -30,6 +30,7 @@ namespace Motion_lie_detection
 
     public class Visualizer : GraphicsDeviceControl
     {
+        Grid grid;
 
         Frame frame;
 
@@ -79,6 +80,8 @@ namespace Motion_lie_detection
 
             sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
             cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
+
+            grid = new Grid(GraphicsDevice, -12);
 		}		
 
         protected override void Draw()
@@ -93,6 +96,8 @@ namespace Motion_lie_detection
 
             // Start the normal drawing procedure.
             GraphicsDevice.Clear(Color.Black);
+
+            grid.Draw(GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
 
 			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
 
