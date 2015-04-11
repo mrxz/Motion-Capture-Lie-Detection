@@ -86,6 +86,7 @@ namespace Motion_lie_detection
 
 			recording.Update();
             timeline.Update();
+            leftSidePanel.Update();
 
             // Note: it might be worthwhile to ensure the frame is valid and contains joint data.
             // It shouldn't be a problem since the timeline should ensure that CurrentPos is within the recordings bound.

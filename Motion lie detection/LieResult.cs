@@ -59,6 +59,39 @@ namespace Motion_lie_detection
             get { return means; }
         }
 
+        public List<float> ComputeAbsoluteMovements(int start, int end)
+        {
+            if (frameDifferences.Count == 0 || start >= end)
+                return null;
+
+            // First convert the start and end to (downsampled) index.
+            int m = (framend - framestart) / frameDifferences.Count;
+            int startIndex = (start - framestart) / m;
+            int endIndex = Math.Min((end - framestart) / m, frameDifferences.Count - 1);
+            if (startIndex >= endIndex)
+                return null;
+
+            // Sum all the framedifferences between start and end.
+            List<float> result = new List<float>();
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                for (int j = 0; j < frameDifferences[i].Count; j++)
+                {
+                    if(i == startIndex) result.Add(0);
+                    result[j] += frameDifferences[i][j];
+                }
+            }
+
+            // Compute the mean and multiply by 500
+            for(int i = 0; i < result.Count; i++)
+            {
+                result[i] /= frameDifferences.Count;
+                result[i] *= 500;
+            }
+
+            return result;
+        }
+
         public List<float> FrameDifference(int id)
         {
             if (id < framestart || id > framend)

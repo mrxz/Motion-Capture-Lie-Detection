@@ -68,6 +68,7 @@
     <Compile Include="Classification.cs" />
     <Compile Include="ClassificationConfiguration.cs" />
     <Compile Include="GraphicsDeviceService.cs" />
+    <Compile Include="Grid.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="GraphicsDeviceControl.cs">
       <SubType>Component</SubType>
