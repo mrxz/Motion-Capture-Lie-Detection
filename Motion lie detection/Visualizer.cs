@@ -57,7 +57,8 @@ namespace Motion_lie_detection
         }
        // TrafficLight trafficLight;
         
-        static Color drawColor = Color.LightBlue;
+        Color jointColor = Color.LightGray;
+        Color boneColor = Color.LightGray;
         GeometricPrimitive sphere;
 		CylinderPrimitive cylinder;
 
@@ -81,7 +82,7 @@ namespace Motion_lie_detection
             sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
             cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
 
-            grid = new Grid(GraphicsDevice, -12);
+            grid = new Grid(GraphicsDevice, -13);
 		}		
 
         protected override void Draw()
@@ -98,6 +99,7 @@ namespace Motion_lie_detection
             GraphicsDevice.Clear(Color.Black);
 
             grid.Draw(GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
+            
 
 			Vector3 Centre = ConvertRealWorldPoint (frame.Joints [3].Position);
 
@@ -109,7 +111,7 @@ namespace Motion_lie_detection
             {
 				var position = ConvertRealWorldPoint(joint.Position) - Centre;
                 joints.Add(joint.Id, Tuple.Create(joint, position));          
-                drawJoint(position);              
+                drawJoint(position, 0.5f);               
             }
 
 			Queue<BodyNode> q = new Queue<BodyNode>();
@@ -119,7 +121,7 @@ namespace Motion_lie_detection
 				BodyNode node = q.Dequeue ();
 				foreach (BodyNode neighbour in node.getNeighbours()) {
 					q.Enqueue (neighbour);
-					drawBone (joints, bodyConfiguration, node.JointId, neighbour.JointId);
+					drawBone (joints, bodyConfiguration, node.JointId, neighbour.JointId, 0);
 				}
 			}
 		}
@@ -130,9 +132,10 @@ namespace Motion_lie_detection
             bodyConfiguration = null;
         }
 
-        private void drawJoint(Vector3 position)
+        private void drawJoint(Vector3 position, float amount)
         {
-            sphere.Draw(Matrix.CreateTranslation(position), camera.ViewMatrix, camera.ProjectionMatrix, drawColor);  
+            jointColor = Color.Lerp(Color.LightGray, Color.Red, amount);
+            sphere.Draw(Matrix.CreateTranslation(position), camera.ViewMatrix, camera.ProjectionMatrix, jointColor);  
         }
 
         /**
@@ -141,8 +144,9 @@ namespace Motion_lie_detection
          * @param configuration The bodyconfiguration to draw.
          * @param first The index of the first joint of the bone.
          * @param second The index of the second joint of the bone.
+         * @param the contribution to the algorithm by this bone.
          */
-		private void drawBone(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, int first, int second)
+		private void drawBone(Dictionary<int, Tuple<Joint, Vector3>> joints, BodyConfiguration configuration, int first, int second, float amount)
         {
 			if (first== -1 || second == -1)
                 return;
@@ -166,7 +170,8 @@ namespace Motion_lie_detection
 			Matrix trans = Matrix.CreateTranslation (firstJoint.Item2);
 
 			Matrix world = initTrans * scale * rot * trans;
-			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, Color.LightGray);
+            boneColor =  Color.Lerp(Color.LightGray, Color.Red, amount);
+			cylinder.Draw (world, camera.ViewMatrix, camera.ProjectionMatrix, boneColor);
         }
 
         #region events
@@ -178,7 +183,7 @@ namespace Motion_lie_detection
 
         void visualizer_Zoom(object sender, MouseEventArgs e)
         {
-            camera.Zoom -= e.Delta / 100;
+            camera.Zoom -= e.Delta / 50;
         }
 
         int prevMouseX = -1;
@@ -208,12 +213,13 @@ namespace Motion_lie_detection
                     camera.Pitch += dy;
                     break;
                 case MouseButtons.Right:
-                    camera.MoveCameraRight(-dx);
-                    camera.MoveCameraForward(dy);
+                    camera.MoveCameraRight(-dx*5);
+                    camera.MoveCameraForward(dy*5);
                     Invalidate();
                     break;
-
-
+                case MouseButtons.Middle:
+                    camera.Zoom -= dy*20;
+                    break;
             }
         }
 
