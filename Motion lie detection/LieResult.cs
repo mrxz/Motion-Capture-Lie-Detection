@@ -40,8 +40,9 @@ namespace Motion_lie_detection
                     frameDifferences.Add(diff);
                     for (int i = 0; i < means.Count; i++)
                     {
-                        means[i] *= meancount / (meancount + 1);
-                        means[i] += diff[i] / (meancount + 1);
+                        double mcount = (double)meancount;
+                        means[i] *= mcount / (mcount + 1);
+                        means[i] += diff[i] / (mcount + 1);
                     }
                     meancount++;
                 }
@@ -85,7 +86,7 @@ namespace Motion_lie_detection
             // Compute the mean and multiply by 500
             for(int i = 0; i < result.Count; i++)
             {
-                result[i] /= frameDifferences.Count;
+                result[i] /= endIndex - startIndex;
                 result[i] *= 500;
             }
 

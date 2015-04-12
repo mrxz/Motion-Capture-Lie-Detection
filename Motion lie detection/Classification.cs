@@ -50,11 +50,20 @@ namespace Motion_lie_detection
             return res;
         }
 
-        private static double GaussianNaiveBayes(double average, double variance, double movement)
+        public static List<Tuple<double, double>> ClassifyMeansBoth(ClassificationConfiguration model, LieResult result)
+        {
+            List<Tuple<double, double>> res = null;
+            List<double> movements = result.Means;
+            if (movements != null)
+                res = Classification.classifyBoth(model, movements);
+            return res;
+        }
+
+        public static double GaussianNaiveBayes(double average, double variance, double movement)
         {
             double diff = movement - average;
             double var2 = variance * 2;
-            return (1.0 / Math.Sqrt(Math.PI * var2)) * Math.Pow(Math.E, -(diff * diff) / var2);
+            return (1.0 / Math.Sqrt(Math.PI * var2)) * Math.Exp(-(diff * diff) / var2);
         }
 
         private static List<double> classify(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1)
@@ -76,6 +85,31 @@ namespace Motion_lie_detection
                 else
                 {
                     res.Add(0.5);
+                }
+            }
+            return res;
+        }
+
+        private static List<Tuple<double, double>> classifyBoth(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1)
+        {
+            List<Tuple<double, double>> res = new List<Tuple<double, double>>();
+            double[] param;
+            max = (max == -1 || max > movements.Count) ? movements.Count : max;
+
+            for (int i = min; i < max; i++)
+            {
+                param = model[i];
+                if (param != null)
+                {
+                    Console.WriteLine("Using model {0} for i {1}, with movement {2}", param[0], i, movements[i] * 500);
+                    double ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * 500);
+                    double plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * 500);
+
+                    res.Add(Tuple.Create(ptruth, plie));
+                }
+                else
+                {
+                    res.Add(Tuple.Create(0.5, 0.5));
                 }
             }
             return res;

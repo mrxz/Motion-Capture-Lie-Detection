@@ -78,7 +78,8 @@ namespace Motion_lie_detection
             this.numberOfFrames = numberOfFrames;
         }
 
-        public List<double> trafficclassif, meanclassif;
+        public List<double> trafficclassif;
+        public List<Tuple<double, double>> meanclassif;
         
         /**
          * Methods for handling events
@@ -165,12 +166,25 @@ namespace Motion_lie_detection
             if (meanclassif != null)
             {
                 Brush meanbrush = Brushes.Orange;
-                if (meanclassif[24] < 0.5f)
+                var trueTot = 1.0;
+                var falseTot = 1.0;
+                for (int i = 0; i < 5; i++)
+                {
+                    double ptruth = meanclassif[24 + i].Item1;
+                    double plie = meanclassif[24 + i].Item2;
+
+                    trueTot *= ptruth;
+                    falseTot *= plie;
+                }
+                double result = trueTot / (trueTot + falseTot);
+
+                if (result < 0.5f)
                     meanbrush = Brushes.Red;
-                if (meanclassif[24] > 0.5f)
+                else if (result > 0.5f)
                     meanbrush = Brushes.Green;
+                
                 g.FillEllipse(meanbrush, Width - 20, 5, 10, 10);
-                g.DrawString("Mean: " + meanclassif[24].ToString(), new Font("Arial", 10.0f), Brushes.Black, Width - 200, 5);
+                g.DrawString("Mean: " + result.ToString(), new Font("Arial", 10.0f), Brushes.Black, Width - 200, 5);
             }
         }
 
@@ -298,7 +312,7 @@ namespace Motion_lie_detection
 
             if (CurrentPos == lieresult.End)
             {
-                meanclassif = Classification.ClassifyMeans(recording.ClassificationConfiguration, lieresult);
+                meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
             }
 
             // Let the timeline be redrawn and update the control.
