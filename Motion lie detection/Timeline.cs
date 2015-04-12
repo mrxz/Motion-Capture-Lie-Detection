@@ -132,10 +132,13 @@ namespace Motion_lie_detection
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
+            int frame = frameId((float)e.X);
+            if (currentMarkPoint.Id != -1)
+                frame = currentMarkPoint.Frameid;
+
             // Update the current position to the frameId corresponding with the clicked point.
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                int frame = frameId((float)e.X);
                 CurrentPos = frame;
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -143,13 +146,13 @@ namespace Motion_lie_detection
                 if (selection)
                 {
                     selection = false;
-                    selectionStart = frameId((float)e.X);
+                    selectionStart = frame;
                     selectionEnd = -1;
                 }
                 else
                 {
                     selection = true;
-                    selectionEnd = frameId((float)e.X);
+                    selectionEnd = frame;
                     // Swap if needed.
                     if (selectionEnd < selectionStart)
                     {
@@ -256,7 +259,7 @@ namespace Motion_lie_detection
                 if (selection)
                 {
                     Brush brush = new SolidBrush(Color.FromArgb(128, Color.Blue));
-                    g.FillRectangle(brush, (int)startPos, 20, (int)(endPos - startPos), Height - 40);
+                    g.FillRectangle(brush, (int)startPos, 20, (int)endPos - (int)startPos, Height - 40);
 
                     g.DrawLine(Pens.Blue, (int)endPos, 20, (int)endPos, Height - 20);
                 }
