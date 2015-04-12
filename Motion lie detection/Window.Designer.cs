@@ -433,7 +433,7 @@ namespace Motion_lie_detection
                 loop.Text = "loop";
                 loop.CheckedChanged += (obj, e) =>
                 {
-
+                    timeline.Looping = loop.Checked;
                 };
                 this.Controls.Add(loop);
 

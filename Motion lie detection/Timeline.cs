@@ -150,6 +150,13 @@ namespace Motion_lie_detection
                 {
                     selection = true;
                     selectionEnd = frameId((float)e.X);
+                    // Swap if needed.
+                    if (selectionEnd < selectionStart)
+                    {
+                        var tmp = selectionEnd;
+                        selectionEnd = selectionStart;
+                        selectionStart = tmp;
+                    }
                 }
             }
         }
@@ -240,9 +247,26 @@ namespace Motion_lie_detection
                 g.DrawLine(markPen, (int)markPos, 20, (int)markPos, Height - 20);
             }
 
+            // Draw the selection.
+            {
+                float startPos = position(selectionStart);
+                float endPos = position(selectionEnd);
+                g.DrawLine(Pens.Blue, (int)startPos, 20, (int)startPos, Height - 20);
+
+                if (selection)
+                {
+                    Brush brush = new SolidBrush(Color.FromArgb(128, Color.Blue));
+                    g.FillRectangle(brush, (int)startPos, 20, (int)(endPos - startPos), Height - 40);
+
+                    g.DrawLine(Pens.Blue, (int)endPos, 20, (int)endPos, Height - 20);
+                }
+            }
+
             // Draw the red currentFrame line
-            float timePos = position(CurrentPos);
-            g.DrawLine(Pens.Red, (int)timePos, 20, (int)timePos, Height - 20);
+            {
+                float timePos = position(CurrentPos);
+                g.DrawLine(Pens.Red, (int)timePos, 20, (int)timePos, Height - 20);
+            }
         }
 
         protected void paintFooter(Graphics g)
@@ -307,7 +331,17 @@ namespace Motion_lie_detection
                 {
                     // Determine the time delta since the last update.
                     double deltaSeconds = nowUpdateTime - previouseUpdateTime;
-                    float newCurrentFrame = (float)(currentFrame + (deltaSeconds * Recording.FrameRate) * playBackSpeed);
+                    double newCurrentFrame = (float)(currentFrame + (deltaSeconds * Recording.FrameRate) * playBackSpeed);
+                    setCurrentFrame(newCurrentFrame);
+                }
+            }
+
+            // Now check for looping within the selection.
+            if (selection && looping)
+            {
+                if (currentFrame > selectionEnd)
+                {
+                    double newCurrentFrame = currentFrame - selectionEnd + selectionStart;
                     setCurrentFrame(newCurrentFrame);
                 }
             }
@@ -325,15 +359,6 @@ namespace Motion_lie_detection
 
             if (recording != null && CurrentPos < lieresult.End)
             {
-                //trafficclassif = 0f;
-                //foreach (List<float> diff in lieresult.FrameDifferences)
-                //{
-                //    if (diff == null)
-                //        continue;
-                //    trafficclassif += diff[diff.Count - 1];
-                //}
-                //trafficclassif /= lieresult.FrameDifferences.Count;
-                //trafficclassif *= 500;
                 trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos);
             }
 
@@ -367,7 +392,7 @@ namespace Motion_lie_detection
             return (int)(position * (float)numberOfFrames / Width);
         }
 
-        private void setCurrentFrame(float value)
+        private void setCurrentFrame(double value)
         {
             // Initially set the current frame to the dictated value.
             currentFrame = value;
