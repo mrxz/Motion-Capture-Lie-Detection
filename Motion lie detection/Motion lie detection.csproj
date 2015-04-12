@@ -86,6 +86,7 @@
     <Compile Include="SuitController.cs" />
     <Compile Include="SuitRecordingProvider.cs" />
     <Compile Include="TrafficLight.cs" />
+    <Compile Include="Vector3d.cs" />
     <Compile Include="VertexPositionNormal.cs" />
     <Compile Include="Visualizer.cs">
       <SubType>Component</SubType>
