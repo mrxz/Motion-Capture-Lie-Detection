@@ -62,6 +62,17 @@ namespace Motion_lie_detection
          * Flag indicating that the timeline is at the end of a recording.
          */
         public bool atEnd = true;
+        /**
+         * Boolean if the player is looping.
+         */
+        private bool looping = false;
+
+        /**
+         * Selection segment.
+         */
+        private bool selection;
+        private int selectionStart;
+        private int selectionEnd;
 
         public Timeline()
             : this(1000) // FIXME: DEBUG VALUE
@@ -122,9 +133,25 @@ namespace Motion_lie_detection
         protected override void OnMouseClick(MouseEventArgs e)
         {
             // Update the current position to the frameId corresponding with the clicked point.
-            int frame = frameId((float)e.X);
-            CurrentPos = frame;
-            //StepMode = false;
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                int frame = frameId((float)e.X);
+                CurrentPos = frame;
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                if (selection)
+                {
+                    selection = false;
+                    selectionStart = frameId((float)e.X);
+                    selectionEnd = -1;
+                }
+                else
+                {
+                    selection = true;
+                    selectionEnd = frameId((float)e.X);
+                }
+            }
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -163,7 +190,7 @@ namespace Motion_lie_detection
                 g.DrawEllipse(Pens.Black, (int)markPos - 5, 5, 10, 10);
             }
 
-            if (meanclassif != null)
+            if (meanclassif != null && meanclassif.Count >= 29)
             {
                 Brush meanbrush = Brushes.Orange;
                 var trueTot = 1.0;
@@ -427,6 +454,16 @@ namespace Motion_lie_detection
             set {
                 playing = value;
                 atEnd &= playing;
+            }
+        }
+
+        public bool Looping
+        {
+            get { return looping; }
+            set
+            {
+                looping = value;
+                //atEnd &= playing;
             }
         }
     }
