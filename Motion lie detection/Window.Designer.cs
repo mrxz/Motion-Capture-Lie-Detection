@@ -580,7 +580,7 @@ namespace Motion_lie_detection
                 this.Controls.Add(light);
 
                 titleLabel = new Label();
-                titleLabel.Text = "Absolute movement:";
+                titleLabel.Text = "Frame dgiference";
                 titleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 titleLabel.Font = new Font(titleLabel.Font.FontFamily, titleLabel.Font.Size, FontStyle.Bold);
                 //this.Controls.Add(titleLabel);
@@ -599,7 +599,7 @@ namespace Motion_lie_detection
                 this.Chart.Palette = ChartColorPalette.Pastel;
 
                 // Set chart title.
-                this.Chart.Titles.Add("Absolute movement");
+                this.Chart.Titles.Add("Frame difference");
                 
                 // add a chart legend. neat right.
                 this.Chart.Legends.Add("chart legend");
@@ -631,13 +631,6 @@ namespace Motion_lie_detection
                     // construct a chart series
                     if (Chart.Series.Count == 0)
                     {
-                        Chart.Series.Add(new Series("Abs movement")
-                        {
-                            ChartType = SeriesChartType.FastLine,
-                            YAxisType = AxisType.Primary,
-                            YValueType = ChartValueType.Double,
-                            IsXValueIndexed = false
-                        });
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
                             Chart.Series.Add(new Series(node.getName())
@@ -667,7 +660,7 @@ namespace Motion_lie_detection
 
                     if (timeline.CurrentPos > 0)
                     {
-                        int j = 1;
+                        int j = 0;
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
                             var value = timeline.LieResult[timeline.CurrentPos][j] * 500;
