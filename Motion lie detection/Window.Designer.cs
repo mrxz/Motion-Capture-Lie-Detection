@@ -222,9 +222,11 @@ namespace Motion_lie_detection
             RecordingProvider provider = new SuitRecordingProvider(controller);
             provider.Init();
             Recording recording = new Recording(provider, new FixedBodyConfiguration());
+            
             recording.Update();
 
 			this.Recording = recording;
+            leftSidePanel.Chart.Series.Clear();
 			this.Text = "Motion Lie Detection - " + connectForm.Host + ":" + connectForm.Port;
 		}
 
@@ -245,6 +247,7 @@ namespace Motion_lie_detection
             recording.Update();
 
 			this.Recording = recording;
+            leftSidePanel.Chart.Series.Clear();
 			this.Text = "Motion Lie Detection - " + dialog.SafeFileName;
 		}
 
@@ -282,6 +285,7 @@ namespace Motion_lie_detection
 
             // Set the markpoint panel.
             rightSidePanel.Reset();
+            leftSidePanel.Chart.Series.Clear();
 
 			this.Text = "Motion Lie Detection";
 		}
@@ -522,7 +526,7 @@ namespace Motion_lie_detection
             private Label result;
             private Label absoluteMovement;
 
-            Chart chart;
+            public Chart Chart;
 
             public LeftSidePanel(Timeline timeline)
             {
@@ -539,43 +543,34 @@ namespace Motion_lie_detection
                // this.Controls.Add(absoluteMovement);
 
 
-                chart = new Chart();
+                Chart = new Chart();
 
                 //Chart Settings 
                 // Populating the data arrays.
-                this.chart.Series.Clear();
-                this.chart.Palette = ChartColorPalette.SeaGreen;
+                this.Chart.Series.Clear();
+
+                this.Chart.Palette = ChartColorPalette.SeaGreen;
 
                 // Set chart title.
-                this.chart.Titles.Add("Absolute movement");
+                this.Chart.Titles.Add("Absolute movement");
                 
                 // add a chart legend. neat right.
-                this.chart.Legends.Add("chart legend");
+                this.Chart.Legends.Add("chart legend");
 
  
-
-                //var i = timeline.BodyConfiguration.Size;
-
-          
-
-                chart.ResetAutoValues();
-                chart.ChartAreas.Add(new ChartArea());
-                chart.ChartAreas[0].AxisY.Maximum = 60;
-                chart.ChartAreas[0].AxisY.Minimum = 0;
-                chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
-                chart.ChartAreas[0].AxisY.Title = "Abs movement";
-                chart.ChartAreas[0].AxisY.IntervalAutoMode = IntervalAutoMode.VariableCount;
+         
+                Chart.ResetAutoValues();
+                Chart.ChartAreas.Add(new ChartArea());
+                Chart.ChartAreas[0].AxisY.Maximum = 60;
+                Chart.ChartAreas[0].AxisY.Minimum = 0;
+                Chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
+                Chart.ChartAreas[0].AxisY.Title = "Abs movement";
+                Chart.ChartAreas[0].AxisY.IntervalAutoMode = IntervalAutoMode.VariableCount;
 
 
-                this.Controls.Add(chart);
+                this.Controls.Add(Chart);
 
-                chart.Series.Add(new Series("Abs movement")
-                {
-                    ChartType = SeriesChartType.FastLine,
-                    YAxisType = AxisType.Primary,
-                    YValueType = ChartValueType.Double,
-                    IsXValueIndexed = false
-                });
+
 
                
 
@@ -589,11 +584,18 @@ namespace Motion_lie_detection
                 if (timeline.Recording != null)
                 {
                     List<double> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
-                    if (chart.Series.Count == 1)
+                    if (Chart.Series.Count == 0)
                     {
+                        Chart.Series.Add(new Series("Abs movement")
+                        {
+                            ChartType = SeriesChartType.FastLine,
+                            YAxisType = AxisType.Primary,
+                            YValueType = ChartValueType.Double,
+                            IsXValueIndexed = false
+                        });
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            chart.Series.Add(new Series(node.getName())
+                            Chart.Series.Add(new Series(node.getName())
                             {
                                 ChartType = SeriesChartType.FastLine,
                                 YAxisType = AxisType.Primary,
@@ -608,20 +610,20 @@ namespace Motion_lie_detection
                         BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
                         int index = bodyConfiguration.Size;
 
-                        for (int i = 0; i < chart.Series.Count; i++ )
+                        for (int i = 0; i < Chart.Series.Count; i++ )
                         {
-                            if (chart.Series[i].Points.Count > 60)
+                            if (Chart.Series[i].Points.Count > 60)
                             {
-                                chart.Series[i].Points.RemoveAt(0);
+                                Chart.Series[i].Points.RemoveAt(0);
                             }
                         }
-                         chart.Series[0].Points.AddY(result[index++]);
+                         Chart.Series[0].Points.AddY(result[index++]);
                       //  text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
 
                         int j = 1;
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            chart.Series[j].Points.Add(result[index++]);
+                            Chart.Series[j].Points.Add(result[index++]);
                            // text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), result[index++]);
                             j++;
                         }
@@ -642,7 +644,7 @@ namespace Motion_lie_detection
                 result.Width = newSize.Width;
                 result.Height = 20;
 
-                chart.Width = newSize.Width;
+                Chart.Width = newSize.Width;
 
                 absoluteMovement.Left = 0;
                 absoluteMovement.Top = newSize.Height/2 + 20;
