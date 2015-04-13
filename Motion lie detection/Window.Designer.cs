@@ -605,7 +605,7 @@ namespace Motion_lie_detection
                 this.Chart.Legends.Add("chart legend");
                 Chart.ResetAutoValues();
                 Chart.ChartAreas.Add(new ChartArea());
-                Chart.ChartAreas[0].AxisY.Maximum = 60;
+                Chart.ChartAreas[0].AxisY.Maximum = 0.05;
                 Chart.ChartAreas[0].AxisY.Minimum = 0;
                 Chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
                 Chart.ChartAreas[0].AxisY.Title = "Abs movement";
@@ -617,10 +617,18 @@ namespace Motion_lie_detection
 
             public new void Update()
             {
+               
+
+          
+
+           
                 String text = "";
                 if (timeline.Recording != null)
                 {
-                    List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
+                    // Update the graph
+                    int pos = timeline.CurrentPos;
+
+                    // construct a chart series
                     if (Chart.Series.Count == 0)
                     {
                         Chart.Series.Add(new Series("Abs movement")
@@ -642,30 +650,53 @@ namespace Motion_lie_detection
                         }
                     }
 
+                    // remove trailing points
+                    for (int i = 0; i < Chart.Series.Count; i++)
+                    {
+                        if (Chart.Series[i].Points.Count > 60)
+                        {
+                            Chart.Series[i].Points.RemoveAt(0);
+                        }
+                    }
+
+                    // adjust the chart's axis.
+
+                    //Chart.ChartAreas[0].AxisY.Maximum = 5 + (double)(10 * Math.Ceiling(abs / 10));
+                    //Chart.Series[0].Points.AddY(abs);
+
+
+                    if (timeline.CurrentPos > 0)
+                    {
+                        int j = 1;
+                        foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
+                        {
+                            var value = timeline.LieResult[timeline.CurrentPos][j] * 500;
+                            Chart.Series[j].Points.Add(value);
+                            j++;
+                        }
+                    }
+                    // update the traffic light
+                    List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
+                  
+                    
+
                     if (movement != null)
                     {
                         BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
                         int index = bodyConfiguration.Size;
 
-                        for (int i = 0; i < Chart.Series.Count; i++ )
-                        {
-                            if (Chart.Series[i].Points.Count > 60)
-                            {
-                                Chart.Series[i].Points.RemoveAt(0);
-                            }
-                        }
+     
                         var abs = movement[index++];
-                        Chart.ChartAreas[0].AxisY.Maximum = 5+ (double)(10 * Math.Ceiling(abs / 10));
-                        Chart.Series[0].Points.AddY(abs);
+
                         text += String.Format("Abs. movement: {0:0.000}\n", abs);
 
-                        int j = 1;
+              
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
                             var value = movement[index++];
-                            Chart.Series[j].Points.Add(value);
+           
                             text += String.Format("Limb {0}: {1:0.000}\n", node.getName(), value);
-                            j++;
+            
                         }
 
                         this.results = Classification.ClassifyBoth(timeline.Recording.ClassificationConfiguration, movement);
