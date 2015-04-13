@@ -513,18 +513,66 @@ namespace Motion_lie_detection
         {
             private Timeline timeline;
 
-            private Label result;
+            private Panel light;
+            private Label titleLabel;
             private Label absoluteMovement;
+
+            private List<Tuple<double, double>> results = null;
 
             public LeftSidePanel(Timeline timeline)
             {
                 this.timeline = timeline;
 
-                result = new Label();
-                result.Text = "Absolute movement:";
-                result.TextAlign = ContentAlignment.MiddleCenter;
-                result.Font = new Font(result.Font.FontFamily, result.Font.Size, FontStyle.Bold);
-                this.Controls.Add(result);
+                light = new Light();
+                light.Paint += (obj, e) => {
+                    Graphics g = e.Graphics;
+
+                    // Determine the color
+                    Brush meanbrush = Brushes.Orange;
+                    if (results != null)
+                    {
+                        var trueTot = 1.0;
+                        var falseTot = 1.0;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            double ptruth = results[24 + i].Item1;
+                            double plie = results[24 + i].Item2;
+
+                            trueTot *= ptruth;
+                            falseTot *= plie;
+                        }
+
+                        double result = trueTot / (trueTot + falseTot);
+                        if (result < 0.5f)
+                            meanbrush = Brushes.Red;
+                        else if (result > 0.5f)
+                            meanbrush = Brushes.Green;
+                    }
+
+                    // Draw the ellipse
+                    Rectangle draw = ((Panel)obj).ClientRectangle;
+                    draw.Inflate(-20, -20);
+                    if (draw.Height > draw.Width)
+                    {
+                        int diff = draw.Height - draw.Width;
+                        draw.Height = draw.Width;
+                        draw.Y += diff/2;
+                    }
+                    else
+                    {
+                        int diff = draw.Width - draw.Height;
+                        draw.Width = draw.Height;
+                        draw.X += diff / 2;
+                    }
+                    g.FillEllipse(meanbrush, draw);
+                };
+                this.Controls.Add(light);
+
+                titleLabel = new Label();
+                titleLabel.Text = "Absolute movement:";
+                titleLabel.TextAlign = ContentAlignment.MiddleCenter;
+                titleLabel.Font = new Font(titleLabel.Font.FontFamily, titleLabel.Font.Size, FontStyle.Bold);
+                this.Controls.Add(titleLabel);
 
                 absoluteMovement = new Label();
                 absoluteMovement.Text = "";
@@ -538,17 +586,21 @@ namespace Motion_lie_detection
                 String text = "";
                 if (timeline.Recording != null)
                 {
-                    List<double> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
-                    if (result != null)
+                    List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
+
+                    if (movement != null)
                     {
                         BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
                         int index = bodyConfiguration.Size;
 
-                        text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
+                        text += String.Format("Abs. movement\t: {0:0.000} \n", movement[index++]);
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), result[index++]);
+                            text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), movement[index++]);
                         }
+
+                        this.results = Classification.ClassifyBoth(timeline.Recording.ClassificationConfiguration, movement);
+                        light.Invalidate();
                     }
                 }
 
@@ -561,16 +613,33 @@ namespace Motion_lie_detection
             {
                 Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);
 
-                result.Left = 0;
-                result.Top = newSize.Height / 2;
-                result.Width = newSize.Width;
-                result.Height = 20;
+                light.Left = 0;
+                light.Top = 0;
+                light.Width = newSize.Width;
+                light.Height = newSize.Height / 2;
+                light.Invalidate();
+
+                titleLabel.Left = 0;
+                titleLabel.Top = newSize.Height / 2;
+                titleLabel.Width = newSize.Width;
+                titleLabel.Height = 20;
 
                 absoluteMovement.Left = 0;
                 absoluteMovement.Top = newSize.Height/2 + 20;
                 absoluteMovement.Width = newSize.Width;
                 absoluteMovement.Height = newSize.Height/2 - 20;
 
+            }
+
+            public class Light : Panel
+            {
+                public Light()
+                {
+                    // Note: set the style to prevent flickering of the contorl.
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                        ControlStyles.UserPaint |
+                        ControlStyles.AllPaintingInWmPaint, true);
+                }
             }
         }
 

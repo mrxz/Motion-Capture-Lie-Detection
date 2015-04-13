@@ -130,26 +130,24 @@ namespace Motion_lie_detection
             }
         }
 
-        protected override void OnMouseClick(MouseEventArgs e)
+        protected override void OnMouseUp(MouseEventArgs e)
         {
             int frame = frameId((float)e.X);
             if (currentMarkPoint.Id != -1)
                 frame = currentMarkPoint.Frameid;
 
-            // Update the current position to the frameId corresponding with the clicked point.
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
-            {
-                CurrentPos = frame;
-            }
-            else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            // Check for the right button.
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 if (selection)
                 {
                     selection = false;
-                    selectionStart = frame;
+                    selectionStart = -1;
                     selectionEnd = -1;
+                    return;
                 }
-                else
+
+                if (Math.Abs(selectionStart - frame) > 5)
                 {
                     selection = true;
                     selectionEnd = frame;
@@ -161,6 +159,43 @@ namespace Motion_lie_detection
                         selectionStart = tmp;
                     }
                 }
+                else
+                {
+                    selection = true;
+                    selectionEnd = -2;
+                }
+            }
+
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            int frame = frameId((float)e.X);
+            if (currentMarkPoint.Id != -1)
+                frame = currentMarkPoint.Frameid;
+
+            // Check for the right button.
+            if (!selection && e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                selection = false;
+                selectionStart = frame;
+                selectionEnd = -1;
+            }
+
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            int frame = frameId((float)e.X);
+            if (currentMarkPoint.Id != -1)
+                frame = currentMarkPoint.Frameid;
+
+            // Update the current position to the frameId corresponding with the clicked point.
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                CurrentPos = frame;
             }
         }
 
@@ -253,10 +288,23 @@ namespace Motion_lie_detection
             // Draw the selection.
             {
                 float startPos = position(selectionStart);
-                float endPos = position(selectionEnd);
+                int endFrame = selectionEnd;
+                if (selectionEnd == -2)
+                    endFrame = Recording.FrameCount;
+                if (!selection && MouseButtons == MouseButtons.Right)
+                    endFrame = frameId((float)PointToClient(MousePosition).X);
+                float endPos = position(endFrame);
+                // Swap if needed
+                if (endPos < startPos)
+                {
+                    var tmp = endPos;
+                    endPos = startPos;
+                    startPos = tmp;
+                }
+
                 g.DrawLine(Pens.Blue, (int)startPos, 20, (int)startPos, Height - 20);
 
-                if (selection)
+                if (selection || MouseButtons == MouseButtons.Right)
                 {
                     Brush brush = new SolidBrush(Color.FromArgb(128, Color.Blue));
                     g.FillRectangle(brush, (int)startPos, 20, (int)endPos - (int)startPos, Height - 40);
@@ -492,6 +540,22 @@ namespace Motion_lie_detection
             {
                 looping = value;
                 //atEnd &= playing;
+            }
+        }
+
+        public int SelectionStart
+        {
+            get { return selection ? Math.Max(selectionStart, 0) : 0; }
+        }
+
+        public int SelectionEnd
+        {
+            get
+            {
+                if (selection && selectionEnd != -2)
+                    return Math.Min(selectionEnd, lieresult.End);
+                else
+                    return lieresult.End;
             }
         }
     }

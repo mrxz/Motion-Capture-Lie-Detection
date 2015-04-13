@@ -92,7 +92,7 @@ namespace Motion_lie_detection
             // It shouldn't be a problem since the timeline should ensure that CurrentPos is within the recordings bound.
             visualizer.Frame = timeline.CurrentFrame;
             // TODO: Implement a better method for buffering ahead in the algoritm computation.
-            algo.Compute(ref recording, ref context, ref LieResult, timeline.CurrentPos + 20);
+            algo.Compute(ref recording, ref context, ref LieResult, Math.Max(timeline.CurrentPos + 20, LieResult.End + 100));
 
 		}
 
@@ -108,26 +108,5 @@ namespace Motion_lie_detection
 		}
 	}
 
-    ///**
-    // * Filter pass that simply stores the frame for visualization.
-    // */
-    //public class VisualizerPass : FilterPass
-    //{
-    //    private Frame frame;
-
-    //    public VisualizerPass(Algorithm baseAlgorithm) : base(baseAlgorithm) {}
-
-    //    public override List<float> ComputeFrame (ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
-    //    {
-    //        frame = next;
-    //        return BaseAlgorithm.ComputeFrame (ref context, bodyConfiguration, next);
-    //    }
-
-    //    public Frame GetFrame() 
-    //    {
-    //        return frame;
-    //    }
-
-    //}
 }
 
