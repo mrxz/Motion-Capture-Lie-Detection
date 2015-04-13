@@ -549,7 +549,7 @@ namespace Motion_lie_detection
                 // Populating the data arrays.
                 this.Chart.Series.Clear();
 
-                this.Chart.Palette = ChartColorPalette.SeaGreen;
+                this.Chart.Palette = ChartColorPalette.Pastel;
 
                 // Set chart title.
                 this.Chart.Titles.Add("Absolute movement");
