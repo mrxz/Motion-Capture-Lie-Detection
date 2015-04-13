@@ -625,55 +625,7 @@ namespace Motion_lie_detection
                 String text = "";
                 if (timeline.Recording != null)
                 {
-                    // Update the graph
-                    int pos = timeline.CurrentPos;
-
-                    // construct a chart series
-                    if (Chart.Series.Count == 0)
-                    {
-                        foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
-                        {
-                            Chart.Series.Add(new Series(node.getName())
-                            {
-                                ChartType = SeriesChartType.FastLine,
-                                YAxisType = AxisType.Primary,
-                                YValueType = ChartValueType.Double,
-                                IsXValueIndexed = false
-                            });
-                        }
-                    }
-
-                    // remove trailing points
-                    for (int i = 0; i < Chart.Series.Count; i++)
-                    {
-                        if (Chart.Series[i].Points.Count > 60)
-                        {
-                            Chart.Series[i].Points.RemoveAt(0);
-                        }
-                    }
-
-
-
-                    if (timeline.CurrentPos > 0)
-                    {
-
-                        if (timeline.LieResult.FrameDifferences.Count > 0)
-                        {
-                            int j = 0;
-
-
-                            foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
-                            {
-                                var value = timeline.LieResult[timeline.CurrentPos][j] * 500;
-
-                                Chart.Series[j].Points.Add(value);
-                                j++;
-
-                            }
-                        }
-                      //  Chart.ChartAreas[0].RecalculateAxesScale();
-             
-        
+                    
                     }
                     // update the traffic light
                     List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
@@ -702,7 +654,7 @@ namespace Motion_lie_detection
                         this.results = Classification.ClassifyBoth(timeline.Recording.ClassificationConfiguration, movement);
                         light.Invalidate();
                     }
-                }
+                
             
                 absoluteMovement.Text = text;
                 absoluteMovement.Invalidate();

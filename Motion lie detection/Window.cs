@@ -85,7 +85,7 @@ namespace Motion_lie_detection
 				return;
 
 			recording.Update();
-            timeline.Update();
+            timeline.Update(leftSidePanel.Chart);
             leftSidePanel.Update();
 
             // Note: it might be worthwhile to ensure the frame is valid and contains joint data.

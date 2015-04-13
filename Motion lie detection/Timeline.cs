@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Motion_lie_detection
 {
@@ -357,7 +358,7 @@ namespace Motion_lie_detection
          * Method for updating the timeline to incorporate new frames.
          * @param margin The margin to take the new amount of numberOfFrames.
          */
-        public new void Update()
+        public new void Update(Chart Chart)
         {
             double nowUpdateTime = totalSeconds();
 
@@ -376,7 +377,8 @@ namespace Motion_lie_detection
                 // TODO: Special method to snap to the end in case it's a live recording.
                 if (atEnd)
                 {
-                    currentFrame = recording.FrameCount - 1;
+                    currentFrame = Math.Max(0, lieresult.End);
+                    //recording.FrameCount - 1;
                 }
                 else
                 {
@@ -384,43 +386,88 @@ namespace Motion_lie_detection
                     double deltaSeconds = nowUpdateTime - previouseUpdateTime;
                     double newCurrentFrame = (float)(currentFrame + (deltaSeconds * Recording.FrameRate) * playBackSpeed);
                     setCurrentFrame(newCurrentFrame);
-                }
-            }
 
-            // Now check for looping within the selection.
-            if (selection && looping)
-            {
-                if (currentFrame > SelectionEnd)
+                    // Update the graph
+                    int pos = this.CurrentPos;                    
+                }
+                // construct a chart series
+                if (Chart.Series.Count == 0)
                 {
-                    double newCurrentFrame = currentFrame - SelectionEnd + SelectionStart;
-                    setCurrentFrame(newCurrentFrame);
+                    foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
+                    {
+                        Chart.Series.Add(new Series(node.getName())
+                        {
+                            ChartType = SeriesChartType.FastLine,
+                            YAxisType = AxisType.Primary,
+                            YValueType = ChartValueType.Double,
+                            IsXValueIndexed = false
+                        });
+                    }
                 }
+
+                // remove trailing points
+                for (int i = 0; i < Chart.Series.Count; i++)
+                {
+                    if (Chart.Series[i].Points.Count > 60)
+                    {
+                        Chart.Series[i].Points.RemoveAt(0);
+                    }
+                }
+
+                if (this.CurrentPos > 0)
+                {
+
+                    if (this.LieResult.FrameDifferences.Count > 0)
+                    {
+                        int j = 0;
+
+
+                        foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
+                        {
+                            var value = this.LieResult[this.CurrentPos][j] * 500;
+
+                            Chart.Series[j].Points.Add(value);
+                            j++;
+
+                        }
+                    }
+                    //  Chart.ChartAreas[0].RecalculateAxesScale();
+                }
+                // Now check for looping within the selection.
+                if (selection && looping)
+                {
+                    if (currentFrame > SelectionEnd)
+                    {
+                        double newCurrentFrame = currentFrame - SelectionEnd + SelectionStart;
+                        setCurrentFrame(newCurrentFrame);
+                    }
+                }
+
+                // Regardless if we're playing or not, update the previous update time.
+                // Note: this prevents large time delta's to occur due to pausing/playing.
+                previouseUpdateTime = nowUpdateTime;
+
+                // -------
+                // Check if the number of frames has exceeded the capacity.
+                if (recording.FrameCount > numberOfFrames)
+                {
+                    numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
+                }
+
+                if (recording != null && CurrentPos < lieresult.End)
+                {
+                    trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos);
+                }
+
+                if (CurrentPos == lieresult.End)
+                {
+                    meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
+                }
+
+                // Let the timeline be redrawn and update the control.
+                this.Invalidate();
+                base.Update();
             }
-
-            // Regardless if we're playing or not, update the previous update time.
-            // Note: this prevents large time delta's to occur due to pausing/playing.
-            previouseUpdateTime = nowUpdateTime;
-
-            // -------
-            // Check if the number of frames has exceeded the capacity.
-            if (recording.FrameCount > numberOfFrames)
-            {
-                numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
-            }
-
-            if (recording != null && CurrentPos < lieresult.End)
-            {
-                trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos);
-            }
-
-            if (CurrentPos == lieresult.End)
-            {
-                meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
-            }
-
-            // Let the timeline be redrawn and update the control.
-            this.Invalidate();
-            base.Update();
         }
 
         /**
