@@ -235,29 +235,29 @@ namespace Motion_lie_detection
                 g.DrawEllipse(Pens.Black, (int)markPos - 5, 5, 10, 10);
             }
 
-            if (meanclassif != null && meanclassif.Count >= 29)
-            {
-                Brush meanbrush = Brushes.Orange;
-                var trueTot = 1.0;
-                var falseTot = 1.0;
-                for (int i = 0; i < 5; i++)
-                {
-                    double ptruth = meanclassif[24 + i].Item1;
-                    double plie = meanclassif[24 + i].Item2;
+            //if (meanclassif != null && meanclassif.Count >= 29)
+            //{
+            //    Brush meanbrush = Brushes.Orange;
+            //    var trueTot = 1.0;
+            //    var falseTot = 1.0;
+            //    for (int i = 0; i < 5; i++)
+            //    {
+            //        double ptruth = meanclassif[24 + i].Item1;
+            //        double plie = meanclassif[24 + i].Item2;
 
-                    trueTot *= ptruth;
-                    falseTot *= plie;
-                }
-                double result = trueTot / (trueTot + falseTot);
+            //        trueTot *= ptruth;
+            //        falseTot *= plie;
+            //    }
+            //    double result = trueTot / (trueTot + falseTot);
 
-                if (result < 0.5f)
-                    meanbrush = Brushes.Red;
-                else if (result > 0.5f)
-                    meanbrush = Brushes.Green;
+            //    if (result < 0.5f)
+            //        meanbrush = Brushes.Red;
+            //    else if (result > 0.5f)
+            //        meanbrush = Brushes.Green;
                 
-                g.FillEllipse(meanbrush, Width - 20, 5, 10, 10);
-                g.DrawString("Mean: " + result.ToString(), new Font("Arial", 10.0f), Brushes.Black, Width - 200, 5);
-            }
+            //    g.FillEllipse(meanbrush, Width - 20, 5, 10, 10);
+            //    g.DrawString("Mean: " + result.ToString(), new Font("Arial", 10.0f), Brushes.Black, Width - 200, 5);
+            //}
         }
 
         protected void paintBody(Graphics g)
@@ -322,16 +322,16 @@ namespace Motion_lie_detection
 
         protected void paintFooter(Graphics g)
         {
-            if(trafficclassif != null && recording != null && CurrentPos < lieresult.End){
-                Brush trafficbrush = Brushes.Orange;
-                if(trafficclassif[0]<0.5f)
-                    trafficbrush = Brushes.Red;
-                if (trafficclassif[0] > 0.5f)
-                    trafficbrush = Brushes.Green;
-                g.FillEllipse(trafficbrush, 250, Height - 20, 10, 10);
+            //if(trafficclassif != null && recording != null && CurrentPos < lieresult.End){
+            //    Brush trafficbrush = Brushes.Orange;
+            //    if(trafficclassif[0]<0.5f)
+            //        trafficbrush = Brushes.Red;
+            //    if (trafficclassif[0] > 0.5f)
+            //        trafficbrush = Brushes.Green;
+            //    g.FillEllipse(trafficbrush, 250, Height - 20, 10, 10);
 
-                g.DrawString("Truth likeliness: " + trafficclassif[0].ToString(), new Font("Arial", 10.0f), Brushes.Black, 400, Height - 20);
-            }
+            //    g.DrawString("Truth likeliness: " + trafficclassif[0].ToString(), new Font("Arial", 10.0f), Brushes.Black, 400, Height - 20);
+            //}
 
             // Draw the time.
             int seconds = (int)(currentFrame / Recording.FrameRate);
