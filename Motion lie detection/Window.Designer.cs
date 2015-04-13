@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Motion_lie_detection
 {
@@ -12,10 +13,15 @@ namespace Motion_lie_detection
 		 */
 		public static readonly int ControlMargin = 10;
 
+
+
+
+  
+
 		/**
 		 * The main menu bar at the top of the window.
 		 */
-		private MainMenu mainMenu;
+		 MainMenu mainMenu;
 
         /**
          * Panel containing the playback controls.
@@ -304,7 +310,7 @@ namespace Motion_lie_detection
 
 			// Place and scale the left sidebar.
             leftSidePanel.Location = new System.Drawing.Point(ControlMargin, ControlMargin);
-			leftSidePanel.Width = 200;
+            leftSidePanel.Width = 500 ;
 			leftSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
 
             // Place the visualizer
@@ -518,6 +524,7 @@ namespace Motion_lie_detection
             private Label absoluteMovement;
 
             private List<Tuple<double, double>> results = null;
+            Chart chart;
 
             public LeftSidePanel(Timeline timeline)
             {
@@ -572,11 +579,47 @@ namespace Motion_lie_detection
                 titleLabel.Text = "Absolute movement:";
                 titleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 titleLabel.Font = new Font(titleLabel.Font.FontFamily, titleLabel.Font.Size, FontStyle.Bold);
-                this.Controls.Add(titleLabel);
+                //this.Controls.Add(titleLabel);
 
                 absoluteMovement = new Label();
                 absoluteMovement.Text = "";
-                this.Controls.Add(absoluteMovement);
+                // this.Controls.Add(absoluteMovement);
+
+                chart = new Chart();
+
+                //Chart Settings 
+                // Populating the data arrays.
+                this.chart.Series.Clear();
+                this.chart.Palette = ChartColorPalette.SeaGreen;
+
+                // Set chart title.
+                this.chart.Titles.Add("Absolute movement");
+                
+                // add a chart legend. neat right.
+                this.chart.Legends.Add("chart legend");
+
+                // Add chart series
+                Series series = this.chart.Series.Add("CPU Usage");
+                Series series2 = chart.Series.Add("Jemoeder");
+
+                //var i = timeline.BodyConfiguration.Size;
+                chart.Series[0].ChartType = SeriesChartType.FastLine;
+                chart.Series[1].ChartType = SeriesChartType.FastLine;
+
+                //Populating X Y Axis  Information 
+                chart.Series[0].YAxisType = AxisType.Primary;
+                chart.Series[0].YValueType = ChartValueType.Int32;
+                chart.Series[0].IsXValueIndexed = false;
+
+                chart.ResetAutoValues();
+                chart.ChartAreas.Add(new ChartArea());
+                chart.ChartAreas[0].AxisY.Maximum = 100;
+                chart.ChartAreas[0].AxisY.Minimum = 0;
+                chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
+                chart.ChartAreas[0].AxisY.Title = "Abs movement";
+                chart.ChartAreas[0].AxisY.IntervalAutoMode = IntervalAutoMode.VariableCount;
+
+                this.Controls.Add(chart);
 
                 this.Resize += resize;
             }
@@ -603,7 +646,7 @@ namespace Motion_lie_detection
                         light.Invalidate();
                     }
                 }
-
+            
                 absoluteMovement.Text = text;
                 absoluteMovement.Invalidate();
                 base.Update();
@@ -623,6 +666,8 @@ namespace Motion_lie_detection
                 titleLabel.Top = newSize.Height / 2;
                 titleLabel.Width = newSize.Width;
                 titleLabel.Height = 20;
+
+                chart.Width = newSize.Width;
 
                 absoluteMovement.Left = 0;
                 absoluteMovement.Top = newSize.Height/2 + 20;
