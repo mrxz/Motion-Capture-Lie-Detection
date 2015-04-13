@@ -310,12 +310,12 @@ namespace Motion_lie_detection
 
 			// Place and scale the left sidebar.
             leftSidePanel.Location = new System.Drawing.Point(ControlMargin, ControlMargin);
-            leftSidePanel.Width = 500 ;
+            leftSidePanel.Width = 400 ;
 			leftSidePanel.Height = newSize.Height - 4 * ControlMargin - 150 - 50;
 
             // Place the visualizer
             visualizer.Location = new System.Drawing.Point(leftSidePanel.Right + ControlMargin, ControlMargin);
-            visualizer.Width = newSize.Width - 4 * ControlMargin - 200 - 200;
+            visualizer.Width = newSize.Width - 4 * ControlMargin - 400 - 200;
             visualizer.Height = newSize.Height - 4 * ControlMargin - 150 - 40;
 
 			// Place and scale the right sidebar.
@@ -552,24 +552,15 @@ namespace Motion_lie_detection
                 // add a chart legend. neat right.
                 this.chart.Legends.Add("chart legend");
 
-                // Add chart series
-                Series series = this.chart.Series.Add("CPU Usage");
-                Series series2 = chart.Series.Add("Jemoeder");
+ 
 
-                var i = timeline.BodyConfiguration.Size;
+                //var i = timeline.BodyConfiguration.Size;
 
-                for 
-                chart.Series[0].ChartType = SeriesChartType.FastLine;
-                chart.Series[1].ChartType = SeriesChartType.FastLine;
-
-                //Populating X Y Axis  Information 
-                chart.Series[0].YAxisType = AxisType.Primary;
-                chart.Series[0].YValueType = ChartValueType.Int32;
-                chart.Series[0].IsXValueIndexed = false;
+          
 
                 chart.ResetAutoValues();
                 chart.ChartAreas.Add(new ChartArea());
-                chart.ChartAreas[0].AxisY.Maximum = 100;
+                chart.ChartAreas[0].AxisY.Maximum = 60;
                 chart.ChartAreas[0].AxisY.Minimum = 0;
                 chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
                 chart.ChartAreas[0].AxisY.Title = "Abs movement";
@@ -578,9 +569,19 @@ namespace Motion_lie_detection
 
                 this.Controls.Add(chart);
 
+                chart.Series.Add(new Series("Abs movement")
+                {
+                    ChartType = SeriesChartType.FastLine,
+                    YAxisType = AxisType.Primary,
+                    YValueType = ChartValueType.Double,
+                    IsXValueIndexed = false
+                });
+
+               
 
                 this.Resize += resize;
             }
+
 
             public new void Update()
             {
@@ -588,16 +589,41 @@ namespace Motion_lie_detection
                 if (timeline.Recording != null)
                 {
                     List<double> result = timeline.LieResult.ComputeAbsoluteMovements(0, timeline.LieResult.End);
-
+                    if (chart.Series.Count == 1)
+                    {
+                        foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
+                        {
+                            chart.Series.Add(new Series(node.getName())
+                            {
+                                ChartType = SeriesChartType.FastLine,
+                                YAxisType = AxisType.Primary,
+                                YValueType = ChartValueType.Double,
+                                IsXValueIndexed = false
+                            });
+                        }
+                    }
 
                     if (result != null)
                     {
                         BodyConfiguration bodyConfiguration = timeline.Recording.BodyConfiguration;
                         int index = bodyConfiguration.Size;
-                        text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
+
+                        for (int i = 0; i < chart.Series.Count; i++ )
+                        {
+                            if (chart.Series[i].Points.Count > 60)
+                            {
+                                chart.Series[i].Points.RemoveAt(0);
+                            }
+                        }
+                         chart.Series[0].Points.AddY(result[index++]);
+                      //  text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
+
+                        int j = 1;
                         foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), result[index++]);
+                            chart.Series[j].Points.Add(result[index++]);
+                           // text += String.Format("Limb {0}: {1:0.000} \n", node.getName(), result[index++]);
+                            j++;
                         }
                     }
                 }
