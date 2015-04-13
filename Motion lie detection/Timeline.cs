@@ -390,9 +390,9 @@ namespace Motion_lie_detection
             // Now check for looping within the selection.
             if (selection && looping)
             {
-                if (currentFrame > selectionEnd)
+                if (currentFrame > SelectionEnd)
                 {
-                    double newCurrentFrame = currentFrame - selectionEnd + selectionStart;
+                    double newCurrentFrame = currentFrame - SelectionEnd + SelectionStart;
                     setCurrentFrame(newCurrentFrame);
                 }
             }

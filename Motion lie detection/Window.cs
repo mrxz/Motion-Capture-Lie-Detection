@@ -98,8 +98,8 @@ namespace Motion_lie_detection
 
 		public void keyDown(object source, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Space)
-                timeline.Playing = !timeline.Playing;
+			//if (e.KeyCode == Keys.Space)
+            //    timeline.Playing = !timeline.Playing;
 		}
 
 		public void form_Closed(Object source, EventArgs e)
