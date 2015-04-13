@@ -617,7 +617,9 @@ namespace Motion_lie_detection
                                 Chart.Series[i].Points.RemoveAt(0);
                             }
                         }
-                         Chart.Series[0].Points.AddY(result[index++]);
+                        var abs = result[index++];
+                        Chart.ChartAreas[0].AxisY.Maximum = 5+ (double)(10 * Math.Ceiling(abs / 10));
+                         Chart.Series[0].Points.AddY(abs);
                       //  text += String.Format("Abs. movement\t: {0:0.000} \n", result[index++]);
 
                         int j = 1;
