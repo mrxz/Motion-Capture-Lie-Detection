@@ -605,10 +605,10 @@ namespace Motion_lie_detection
                 this.Chart.Legends.Add("chart legend");
                 Chart.ResetAutoValues();
                 Chart.ChartAreas.Add(new ChartArea());
-                Chart.ChartAreas[0].AxisY.Maximum = 0.05;
+                Chart.ChartAreas[0].AxisY.Maximum = 0.02;
                 Chart.ChartAreas[0].AxisY.Minimum = 0;
                 Chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
-                Chart.ChartAreas[0].AxisY.Title = "Abs movement";
+                Chart.ChartAreas[0].AxisY.Title = "difference";
                 Chart.ChartAreas[0].AxisY.IntervalAutoMode = IntervalAutoMode.VariableCount;
                 this.Controls.Add(Chart);
 
@@ -652,21 +652,28 @@ namespace Motion_lie_detection
                         }
                     }
 
-                    // adjust the chart's axis.
-
-                    //Chart.ChartAreas[0].AxisY.Maximum = 5 + (double)(10 * Math.Ceiling(abs / 10));
-                    //Chart.Series[0].Points.AddY(abs);
 
 
                     if (timeline.CurrentPos > 0)
                     {
-                        int j = 0;
-                        foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
+
+                        if (timeline.LieResult.FrameDifferences.Count > 0)
                         {
-                            var value = timeline.LieResult[timeline.CurrentPos][j] * 500;
-                            Chart.Series[j].Points.Add(value);
-                            j++;
+                            int j = 0;
+
+
+                            foreach (BodyNode node in timeline.Recording.ClassificationConfiguration.Rootnodes)
+                            {
+                                var value = timeline.LieResult[timeline.CurrentPos][j] * 500;
+
+                                Chart.Series[j].Points.Add(value);
+                                j++;
+
+                            }
                         }
+                      //  Chart.ChartAreas[0].RecalculateAxesScale();
+             
+        
                     }
                     // update the traffic light
                     List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
