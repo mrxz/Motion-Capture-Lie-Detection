@@ -19,6 +19,16 @@ namespace Motion_lie_detection
             this.Z = z;
         }
 
+        public double LengthSquared
+        {
+            get { return X * X + Y * Y + Z * Z; }
+        }
+
+        public double Length
+        {
+            get { return Math.Sqrt(X * X + Y * Y + Z * Z); }
+        }
+
         public static double Distance(Vector3d a, Vector3d b)
         {
             double dX = a.X - b.X;

@@ -38,15 +38,17 @@ namespace Motion_lie_detection
                 Queue<BodyNode> queue = new Queue<BodyNode>();
                 foreach (BodyNode node in context.RootNodes)
                 {
-                    // In case the node is it's own root, use the absolute movement.
-                    if (node == bodyConfiguration.getRoot()) // DEBUG
-                    {
-                        res.Add(AbsoluteMovement(last.Joints, next.Joints));
-                        continue;
-                    }
+
+                    BodyNode normalNode;
+                    // In case the node is the root, use the absolute movement.
+                    if (node == bodyConfiguration.getRoot())
+                        normalNode = node;
+                    else
+                        normalNode = node.getRoot();
 
                     // Actual BFS
-                    BodyNode normalNode = node.getRoot();
+                    Vector3d nextNormal = bodyConfiguration.getJoint(next.Joints, normalNode).Position;
+                    Vector3d lastNormal = bodyConfiguration.getJoint(last.Joints, normalNode).Position;
                     queue.Enqueue(node);
                     double totdiff = 0;
                     while (queue.Count > 0)
@@ -55,21 +57,11 @@ namespace Motion_lie_detection
                         foreach (BodyNode v in current.getNeighbours())
                             queue.Enqueue(v);
 
-                        // Add the distance between the joint and the 'normal' joint.
-                        // 
-                        Joint lastNode = bodyConfiguration.getJoint(last.Joints, current);
-                        Joint lastNormal = bodyConfiguration.getJoint(last.Joints, normalNode);
-                        Joint nextNode = bodyConfiguration.getJoint(next.Joints, current);
-                        Joint nextNormal = bodyConfiguration.getJoint(next.Joints, normalNode);
-                        Vector3d A = lastNode.Position - lastNormal.Position;
-                        Vector3d B = nextNode.Position - nextNormal.Position;
+                        // Normalize joint positions
+                        Vector3d A = bodyConfiguration.getJoint(last.Joints, current).Position - lastNormal;
+                        Vector3d B = bodyConfiguration.getJoint(next.Joints, current).Position - nextNormal;
 
-                        double diffX = A.X - B.X;
-                        double diffY = A.Y - B.Y;
-                        double diffZ = A.Z - B.Z;
-                        double diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
-
-                        totdiff += diff;
+                        totdiff += (A - B).LengthSquared;
                     }
                     totdiff = Math.Sqrt(totdiff);
 
@@ -92,11 +84,7 @@ namespace Motion_lie_detection
             double totdiff = 0;
             for (int i = 0; i < A.Count; i++)
             {
-                double diffX = A[i].Position.X - B[i].Position.X;
-                double diffY = A[i].Position.Y - B[i].Position.Y;
-                double diffZ = A[i].Position.Z - B[i].Position.Z;
-                double diff = diffX * diffX + diffY * diffY + diffZ * diffZ;
-
+                double diff = (A[i].Position - B[i].Position).LengthSquared;
                 res.Add(diff);
                 totdiff += diff;
             }
@@ -106,27 +94,5 @@ namespace Motion_lie_detection
             res.Add(totdiff);
             return res;
         }
-
-        private double AbsoluteMovement(IList<Joint> A, IList<Joint> B)
-        {
-            // Make sure the lengths of the joint lists match.
-            if (A.Count != B.Count)
-                throw new Exception("Number of joints, is not equal");
-
-            // Iterate over the joints and sum the distances
-            double totdiff = 0;
-            for (int i = 0; i < A.Count; i++)
-            {
-                double diffX = A[i].Position.X - B[i].Position.X;
-                double diffY = A[i].Position.Y - B[i].Position.Y;
-                double diffZ = A[i].Position.Z - B[i].Position.Z;
-                totdiff += diffX * diffX + diffY * diffY + diffZ * diffZ;
-            }
-            totdiff = Math.Sqrt(totdiff);
-            
-            // Return sum of pairwise differences
-            return totdiff;
-        }
-
     }
 }

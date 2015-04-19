@@ -61,12 +61,16 @@
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithm.cs" />
-    <Compile Include="AlgorithmContext.cs" />
+    <Compile Include="Algorithm\Algorithm.cs" />
+    <Compile Include="Algorithm\AlgorithmContext.cs" />
+    <Compile Include="Algorithm\FilterPass.cs" />
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Classification.cs" />
-    <Compile Include="ClassificationConfiguration.cs" />
+    <Compile Include="Classification\Classification.cs" />
+    <Compile Include="Classification\ClassificationConfiguration.cs" />
+    <Compile Include="DataObjects\Frame.cs" />
+    <Compile Include="DataObjects\Joint.cs" />
+    <Compile Include="DataObjects\MarkPoint.cs" />
     <Compile Include="GraphicsDeviceService.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="ServiceContainer.cs" />
@@ -75,13 +79,13 @@
     </Compile>
     <Compile Include="FileRecordingProvider.cs" />
     <Compile Include="GeoMetricPrimitive.cs" />
-    <Compile Include="LieDetectionAlgorithm.cs" />
-    <Compile Include="LieResult.cs" />
+    <Compile Include="Algorithm\LieDetectionAlgorithm.cs" />
+    <Compile Include="DataObjects\LieResult.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Normalisation.cs" />
-    <Compile Include="Observer.cs" />
+    <Compile Include="Algorithm\Normalisation.cs" />
+    <Compile Include="Debug classes\Observer.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Recording.cs" />
+    <Compile Include="DataObjects\Recording.cs" />
     <Compile Include="RecordingProvider.cs" />
     <Compile Include="SuitController.cs" />
     <Compile Include="SuitRecordingProvider.cs" />
@@ -97,9 +101,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Window.Designer.cs" />
-    <Compile Include="BodyConfiguration.cs" />
-    <Compile Include="DummyStream.cs" />
-    <Compile Include="RunningJump.cs" />
+    <Compile Include="DataObjects\BodyConfiguration.cs" />
+    <Compile Include="Debug classes\DummyStream.cs" />
+    <Compile Include="Debug classes\RunningJump.cs" />
     <Compile Include="RecordingSaver.cs" />
     <Compile Include="Timeline.cs">
       <SubType>Component</SubType>
@@ -117,6 +121,9 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Visualizer\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

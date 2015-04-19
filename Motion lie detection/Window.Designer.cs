@@ -13,11 +13,6 @@ namespace Motion_lie_detection
 		 */
 		public static readonly int ControlMargin = 10;
 
-
-
-
-  
-
 		/**
 		 * The main menu bar at the top of the window.
 		 */

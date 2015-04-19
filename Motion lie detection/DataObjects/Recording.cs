@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
-using mxf = Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
 {
@@ -159,112 +158,5 @@ namespace Motion_lie_detection
         }
 
 
-	}
-
-	public struct Frame
-	{
-		private readonly List<Joint> joints;
-		private readonly int timestamp;
-
-		public Frame (List<Joint> joints, int timestamp)
-		{
-			this.joints = joints;
-			this.timestamp = timestamp;
-		}
-
-		public ReadOnlyCollection<Joint> Joints { get { return joints != null ? joints.AsReadOnly() : null; } }
-
-		public int Timestamp { get {return timestamp; }}
-        
-        public static Frame Empty
-        {
-            get { return new Frame(null, -1); }
-        }
-
-        public static bool IsEmpty(Frame frame)
-        {
-            return frame.joints == null;
-        }
-
-        public static Frame MeanFrame(List<Frame> list)
-        {
-            List<List<Joint>> joints = new List<List<Joint>>();
-            foreach(Frame frame in list){
-                for (int i = 0; i < frame.Joints.Count; i++){
-                    joints[i].Add(frame.joints[i]);
-                }
-            }
-			return new Frame(joints.ConvertAll<Joint>(new Converter<List<Joint>, Joint>(Joint.MeanJoint)), list[0].Timestamp);
-        }
-
-    }
-
-	public struct Joint
-	{
-		private readonly int id;
-		private Vector3d position;
-		private mxf.Quaternion orientation;
-
-		public Joint (int jointId, Vector3d position, mxf.Quaternion orientation)
-		{
-			id = jointId;
-			this.position = position;
-			this.orientation = orientation;
-		}
-
-		public int Id { get { return id; } }
-
-        public Vector3d Position { get { return position; } set { position = value; } }
-
-		public mxf.Quaternion Orientation { get { return orientation; } }
-
-        public static Joint MeanJoint(List<Joint> joints)
-        {
-            //TODO: calculate mean for quaternions
-            Joint res = joints[0];
-            for (int i = 1; i < joints.Count; i++)
-            {
-                res.position += joints[i].Position;
-                //res.orientation += joints[i].orientation;
-            }
-            res.position /= joints.Count;
-            //res.orientation /= joints.Count;
-            return res;
-        }
-	}
-
-	public class MarkPoint
-	{
-		private readonly int id;
-		private String description;
-		private int frameId;
-
-		public MarkPoint (int id, string description, int frameId)
-		{
-			this.id = id;
-			this.description = description;
-			this.frameId = frameId;
-		}
-
-		public int Id { get { return id; } }
-
-		public String Description { 
-            get { return description; }
-            set {
-                this.description = value;
-            }
-        }
-
-		public int Frameid { 
-            get { return frameId; }
-            set {
-                this.frameId = value;
-            }
-        }
-
-        public override string ToString()
-        {
-            return description;
-        }
 	}
 }
