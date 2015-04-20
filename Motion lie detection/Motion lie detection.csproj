@@ -65,6 +65,15 @@
     <Compile Include="Algorithm\AlgorithmContext.cs" />
     <Compile Include="Algorithm\FilterPass.cs" />
     <Compile Include="IO\BigEndianBinaryReader.cs" />
+    <Compile Include="UI\LeftSidePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\PlaybackPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\RightSidePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Visualizer\Camera.cs" />
     <Compile Include="Classification\Classification.cs" />
     <Compile Include="Classification\ClassificationConfiguration.cs" />
@@ -89,7 +98,6 @@
     <Compile Include="IO\RecordingProvider.cs" />
     <Compile Include="IO\SuitController.cs" />
     <Compile Include="IO\SuitRecordingProvider.cs" />
-    <Compile Include="UI\TrafficLight.cs" />
     <Compile Include="Recording\Vector3d.cs" />
     <Compile Include="UI\Visualizer\VertexPositionNormal.cs" />
     <Compile Include="UI\Visualizer\Visualizer.cs">

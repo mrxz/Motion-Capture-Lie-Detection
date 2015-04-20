@@ -7,18 +7,22 @@ using System.Windows.Forms;
 
 namespace Motion_lie_detection
 {
+    /**
+     * Entry point of the motion lie detection program.
+     */
     public class MotionLieDetection
     {
+        /**
+         * The main logger
+         */
 		public static readonly Logger LOG = Logger.getInstance("Main");
-        public static Visualizer visualizer;
 
 		[STAThread]
         public static void Main()
         {
 			LOG.info ("Motion lie detection starting up");
                         
-            //new Thread(updateVisualizer).Start();
-            //Algorithm algo= new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new NormalizeLength(new LieDetectionAlgorithm()))), 5);
+            // Construct the algorithm with the needed filter passes.
             Algorithm algo = new DownsamplePass(new NormalizeOrientation(new NormalizePosition(new LieDetectionAlgorithm())), 12);
             
             LOG.info("Opening window for visualization");
