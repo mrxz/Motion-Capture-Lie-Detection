@@ -13,20 +13,6 @@ using System.Windows.Forms;
 
 namespace Motion_lie_detection
 {
-    /*
-     * ONZE SUPER COOOLE MEGA TODO LIJST!!!!!
-     * 
-     *  MUST:
-     * - Add camera controllzzz
-     * - Basix GUI die loaden en saven ondersteunt 
-     * - Draw de verbindingen tussen de joints waar ze verbonden zijn
-     * 
-     * COULD:
-     * maak de spheres kleiner want ze zijn zo groot nu.
-     * mooie kleurtjes!!!
-     */
-
-
 
     public class Visualizer : GraphicsDeviceControl
     {
@@ -55,7 +41,6 @@ namespace Motion_lie_detection
                 Invalidate();
             }
         }
-       // TrafficLight trafficLight;
         
         Color jointColor = Color.LightGray;
         Color boneColor = Color.LightGray;
@@ -70,18 +55,20 @@ namespace Motion_lie_detection
             this.MouseUp += visualizer_StopDrag;
             this.MouseDown += visualizer_StartDrag;
             this.MouseWheel += visualizer_Zoom;
-            this.KeyDown +=visualizer_KeyDown;
         }
 
 		protected override void Initialize()
 		{
+            //create a camera
         	camera = new Camera (GraphicsDevice.Viewport.AspectRatio, Vector3.Forward);
             camera.LookAt = Vector3.Forward;
             camera.Zoom = 50;
 
+            //create the sphere for drawing joints and the cylinder for the bones
             sphere = new SpherePrimitive(GraphicsDevice, 0.5f, 16);
             cylinder = new CylinderPrimitive(GraphicsDevice, 1, 0.5f, 16);
 
+            //create the grid
             grid = new Grid(GraphicsDevice, -13);
 		}		
 
@@ -98,6 +85,7 @@ namespace Motion_lie_detection
             // Start the normal drawing procedure.
             GraphicsDevice.Clear(Color.Black);
 
+            //draw the grid
             grid.Draw(GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
             
 
@@ -125,13 +113,17 @@ namespace Motion_lie_detection
 				}
 			}
 		}
-
+        //reset the visualizer
         public void Reset()
         {
             GraphicsDevice.Clear(Color.DarkGray);
             bodyConfiguration = null;
         }
-
+        /**
+         * Method for drawing a joint.
+         * @param joints position in 3D
+         * @param the contribution of this joint to the lie result          
+         */
         private void drawJoint(Vector3 position, float amount)
         {
             jointColor = Color.Lerp(Color.LightGray, Color.Red, amount);
@@ -180,7 +172,7 @@ namespace Motion_lie_detection
 			return new Vector3 (position.X, position.Z, position.Y) * 10;
         }
 
-
+        //when the scroll wheal is used
         void visualizer_Zoom(object sender, MouseEventArgs e)
         {
             camera.Zoom -= e.Delta / 50;
@@ -188,19 +180,21 @@ namespace Motion_lie_detection
 
         int prevMouseX = -1;
         int prevMouseY = -1;
- 
+        
+        //When the left mouse button is released, do the following:
         void visualizer_StopDrag(object sender, MouseEventArgs e)
         {
             prevMouseX = -1;
             prevMouseY = -1;
         }
-
+        //When the left mouse button is pressed, do the following:
         void visualizer_StartDrag(object sender, MouseEventArgs e)
         {
             prevMouseX = e.X;
             prevMouseY = e.Y;
+            this.Focus();
         }
-
+        //When the left mouse button is being held down, do the following:
         void visualizer_Drag(object sender, MouseEventArgs e)
         {
             float dx = (prevMouseX - e.X) / 200f;
@@ -221,54 +215,7 @@ namespace Motion_lie_detection
                     camera.Zoom -= dy*20;
                     break;
             }
-        }
-
-        void visualizer_KeyDown(object sender, KeyEventArgs e)
-        {
-            // this is buggy for some reason
-         /*   switch (e.KeyCode)
-            {
-                case Keys.W:
-
-                    if (e.Modifiers == Keys.Shift)
-                    {
-                        camera.MoveCameraForward(0.1f);
-                    }
-                    else
-                    {
-                        camera.Pitch += 0.1f;
-                    }
-
-                    break;
-                case Keys.S:
-                    if (e.Modifiers == Keys.Shift)
-                    {
-                        camera.MoveCameraForward(-0.1f);
-                    }
-                    else
-                    {
-                        camera.Pitch -= 0.1f;
-                    }
-                    break;
-                case Keys.A:
-                    if (e.Modifiers == Keys.Shift)
-                    { camera.MoveCameraRight(-0.1f); }
-                    { camera.Yaw += 0.1f; }
-                    break;
-                case Keys.D:
-                    if (e.Modifiers == Keys.Shift)
-                    { camera.MoveCameraRight(0.1f); }
-                    { camera.Yaw -= 0.1f; }
-                    break;
-                case Keys.Space:
-                    camera.Yaw = 0;
-                    camera.Pitch = 0;
-                    camera.Zoom = 50;
-                    camera.LookAt = Vector3.Forward;
-                    break;
-            }*/
-        }
-       
+        }      
         #endregion
     }
 }
