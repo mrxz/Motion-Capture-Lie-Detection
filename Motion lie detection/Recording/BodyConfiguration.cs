@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
 {
@@ -11,11 +10,11 @@ namespace Motion_lie_detection
 	public class BodyConfiguration
 	{
 		/**
-		 * The bodyTree.
+		 * The root node of the bodyTree.
 		 */
 		protected BodyNode root;
 		/**
-		 * The bodyNode that can be used to determine the orientation.
+		 * The bodyNode that can be used to determine the orientation of the body.
 		 */
 		protected BodyNode orientationNode;
 
@@ -41,6 +40,13 @@ namespace Motion_lie_detection
 			return orientationNode;
 		}
 
+        /**
+         * Method for getting the length between two body nodes.
+         * Note: there's no guarantee that from-to returns the same as to-from.
+         * @param from The first BodyNode
+         * @param to The second BodyNode.
+         * @return The length of the segment betwen the bodynodes, -1 if no such connection (or length) is present.
+         */
 		public double GetLength(BodyNode from, BodyNode to)
 		{
 			double result;
@@ -49,12 +55,24 @@ namespace Motion_lie_detection
 			return -1;
 		}
 
+        /**
+         * Method for setting the lenght for a given segment between BodyNodes.
+         * @param from The first BodyNode.
+         * @param to The second BodyNode.
+         * @param length The new length to set.
+         */
 		public void SetLength(BodyNode from, BodyNode to, float length)
 		{
 			Tuple<BodyNode, BodyNode> key = Tuple.Create (from, to);
 			lengths.Add (key, length);
 		}
 
+        /**
+         * Method for getting the joint from a given list of joints corresponding to the requested BodyNode.
+         * @param joints The list of joints to return the joint from.
+         * @param node The node to return the joint for.
+         * @return The corresponding Joint if found, an empyt Joint otherwise.
+         */
 		public Joint getJoint(IList<Joint> joints, BodyNode node) {
 			// TODO: Add alternative in case the joint order is known.
 			// Loop over the joints to find the correct one.
@@ -67,11 +85,22 @@ namespace Motion_lie_detection
 			return new Joint ();
 		}
 
+        /**
+         * Convenience method for getting the root joint from a list of joints.
+         * @param joints The list of joints to return the joint from.
+         * @return The root Joint if found, an empty Joint otherwise.
+         */
 		public Joint getRootJoint(IList<Joint> joints) {
 			return getJoint (joints, root);
 		}
 
-		public Joint getOrientationJoint(IList<Joint> joints) {
+        /**
+         * Convenience method for getting the orientation joint from a list of joints.
+         * @param joints The list of joints to return the joint from.
+         * @return The orientation Joint if found, an empty Joint otherwise.
+         */
+        public Joint getOrientationJoint(IList<Joint> joints)
+        {
 			return getJoint (joints, orientationNode);
 		}
 
@@ -100,6 +129,10 @@ namespace Motion_lie_detection
 			}
 		}
 
+        /**
+         * Returns the size of the body tree.
+         * The size is the number of nodes in the tree.
+         */
         public int Size {
             get { return (root != null) ? root.Size : 0; }
         }
@@ -107,6 +140,7 @@ namespace Motion_lie_detection
 
 	/**
 	 * A node in the body tree.
+     * Note: BodyNode should not be intermixed between different instances of a BodyConfiguration.
 	 */
     public class BodyNode
     {
@@ -164,15 +198,18 @@ namespace Motion_lie_detection
             return name;
         }
 
+        /**
+         * Returns the size of the body tree from this node onwards.
+         * The size is the number of nodes in the sub-tree.
+         */
         public int Size
         {
             get
             {
+                // Start with one, the node itself.
                 int res = 1;
                 foreach (BodyNode node in adjacent)
-                {
                     res += node.Size;
-                }
                 return res;
             }
         }

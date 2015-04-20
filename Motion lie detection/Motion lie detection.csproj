@@ -90,9 +90,9 @@
     <Compile Include="UI\Visualizer\GeoMetricPrimitive.cs" />
     <Compile Include="Algorithm\LieDetectionAlgorithm.cs" />
     <Compile Include="Algorithm\LieResult.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Util\Logger.cs" />
     <Compile Include="Algorithm\Normalisation.cs" />
-    <Compile Include="IO\Observer.cs" />
+    <Compile Include="Util\Observer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Recording\Recording.cs" />
     <Compile Include="IO\RecordingProvider.cs" />

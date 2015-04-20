@@ -1,16 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using mxf = Microsoft.Xna.Framework;
 
 namespace Motion_lie_detection
 {
+    /**
+     * Struct for a single joint in a single frame of a recording.
+     * The joint contains the position and orientation data.
+     */
     public struct Joint
     {
+        /**
+         * The id of the joint.
+         */
         private readonly int id;
+
+        /**
+         * The absolute position of the joint.
+         */
         private Vector3d position;
+        /**
+         * The orientation of the joint.
+         */
         private mxf.Quaternion orientation;
 
         public Joint(int jointId, Vector3d position, mxf.Quaternion orientation)
@@ -22,22 +32,8 @@ namespace Motion_lie_detection
 
         public int Id { get { return id; } }
 
-        public Vector3d Position { get { return position; } set { position = value; } }
+        public Vector3d Position { get { return position; } }
 
         public mxf.Quaternion Orientation { get { return orientation; } }
-
-        public static Joint MeanJoint(List<Joint> joints)
-        {
-            //TODO: calculate mean for quaternions
-            Joint res = joints[0];
-            for (int i = 1; i < joints.Count; i++)
-            {
-                res.position += joints[i].Position;
-                //res.orientation += joints[i].orientation;
-            }
-            res.position /= joints.Count;
-            //res.orientation /= joints.Count;
-            return res;
-        }
     }
 }

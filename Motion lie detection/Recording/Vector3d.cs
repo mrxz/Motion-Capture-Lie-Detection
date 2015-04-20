@@ -1,15 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Motion_lie_detection
 {
+    /**
+     * Simple 3d vector struct using double precision.
+     */
     public struct Vector3d
     {
+        /**
+         * The X component of the vector.
+         */
         public double X;
+        /**
+         * The Y component of the vector.
+         */
         public double Y;
+        /**
+         * The Z component of the vector.
+         */
         public double Z;
 
         public Vector3d(double x, double y, double z)
@@ -57,6 +65,10 @@ namespace Motion_lie_detection
             return new Vector3d(a.X / scalar, a.Y / scalar, a.Z / scalar);
         }
 
+        /**
+         * Convenience method for converting a Vector3d to an XNA Vector3.
+         * @return The XNA Vector3.
+         */
         public Microsoft.Xna.Framework.Vector3 ToXNAVec()
         {
             return new Microsoft.Xna.Framework.Vector3((float)X, (float)Y, (float)Z);

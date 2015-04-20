@@ -87,7 +87,8 @@ namespace Motion_lie_detection
                 for (int i = 0; i < samplejoints.Count; i++)
                 {
                     Joint j = samplejoints[i];
-                    j.Position = j.Position * (n / (n + 1)) + next.Joints[i].Position / (n + 1);
+                    Vector3d newPosition = j.Position * (n / (n + 1)) + next.Joints[i].Position / (n + 1);
+                    j = new Joint(j.Id, newPosition, j.Orientation);     
 					newJoints.Add(j);
                 }
 
@@ -152,10 +153,12 @@ namespace Motion_lie_detection
                         }
                     }
 
-                    //normalise nodejoint
+                    // Normalise nodejoint
 					Joint nodejoint = newJoints[node.JointId-1];
-                    nodejoint.Position += nvectors[node.JointId - 1];
-                    //put normalised joint back in the frame
+                    Vector3d newPosition = nodejoint.Position + nvectors[node.JointId - 1];
+                    nodejoint = new Joint(nodejoint.Id, newPosition, nodejoint.Orientation);
+
+                    // Put normalised joint back in the frame
 					newJoints[node.JointId -1] = nodejoint;
                 }
 
