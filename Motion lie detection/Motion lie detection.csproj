@@ -64,51 +64,51 @@
     <Compile Include="Algorithm\Algorithm.cs" />
     <Compile Include="Algorithm\AlgorithmContext.cs" />
     <Compile Include="Algorithm\FilterPass.cs" />
-    <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="Camera.cs" />
+    <Compile Include="IO\BigEndianBinaryReader.cs" />
+    <Compile Include="UI\Visualizer\Camera.cs" />
     <Compile Include="Classification\Classification.cs" />
     <Compile Include="Classification\ClassificationConfiguration.cs" />
-    <Compile Include="DataObjects\Frame.cs" />
-    <Compile Include="DataObjects\Joint.cs" />
-    <Compile Include="DataObjects\MarkPoint.cs" />
-    <Compile Include="GraphicsDeviceService.cs" />
-    <Compile Include="Grid.cs" />
-    <Compile Include="ServiceContainer.cs" />
-    <Compile Include="GraphicsDeviceControl.cs">
+    <Compile Include="Recording\Frame.cs" />
+    <Compile Include="Recording\Joint.cs" />
+    <Compile Include="Recording\MarkPoint.cs" />
+    <Compile Include="UI\Visualizer\GraphicsDeviceService.cs" />
+    <Compile Include="UI\Visualizer\Grid.cs" />
+    <Compile Include="UI\Visualizer\ServiceContainer.cs" />
+    <Compile Include="UI\Visualizer\GraphicsDeviceControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FileRecordingProvider.cs" />
-    <Compile Include="GeoMetricPrimitive.cs" />
+    <Compile Include="IO\FileRecordingProvider.cs" />
+    <Compile Include="UI\Visualizer\GeoMetricPrimitive.cs" />
     <Compile Include="Algorithm\LieDetectionAlgorithm.cs" />
-    <Compile Include="DataObjects\LieResult.cs" />
+    <Compile Include="Algorithm\LieResult.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Algorithm\Normalisation.cs" />
-    <Compile Include="Debug classes\Observer.cs" />
+    <Compile Include="IO\Observer.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="DataObjects\Recording.cs" />
-    <Compile Include="RecordingProvider.cs" />
-    <Compile Include="SuitController.cs" />
-    <Compile Include="SuitRecordingProvider.cs" />
-    <Compile Include="TrafficLight.cs" />
-    <Compile Include="Vector3d.cs" />
-    <Compile Include="VertexPositionNormal.cs" />
-    <Compile Include="Visualizer.cs">
+    <Compile Include="Recording\Recording.cs" />
+    <Compile Include="IO\RecordingProvider.cs" />
+    <Compile Include="IO\SuitController.cs" />
+    <Compile Include="IO\SuitRecordingProvider.cs" />
+    <Compile Include="UI\TrafficLight.cs" />
+    <Compile Include="Recording\Vector3d.cs" />
+    <Compile Include="UI\Visualizer\VertexPositionNormal.cs" />
+    <Compile Include="UI\Visualizer\Visualizer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="XSensController.cs" />
-    <Compile Include="XSensListener.cs" />
-    <Compile Include="Window.cs">
+    <Compile Include="IO\XSens\XSensController.cs" />
+    <Compile Include="IO\XSens\XSensListener.cs" />
+    <Compile Include="UI\Window.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Window.Designer.cs" />
-    <Compile Include="DataObjects\BodyConfiguration.cs" />
-    <Compile Include="Debug classes\DummyStream.cs" />
-    <Compile Include="Debug classes\RunningJump.cs" />
-    <Compile Include="RecordingSaver.cs" />
-    <Compile Include="Timeline.cs">
+    <Compile Include="UI\Window.Designer.cs" />
+    <Compile Include="Recording\BodyConfiguration.cs" />
+    <Compile Include="Debug\DummyStream.cs" />
+    <Compile Include="Debug\RunningJump.cs" />
+    <Compile Include="IO\RecordingSaver.cs" />
+    <Compile Include="UI\Timeline.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Primitives.cs" />
+    <Compile Include="UI\Visualizer\Primitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -122,9 +122,7 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Visualizer\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
