@@ -236,6 +236,10 @@ namespace Motion_lie_detection
 			if (result == DialogResult.Cancel)
 				return;
 
+            // In case a recording is still open, close it.
+            if (this.Recording != null)
+                closeRecording(sender, e);
+
             RecordingProvider provider = FileRecordingProvider.AppropriateReader(dialog.FileName);
             provider.Init();
             Recording recording = new Recording(provider);
@@ -273,8 +277,7 @@ namespace Motion_lie_detection
             this.context = new AlgorithmContext();
 
             //Set Timeline
-            timeline.LieResult = LieResult;
-            timeline.CurrentPos = 0;
+            timeline.Reset(this.LieResult);
             timeline.Invalidate();
             visualizer.Invalidate();
 

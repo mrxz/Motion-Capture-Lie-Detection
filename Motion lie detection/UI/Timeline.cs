@@ -76,7 +76,7 @@ namespace Motion_lie_detection
         private int selectionEnd;
 
         public Timeline()
-            : this(1000) // FIXME: DEBUG VALUE
+            : this(1000)
         {
         }
 
@@ -506,6 +506,19 @@ namespace Motion_lie_detection
                 atEnd = playBackSpeed >= 1.0 && playing;
             }
 
+        }
+
+        public void Reset(LieResult newResult)
+        {
+            LieResult = newResult;
+            currentFrame = 0.0;
+            currentMarkPoint = NONE;
+            previouseUpdateTime = -1.0;
+            numberOfFrames = 1000;
+            atEnd = true;
+            selection = false;
+            selectionStart = -1;
+            selectionEnd = -1;
         }
 
         /**
