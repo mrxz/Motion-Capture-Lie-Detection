@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 
 namespace Motion_lie_detection
 {
@@ -11,11 +12,6 @@ namespace Motion_lie_detection
 	 */
 	public abstract class RecordingSaver
 	{
-		/**
-		 * FIXME: Currently hard-coded segment count.
-		 */
-		public static readonly int segmentCount = 23;
-
 		/**
 		 * The file path and name to write the recording to.
 		 */
@@ -93,7 +89,7 @@ namespace Motion_lie_detection
 				writer.WriteStartElement ("subject");
 				writer.WriteAttributeString ("label", "Suit MLD"); // FIXME: No use trying to copy the suit-id, so now simply using Suit MLD (Motion Lie Detection)
 				writer.WriteAttributeString ("frameRate", recording.FrameRate.ToString());
-				writer.WriteAttributeString ("segmentCount", segmentCount.ToString()); // FIXME: Hard-coded 23 segments, could work if for lower numbers numbers are made up for the missing segments.
+                writer.WriteAttributeString("segmentCount", recording.GetFrame(start).Joints.Count.ToString()); // FIXME: Hard-coded 23 segments, could work if for lower numbers numbers are made up for the missing segments.
 				writer.WriteAttributeString ("recDate", "Mon 14. May 15:31:16 2012"); // FIXME: Hard-coded rec-date, not important.
 				writer.WriteAttributeString ("originalFilename", file);
 
@@ -188,9 +184,9 @@ namespace Motion_lie_detection
 
 		private void writeFrames(XmlWriter writer, Recording recording, int start, int end) {
 			writer.WriteStartElement ("frames");
-			writer.WriteAttributeString ("segmentCount", segmentCount.ToString());
+            writer.WriteAttributeString("segmentCount", recording.GetFrame(start).Joints.Count.ToString());
 			writer.WriteAttributeString ("sensorCount", 0.ToString()); // FIXME: This is (and should be) 0 ???
-			writer.WriteAttributeString ("jointCount", (segmentCount - 1).ToString()); // FIXME: Assumming this will be one less than the segment count?
+            writer.WriteAttributeString("jointCount", (recording.GetFrame(start).Joints.Count - 1).ToString()); // FIXME: Assumming this will be one less than the segment count?
 
 			// Loop over the frames.
 			// TODO: Add npose and/or tpose (perhaps derive from body configuration).
@@ -216,9 +212,9 @@ namespace Motion_lie_detection
 			StringBuilder positions = new StringBuilder ();
 			foreach (Joint joint in frame.Joints) {
 				if (orientations.Length != 0) orientations.Append (" ");
-				orientations.Append (String.Format("{0} {1} {2} {3}", joint.Orientation.X, joint.Orientation.Y, joint.Orientation.Z, joint.Orientation.W));
+                orientations.Append(String.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3}", joint.Orientation.X, joint.Orientation.Y, joint.Orientation.Z, joint.Orientation.W));
 				if (positions.Length != 0) positions.Append (" ");
-				positions.Append (String.Format("{0} {1} {2}", joint.Position.X, joint.Position.Y, joint.Position.Z));
+				positions.Append (String.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", joint.Position.X, joint.Position.Y, joint.Position.Z));
 			}
 
 			// Orientation.
@@ -291,7 +287,7 @@ namespace Motion_lie_detection
 
                     // Write FrameRate, SegmentCount and FrameCount
                     bw.Write(recording.FrameRate);
-                    bw.Write(segmentCount);
+                    bw.Write(recording.GetFrame(start).Joints.Count);
                     int fcount = end - start;
                     bw.Write(fcount);
                     bw.Write(jCount = recording.GetFrame(start).Joints.Count); // close enough
@@ -331,5 +327,4 @@ namespace Motion_lie_detection
             }
         }
     }
-// */
 }
