@@ -31,11 +31,7 @@ namespace Motion_lie_detection
 		 * The Lieresult
 		 */
         private LieResult LieResult;
-		/**
-		 * The frame that is being drawn.
-		 */
-        private Frame frame;
-		
+
 		public Window(Algorithm algorithm)
 		{			
 			InitializeComponent();
@@ -67,8 +63,6 @@ namespace Motion_lie_detection
             {
                 this.recording = value;
                 this.timeline.Recording = value;
-                //this.frame = Frame.Empty;
-                ////this.visualizer.Frame = frame;
                 if (value != null)
                 {
                     this.visualizer.BodyConfiguration = recording.BodyConfiguration;

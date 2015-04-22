@@ -54,6 +54,7 @@ namespace Motion_lie_detection
 			// File
 			MenuItem File = mainMenu.MenuItems.Add("File");
 			File.MenuItems.Add(new MenuItem("Start listening", new EventHandler(startListener), Shortcut.CtrlShiftO));
+            File.MenuItems.Add(new MenuItem("Stop listener", new EventHandler(stopListener), Shortcut.CtrlShiftS));
 			File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
 			File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
 			File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
@@ -224,6 +225,11 @@ namespace Motion_lie_detection
             leftSidePanel.Chart.Series.Clear();
 			this.Text = "Motion Lie Detection - " + connectForm.Host + ":" + connectForm.Port;
 		}
+        
+        private void stopListener(object sender, EventArgs e)
+        {
+            
+        }
 
         private void openFile(object sender, EventArgs e)
         {
