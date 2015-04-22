@@ -323,17 +323,6 @@ namespace Motion_lie_detection
 
         protected void paintFooter(Graphics g)
         {
-            //if(trafficclassif != null && recording != null && CurrentPos < lieresult.End){
-            //    Brush trafficbrush = Brushes.Orange;
-            //    if(trafficclassif[0]<0.5f)
-            //        trafficbrush = Brushes.Red;
-            //    if (trafficclassif[0] > 0.5f)
-            //        trafficbrush = Brushes.Green;
-            //    g.FillEllipse(trafficbrush, 250, Height - 20, 10, 10);
-
-            //    g.DrawString("Truth likeliness: " + trafficclassif[0].ToString(), new Font("Arial", 10.0f), Brushes.Black, 400, Height - 20);
-            //}
-
             // Draw the time.
             int seconds = (int)(currentFrame / Recording.FrameRate);
             String time = String.Format("{0:D2}:{1:D2}:{2:D2} ({3})", seconds / 3600, (seconds % 3600) / 60, seconds % 60, (int)currentFrame);
@@ -358,7 +347,7 @@ namespace Motion_lie_detection
          * Method for updating the timeline to incorporate new frames.
          * @param margin The margin to take the new amount of numberOfFrames.
          */
-        public new void Update(Chart Chart)
+        public void Update(Chart Chart)
         {
             double nowUpdateTime = totalSeconds();
 
@@ -447,12 +436,7 @@ namespace Motion_lie_detection
                 // Note: this prevents large time delta's to occur due to pausing/playing.
                 previouseUpdateTime = nowUpdateTime;
 
-                // -------
-                // Check if the number of frames has exceeded the capacity.
-                if (recording.FrameCount > numberOfFrames)
-                {
-                    numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
-                }
+                
 
                 if (recording != null && CurrentPos < lieresult.End)
                 {
@@ -463,11 +447,18 @@ namespace Motion_lie_detection
                 {
                     meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
                 }
-
-                // Let the timeline be redrawn and update the control.
-                this.Invalidate();
-                base.Update();
             }
+
+            
+            
+            // Check if the number of frames has exceeded the capacity.
+            if (recording.FrameCount > numberOfFrames)
+            {
+                numberOfFrames = (int)(recording.FrameCount * (1.0 + FramesMargin));
+            }
+            // Let the timeline be redrawn and update the control.
+            this.Invalidate();
+            base.Update();
         }
 
         /**
