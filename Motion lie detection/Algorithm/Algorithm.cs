@@ -64,32 +64,28 @@ namespace Motion_lie_detection
          * Method for expanding a lieresult with one additional frame.
          * Note: the recording, context and LieResult should not be intermixed with other instances for the result will be undefined.
          * @param recording The recording to use for the computation
-         * @param context
-         * @param result
+         * @param context The context used in the computation of the LieResult.
+         * @param result The lie result to expand upon.
          */
         public void Compute(ref Recording recording, ref AlgorithmContext context, ref LieResult result)
         {
-            // FIXME: Perhaps ensure that the recording corresponds with the context and lieresult, etc?
-
             int next = result.NextFrameId;
             if (next > -1 && next < recording.FrameCount)
                 result.AddFrameDiff(ComputeFrame(ref context, recording.BodyConfiguration, recording.Frames[next]), next);
         }
 
         /**
-         * Method for expanding a lieresult to a given frame.
+         * Method for expanding a lieresult up to a given frame.
          * Note: the recording, context and LieResult should not be intermixed with other instances for the result will be undefined.
          * @param recording The recording to use for the computation
-         * @param context
-         * @param result
+         * @param context The context used in the computation of the LieResult.
+         * @param result The lie result to expand upon.
          * @param frameEnd The frame id to expand the LieResult to.
          */
         public void Compute(ref Recording recording, ref AlgorithmContext context, ref LieResult result, int frameEnd)
         {
-            // FIXME: Perhaps ensure that the recording corresponds with the context and lieresult, etc?
-
             int next = result.NextFrameId;
-            int number = 0;
+            int number = 0; // Counter to cap number of frames per update.
             while(next < frameEnd && number < MaxFrameExpand)
             {
                 if (next > -1 && next < recording.FrameCount)
@@ -99,6 +95,13 @@ namespace Motion_lie_detection
             }
         }
 
+        /**
+         * Abstract method that performs the actual algorithm.
+         * @param context The context containing the needed information.
+         * @param bodyConfiguration The configuration of the body used in the frame.
+         * @param frame The frame to perform the algorithm on.
+         * @return List containing the results per body node/joint.
+         */
         public abstract List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next);    
     }	
 }

@@ -12,7 +12,7 @@ namespace Motion_lie_detection
     public abstract class FilterPass : Algorithm
     {
         /**
-         * The next step in the chain, can be another filter or an instance of an algorithm.
+         * The next step in the chain. This can be another filter or an instance of an algorithm.
          */
         protected Algorithm BaseAlgorithm;
 
@@ -21,11 +21,5 @@ namespace Motion_lie_detection
             BaseAlgorithm = baseAlgorithm;
         }
 
-
-        public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
-        {
-            throw new NotImplementedException();
-        }
     }
-
 }

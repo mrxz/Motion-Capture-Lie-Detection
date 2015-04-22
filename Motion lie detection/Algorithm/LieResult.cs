@@ -5,12 +5,34 @@ using System.Text;
 
 namespace Motion_lie_detection
 {
+    /**
+     * Result class from the algorithm.
+     * This result contains all the information to classify the result as either a lie or a truth.
+     */
     public class LieResult
     {
+        /**
+         * The start frame of the interval the lie result was computed over.
+         */
         private int framestart;
+        /**
+         * The end frame of the interval the lie result was computed over.
+         */
         private int framend;
+
+        /**
+         * The list of framedifferences.
+         */
         private List<List<double>> frameDifferences;
+
+
+        /**
+         * Convenienve list containing the means of the entire lie result interval.
+         */
         private List<double> means;
+        /**
+         * The number of elements the means are computed over.
+         */
         private int meancount = 0;
 
         public LieResult(int framestart = 0)

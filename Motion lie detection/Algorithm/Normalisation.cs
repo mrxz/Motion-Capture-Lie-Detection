@@ -73,7 +73,10 @@ namespace Motion_lie_detection
 	 */
     public class DownsamplePass : FilterPass
     {
-        public DownsamplePass(Algorithm baseAlgorithm, int samplerate) : base(baseAlgorithm) { DownsampleRate = samplerate; }
+        public DownsamplePass(Algorithm baseAlgorithm, int samplerate) : base(baseAlgorithm) 
+        {
+            DownsampleRate = samplerate; 
+        }
 
         public int DownsampleRate;
 
@@ -119,7 +122,7 @@ namespace Motion_lie_detection
             if (context.Normalizeconfiguration != null)
             {
                 Vector3d[] nvectors = new Vector3d[next.Joints.Count];
-				bool[] normalised = new bool[next.Joints.Count]; //?? maybe we can assume that that it is not cyclic, I think we may :-)
+				bool[] normalised = new bool[next.Joints.Count];
                 Queue<BodyNode> queue = new Queue<BodyNode>();
                
 				List<Joint> newJoints = new List<Joint> ();
@@ -146,7 +149,7 @@ namespace Motion_lie_detection
                                 continue;
                             }
 							Vector3d diff = newJoints[node.JointId - 1].Position - newJoints[child.JointId - 1].Position;
-                            //calculate normalise vector for the childnode
+                            // Calculate normalise vector for the childnode
                             nvectors[child.JointId - 1] = nvectors[node.JointId - 1] + diff * ((nlength - rlength) / rlength);
                             normalised[child.JointId - 1] = true;
                             queue.Enqueue(child);

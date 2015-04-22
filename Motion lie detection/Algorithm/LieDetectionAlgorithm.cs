@@ -12,12 +12,13 @@ namespace Motion_lie_detection
         /**
 		 * Method for computing the result for one single frame.
          * The result will look as follows:
-         *  - Abs. movement x Joints
-         *  - Abs. movement
-         *  - Abs. movement x rootNodes
-		 * @param result
-		 * @param next
-		 * @return
+         *  n times   - Abs. movement of the joints
+         *  1 time    - Abs. movement of the entire body
+         *  rootNodes - Abs. movement of the rootNodes
+		 * @param context The context in which the algorithm runs. 
+         * @param bodyConfiguration The configuration of the body as in the frame and context.
+		 * @param next The new frame to run the computations on.
+		 * @return List of absolute movements in the order as described above.
 		 */
 		public override List<double> ComputeFrame(ref AlgorithmContext context, BodyConfiguration bodyConfiguration, Frame next)
         {
@@ -38,7 +39,6 @@ namespace Motion_lie_detection
                 Queue<BodyNode> queue = new Queue<BodyNode>();
                 foreach (BodyNode node in context.RootNodes)
                 {
-
                     BodyNode normalNode;
                     // In case the node is the root, use the absolute movement.
                     if (node == bodyConfiguration.getRoot())
