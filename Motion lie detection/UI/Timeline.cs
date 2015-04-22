@@ -90,7 +90,6 @@ namespace Motion_lie_detection
             this.numberOfFrames = numberOfFrames;
         }
 
-        public List<double> trafficclassif;
         public List<Tuple<double, double>> meanclassif;
         
         /**
@@ -351,7 +350,6 @@ namespace Motion_lie_detection
         {
             double nowUpdateTime = totalSeconds();
 
-            // Determine the delta between the updates.
             if (previouseUpdateTime == -1)
             {
                 // FIXME: At this rate the first update will be a dummy.
@@ -367,57 +365,30 @@ namespace Motion_lie_detection
                 if (atEnd)
                 {
                     currentFrame = Math.Max(0, lieresult.End);
-                    //recording.FrameCount - 1;
                 }
                 else
                 {
                     // Determine the time delta since the last update.
                     double deltaSeconds = nowUpdateTime - previouseUpdateTime;
                     double newCurrentFrame = (float)(currentFrame + (deltaSeconds * Recording.FrameRate) * playBackSpeed);
-                    setCurrentFrame(newCurrentFrame);
-
-                    // Update the graph
-                    int pos = this.CurrentPos;                    
-                }
-                // construct a chart series
-                if (Chart.Series.Count == 0)
-                {
-                    foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
-                    {
-                        Chart.Series.Add(new Series(node.getName())
-                        {
-                            ChartType = SeriesChartType.FastLine,
-                            YAxisType = AxisType.Primary,
-                            YValueType = ChartValueType.Double,
-                            IsXValueIndexed = false
-                        });
-                    }
+                    setCurrentFrame(newCurrentFrame);                 
                 }
 
-                // remove trailing points
-                for (int i = 0; i < Chart.Series.Count; i++)
-                {
-                    if (Chart.Series[i].Points.Count > 60)
-                    {
-                        Chart.Series[i].Points.RemoveAt(0);
-                    }
-                }
+                //Update the chart
+                UpdateChart(Chart);
 
-                if (this.CurrentPos > 0)
-                {
+                if (this.CurrentPos > 0)                {
 
                     if (this.LieResult.FrameDifferences.Count > 0)
                     {
                         int j = 0;
 
-
                         foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
                         {
-                            var value = this.LieResult[this.CurrentPos][j] * 500;
+                            var value = this.LieResult[this.CurrentPos][j];
 
                             Chart.Series[j].Points.Add(value);
                             j++;
-
                         }
                     }
                     //  Chart.ChartAreas[0].RecalculateAxesScale();
@@ -430,26 +401,17 @@ namespace Motion_lie_detection
                         double newCurrentFrame = currentFrame - SelectionEnd + SelectionStart;
                         setCurrentFrame(newCurrentFrame);
                     }
-                }
-
-                // Regardless if we're playing or not, update the previous update time.
-                // Note: this prevents large time delta's to occur due to pausing/playing.
-                previouseUpdateTime = nowUpdateTime;
-
-                
-
-                if (recording != null && CurrentPos < lieresult.End)
-                {
-                    trafficclassif = Classification.ClassifyParts(recording.ClassificationConfiguration, lieresult, CurrentPos);
-                }
-
-                if (CurrentPos == lieresult.End)
-                {
-                    meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
-                }
+                }                
             }
 
-            
+            // Regardless if we're playing or not, update the previous update time.
+            // Note: this prevents large time delta's to occur due to pausing/playing.
+            previouseUpdateTime = nowUpdateTime;
+
+            if (CurrentPos == lieresult.End)
+            {
+                meanclassif = Classification.ClassifyMeansBoth(recording.ClassificationConfiguration, lieresult);
+            }
             
             // Check if the number of frames has exceeded the capacity.
             if (recording.FrameCount > numberOfFrames)
@@ -459,6 +421,33 @@ namespace Motion_lie_detection
             // Let the timeline be redrawn and update the control.
             this.Invalidate();
             base.Update();
+        }
+
+        private void UpdateChart(Chart Chart)
+        {
+            // construct a chart series
+            if (Chart.Series.Count == 0)
+            {
+                foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
+                {
+                    Chart.Series.Add(new Series(node.getName())
+                    {
+                        ChartType = SeriesChartType.FastLine,
+                        YAxisType = AxisType.Primary,
+                        YValueType = ChartValueType.Double,
+                        IsXValueIndexed = false
+                    });
+                }
+            }
+
+            // remove trailing points
+            for (int i = 0; i < Chart.Series.Count; i++)
+            {
+                if (Chart.Series[i].Points.Count > 60)
+                {
+                    Chart.Series[i].Points.RemoveAt(0);
+                }
+            }
         }
 
         /**

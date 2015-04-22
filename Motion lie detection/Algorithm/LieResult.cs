@@ -105,11 +105,10 @@ namespace Motion_lie_detection
                 }
             }
 
-            // Compute the mean and multiply by 500
+            // Compute the mean
             for(int i = 0; i < result.Count; i++)
             {
                 result[i] /= endIndex - startIndex;
-                result[i] *= 500;
             }
 
             return result;

@@ -64,6 +64,7 @@
     <Compile Include="Algorithm\Algorithm.cs" />
     <Compile Include="Algorithm\AlgorithmContext.cs" />
     <Compile Include="Algorithm\FilterPass.cs" />
+    <Compile Include="Classification\FixedClassificationConfiguration.cs" />
     <Compile Include="IO\BigEndianBinaryReader.cs" />
     <Compile Include="UI\LeftSidePanel.cs">
       <SubType>Component</SubType>

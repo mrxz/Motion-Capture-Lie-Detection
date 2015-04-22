@@ -63,7 +63,7 @@ namespace Motion_lie_detection
         {
             List<Tuple<double, double>> res = null;
             if (movements != null)
-                res = Classification.classifyBoth(model, movements, 0, -1, 1.0);
+                res = Classification.classifyBoth(model, movements);
             return res;
         }
 
@@ -74,19 +74,20 @@ namespace Motion_lie_detection
             return (1.0 / Math.Sqrt(Math.PI * var2)) * Math.Exp(-(diff * diff) / var2);
         }
 
-        private static List<double> classify(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1, double factor = 500.0)
+        private static List<double> classify(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1, double factor = -1)
         {
             List<double> res = new List<double>();
             double[] param;
             max = (max == -1 || max > movements.Count) ? movements.Count : max;
+            double fac = (factor == -1) ? model.Factor : factor;
 
             for (int i = min; i < max; i++)
             {
                 param = model[i];
                 if (param != null)
                 {
-                    double ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * factor);
-                    double plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * factor);
+                    double ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * fac);
+                    double plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * fac);
 
                     res.Add(ptruth / (ptruth + plie));
                 }
@@ -98,19 +99,20 @@ namespace Motion_lie_detection
             return res;
         }
 
-        private static List<Tuple<double, double>> classifyBoth(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1, double factor = 500.0)
+        private static List<Tuple<double, double>> classifyBoth(ClassificationConfiguration model, List<double> movements, int min = 0, int max = -1, double factor = -1)
         {
             List<Tuple<double, double>> res = new List<Tuple<double, double>>();
             double[] param;
             max = (max == -1 || max > movements.Count) ? movements.Count : max;
+            double fac = (factor == -1) ? model.Factor : factor;
 
             for (int i = min; i < max; i++)
             {
                 param = model[i];
                 if (param != null)
                 {
-                    double ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * factor);
-                    double plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * factor);
+                    double ptruth = Classification.GaussianNaiveBayes(param[0], param[1], movements[i] * fac);
+                    double plie = Classification.GaussianNaiveBayes(param[2], param[3], movements[i] * fac);
 
                     res.Add(Tuple.Create(ptruth, plie));
                 }
