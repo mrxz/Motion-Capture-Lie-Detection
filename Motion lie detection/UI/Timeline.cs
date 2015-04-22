@@ -377,22 +377,6 @@ namespace Motion_lie_detection
                 //Update the chart
                 UpdateChart(Chart);
 
-                if (this.CurrentPos > 0)                {
-
-                    if (this.LieResult.FrameDifferences.Count > 0)
-                    {
-                        int j = 0;
-
-                        foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
-                        {
-                            var value = this.LieResult[this.CurrentPos][j];
-
-                            Chart.Series[j].Points.Add(value);
-                            j++;
-                        }
-                    }
-                    //  Chart.ChartAreas[0].RecalculateAxesScale();
-                }
                 // Now check for looping within the selection.
                 if (selection && looping)
                 {
@@ -447,6 +431,26 @@ namespace Motion_lie_detection
                 {
                     Chart.Series[i].Points.RemoveAt(0);
                 }
+            }
+
+            if (this.CurrentPos > 0)
+            {
+
+                if (this.LieResult.FrameDifferences.Count > 0)
+                {
+                    int i = 0;
+                    int j = this.recording.BodyConfiguration.Size;
+
+                    foreach (BodyNode node in this.Recording.ClassificationConfiguration.Rootnodes)
+                    {
+                        var value = this.LieResult[this.CurrentPos][j];
+
+                        Chart.Series[i].Points.Add(value);
+                        j++;
+                        i++;
+                    }
+                }
+                //  Chart.ChartAreas[0].RecalculateAxesScale();
             }
         }
 

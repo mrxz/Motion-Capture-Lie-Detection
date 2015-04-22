@@ -93,7 +93,7 @@ namespace Motion_lie_detection
             this.Chart.Legends.Add("chart legend");
             Chart.ResetAutoValues();
             Chart.ChartAreas.Add(new ChartArea());
-            Chart.ChartAreas[0].AxisY.Maximum = 0.02;
+            Chart.ChartAreas[0].AxisY.Maximum = 0.01;
             Chart.ChartAreas[0].AxisY.Minimum = 0;
             Chart.ChartAreas[0].AxisX.Enabled = AxisEnabled.False;
             Chart.ChartAreas[0].AxisY.Title = "difference";
@@ -106,10 +106,6 @@ namespace Motion_lie_detection
         public new void Update()
         {
             String text = "";
-            if (timeline.Recording != null)
-            {
-
-            }
             // update the traffic light
             List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
 
