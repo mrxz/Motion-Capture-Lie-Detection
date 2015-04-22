@@ -66,6 +66,7 @@
     <Compile Include="Algorithm\FilterPass.cs" />
     <Compile Include="Classification\FixedClassificationConfiguration.cs" />
     <Compile Include="IO\BigEndianBinaryReader.cs" />
+    <Compile Include="Recording\FixedBodyConfiguration.cs" />
     <Compile Include="UI\LeftSidePanel.cs">
       <SubType>Component</SubType>
     </Compile>

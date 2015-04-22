@@ -105,11 +105,6 @@ namespace Motion_lie_detection
 
         public new void Update()
         {
-
-
-
-
-
             String text = "";
             if (timeline.Recording != null)
             {
@@ -117,8 +112,6 @@ namespace Motion_lie_detection
             }
             // update the traffic light
             List<double> movement = timeline.LieResult.ComputeAbsoluteMovements(timeline.SelectionStart, timeline.SelectionEnd);
-
-
 
             if (movement != null)
             {
@@ -142,7 +135,6 @@ namespace Motion_lie_detection
                 this.results = Classification.ClassifyBoth(timeline.Recording.ClassificationConfiguration, movement);
                 light.Invalidate();
             }
-
 
             absoluteMovement.Text = text;
             absoluteMovement.Invalidate();

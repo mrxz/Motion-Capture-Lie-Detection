@@ -25,6 +25,7 @@ namespace Motion_lie_detection
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Window(algo));
+            LOG.info("Window closed, exiting progam");
         }
 
     }
