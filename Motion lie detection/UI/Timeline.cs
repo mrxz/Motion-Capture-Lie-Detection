@@ -436,7 +436,7 @@ namespace Motion_lie_detection
             if (this.CurrentPos > 0)
             {
 
-                if (this.LieResult.FrameDifferences.Count > 0)
+                if (this.LieResult.FrameDifferences.Count > 0 && this.CurrentPos < this.LieResult.NextFrameId)
                 {
                     int i = 0;
                     int j = this.recording.BodyConfiguration.Size;
