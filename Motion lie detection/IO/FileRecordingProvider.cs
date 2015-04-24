@@ -210,13 +210,11 @@ namespace Motion_lie_detection
                     int frameCount = br.ReadInt32();
                     jCount = br.ReadInt32();
                     newFrames = new List<Frame>(frameCount);
-                    bool hadnPose = false;
                     for (int f = 0; f < frameCount; ++f) {
                         // Nposes are used to determine the lengths of body parts,
                         // otherwise we read a regular frame.
                         bool isNPose = br.ReadBoolean();
-                        if (isNPose && !hadnPose) {
-                            hadnPose = true;
+                        if (isNPose) {
                             Frame npose = readFrame(br);
                             bodyConfiguration.LengthsFromNPose(npose);
                         }
