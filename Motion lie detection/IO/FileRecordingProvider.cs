@@ -210,11 +210,13 @@ namespace Motion_lie_detection
                     int frameCount = br.ReadInt32();
                     jCount = br.ReadInt32();
                     newFrames = new List<Frame>(frameCount);
+                    bool hadnPose = false;
                     for (int f = 0; f < frameCount; ++f) {
                         // Nposes are used to determine the lengths of body parts,
                         // otherwise we read a regular frame.
                         bool isNPose = br.ReadBoolean();
-                        if (isNPose) {
+                        if (isNPose && !hadnPose) {
+                            hadnPose = true;
                             Frame npose = readFrame(br);
                             bodyConfiguration.LengthsFromNPose(npose);
                         }
@@ -246,7 +248,7 @@ namespace Motion_lie_detection
                 joints.Add(
                     new Joint(
                         i + 1,
-                        new Vector3d(br.ReadSingle(), br.ReadSingle(), br.ReadSingle()),
+                        new Vector3d(br.ReadDouble(), br.ReadDouble(), br.ReadDouble()),
                         new mxf.Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle())));
             }
 

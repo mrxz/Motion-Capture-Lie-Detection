@@ -12,9 +12,9 @@ int32 	TimeCode
 
 After that, for each joint:
 
-single	Position x
-single	Position y
-single	Position z
+double	Position x
+double	Position y
+double	Position z
 single  Orientation x
 single	Orientation y
 single	Orientation z
