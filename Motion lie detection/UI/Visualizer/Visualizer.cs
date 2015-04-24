@@ -57,6 +57,12 @@ namespace Motion_lie_detection
             this.MouseWheel += visualizer_Zoom;
         }
 
+        void Visualizer_Resize(object sender, EventArgs e)
+        {
+
+            camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;
+        }
+
 		protected override void Initialize()
 		{
             //create a camera
@@ -70,6 +76,9 @@ namespace Motion_lie_detection
 
             //create the grid
             grid = new Grid(GraphicsDevice, -13);
+
+            // listen for resizes to adjust aspect ratios
+            this.Resize += Visualizer_Resize;
 		}		
 
         protected override void Draw()
