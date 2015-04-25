@@ -20,6 +20,11 @@ namespace Motion_lie_detection
 		 */
 		public abstract bool Start();
 
+        /**
+         * Method that signals the recording provider to stop.
+         */
+        public abstract bool Stop();
+
 		/**
 		 * Method for returning the framerate for the recording in frames per second.
 		 * Note that the framerate MUST be fixed and so subsequential calls to GetFrameRate should return the same value.

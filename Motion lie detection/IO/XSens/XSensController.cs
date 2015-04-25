@@ -31,7 +31,9 @@ namespace Motion_lie_detection
 
 		public override bool Disconnect ()
 		{
-			return listener.Stop ();
+            // Note: the listener is closed at this point to also close the underlying udp stream.
+            // In case multiple-suits from one listener are desired, this should be managed differently.
+			return listener.Close ();
 		}
 
 		public override bool Calibrate ()

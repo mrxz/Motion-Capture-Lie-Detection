@@ -15,6 +15,8 @@ namespace Motion_lie_detection
 		private int currentPacket;
 		private UdpClient client;
 
+        private Thread thread;
+
 		public DummyStream ()
 		{
 			LOG.info ("New dummy stream created");
@@ -31,19 +33,33 @@ namespace Motion_lie_detection
 			currentPacket = 0;
 
 			LOG.info ("Starting streaming thread");
-			new Thread (send).Start(endless);
+			thread = new Thread (send);
+            thread.Start(endless);
 		}
+
+        public void Stop()
+        {
+            // Abort the thread.
+            LOG.info("Stopping streaming thread");
+            thread.Abort();
+
+            // Disconnect the client.
+            if (client != null)
+                client.Close();
+        }
 
 		private void send(object data)
 		{
             bool endless = (bool)data;
-			while(currentPacket < packets.Length || endless)
+			while(currentPacket < packets.Length)
 			{
 				LOG.fine ("Sending packet #" + currentPacket);
 				client.Send (packets [currentPacket], packets [currentPacket].Length);
 
 				Thread.Sleep (1000 / frameRate);
-                currentPacket = (currentPacket + 1) % packets.Length;
+                currentPacket = (currentPacket + 1);
+                if (currentPacket >= packets.Length && endless)
+                        currentPacket %= packets.Length;
 			}
 
 		}

@@ -71,6 +71,20 @@ namespace Motion_lie_detection
 			return true;
 		}
 
+        /**
+         * Method for actually closing the XSensListener.
+         * Note: The listener shouldn't be used after this point, since the result will be undefined.
+         */
+        public bool Close ()
+        {
+            // First stop the listener.
+            Stop();
+
+            // Now close the UDPListener.
+            client.Close();
+            return true;
+        }
+
 		public void Listen ()
 		{
 			// Listen

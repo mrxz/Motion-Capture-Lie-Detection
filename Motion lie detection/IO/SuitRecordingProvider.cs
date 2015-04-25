@@ -51,10 +51,17 @@ namespace Motion_lie_detection
 
 		public override bool Start ()
 		{
-			// FIXME: Clear the NewFrames list and capture the time stamp as start point.
 			LOG.info ("Starting");
 			return true;
 		}
+
+        public override bool Stop()
+        {
+            // Let the controller disconnect.
+            // Note: this makes the suit-controller semi-managed by the SuitRecordingProvider which might cause problems
+            // in case of multi-recording or multiple recordings from one suit-controller.
+            return controller.Disconnect();
+        }
 
 		public override int GetFrameRate ()
 		{

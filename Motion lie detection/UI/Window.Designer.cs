@@ -39,6 +39,11 @@ namespace Motion_lie_detection
         LeftSidePanel leftSidePanel;
         RightSidePanel rightSidePanel;
 
+        /**
+         * Instance of the dummy stream.
+         */
+        DummyStream dummyStream = null;
+
 		private void InitializeComponent()
         {
             this.visualizer = new Visualizer();
@@ -91,7 +96,6 @@ namespace Motion_lie_detection
             // File
             MenuItem File = mainMenu.MenuItems.Add("File");
             File.MenuItems.Add(new MenuItem("Start listening", new EventHandler(startListener), Shortcut.CtrlShiftO));
-            File.MenuItems.Add(new MenuItem("Stop listener", new EventHandler(stopListener), Shortcut.CtrlShiftS));
             File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
             File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
             File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
@@ -107,6 +111,7 @@ namespace Motion_lie_detection
             MenuItem Settings = mainMenu.MenuItems.Add("Test");
             Settings.MenuItems.Add(new MenuItem("Start dummy stream", new EventHandler(startDummyStream)));
             Settings.MenuItems.Add(new MenuItem("Start endless dummy stream", new EventHandler(startEndlessDummyStream)));
+            Settings.MenuItems.Add(new MenuItem("Sop stream", new EventHandler(stopStream)));
 
 
 			// Note: we call resize once to make sure there's no difference between initial layout and resized layout.
@@ -203,6 +208,10 @@ namespace Motion_lie_detection
             if (connectForm.ShowDialog(this) == DialogResult.Cancel)
 				return;
 
+            // In case a recording is still open, close it.
+            if (this.Recording != null)
+                closeRecording(sender, e);
+
 			SuitController controller = new XSensController(connectForm.Host, connectForm.Port);
             controller.Calibrate();
 			controller.Connect();
@@ -218,11 +227,6 @@ namespace Motion_lie_detection
 			this.Text = "Motion Lie Detection - " + connectForm.Host + ":" + connectForm.Port;
 		}
         
-        private void stopListener(object sender, EventArgs e)
-        {
-            
-        }
-
         private void openFile(object sender, EventArgs e)
         {
 			// Show the file open dialog
@@ -267,6 +271,7 @@ namespace Motion_lie_detection
             visualizer.Reset();
 
             //Set recording
+            this.Recording.Finish();
             this.Recording = null;
 
             //Set Lieresult
@@ -294,14 +299,30 @@ namespace Motion_lie_detection
 
         private void startDummyStream(object sender, EventArgs e)
         {
-            DummyStream stream = new DummyStream();
-            stream.Start(false);
+            // First stop any stream.
+            stopStream(sender, e);
+
+            // Create a new stream and start it.
+            dummyStream = new DummyStream();
+            dummyStream.Start(false);
 		}
 
         private void startEndlessDummyStream(object sender, EventArgs e)
         {
-            DummyStream stream = new DummyStream();
-            stream.Start(true);
+            // First stop any stream.
+            stopStream(sender, e);
+
+            // Create a new stream and start it.
+            dummyStream = new DummyStream();
+            dummyStream.Start(true);
+        }
+
+        private void stopStream(object sender, EventArgs e)
+        {
+            // In case the dummy stream isn't null, stop it.
+            if(dummyStream != null)
+                dummyStream.Stop();
+            dummyStream = null;
         }
 
         private void resize(Object sender, EventArgs e)
