@@ -39,26 +39,7 @@ namespace Motion_lie_detection
 
             toPrevMarker = new Button();
             toPrevMarker.Text = "<<";
-            toPrevMarker.Click += (obj, e) =>
-            {
-                if (timeline.Recording == null)
-                    return;
-
-                // Seek the best fitting markpoint.
-                MarkPoint markpoint = null;
-                int now = timeline.CurrentPos;
-                foreach (MarkPoint point in timeline.Recording.MarkPoints)
-                {
-                    if (point.Frameid < now)
-                        markpoint = point;
-                    else
-                        break;
-                }
-                if (markpoint != null)
-                    timeline.CurrentPos = markpoint.Frameid;
-                else
-                    timeline.CurrentPos = 0;
-            };
+            toPrevMarker.Click += PreviousMarkpoint;
             this.Controls.Add(toPrevMarker);
 
             pause = new Button();
@@ -73,27 +54,7 @@ namespace Motion_lie_detection
 
             toNextMarker = new Button();
             toNextMarker.Text = ">>";
-            toNextMarker.Click += (obj, e) =>
-            {
-                if (timeline.Recording == null)
-                    return;
-
-                // Seek the best fitting markpoint.
-                MarkPoint markpoint = null;
-                int now = timeline.CurrentPos;
-                foreach (MarkPoint point in timeline.Recording.MarkPoints)
-                {
-                    if (point.Frameid > now)
-                    {
-                        markpoint = point;
-                        break;
-                    }
-                }
-                if (markpoint != null)
-                    timeline.CurrentPos = markpoint.Frameid;
-                else
-                    timeline.CurrentPos = timeline.Recording.FrameCount;
-            };
+            toNextMarker.Click += NextMarkpoint;
             this.Controls.Add(toNextMarker);
 
             toEnd = new Button();
@@ -142,6 +103,49 @@ namespace Motion_lie_detection
                 //float playSpeed = Float.speed.Text
             };
             this.Controls.Add(speed);
+        }
+
+        public void PreviousMarkpoint(object sender, EventArgs e)
+        {
+            if (timeline.Recording == null)
+                return;
+
+            // Seek the best fitting markpoint.
+            MarkPoint markpoint = null;
+            int now = timeline.CurrentPos;
+            foreach (MarkPoint point in timeline.Recording.MarkPoints)
+            {
+                if (point.Frameid < now)
+                    markpoint = point;
+                else
+                    break;
+            }
+            if (markpoint != null)
+                timeline.CurrentPos = markpoint.Frameid;
+            else
+                timeline.CurrentPos = 0;
+        }
+
+        public void NextMarkpoint(object sender, EventArgs e)
+        {
+            if (timeline.Recording == null)
+                return;
+
+            // Seek the best fitting markpoint.
+            MarkPoint markpoint = null;
+            int now = timeline.CurrentPos;
+            foreach (MarkPoint point in timeline.Recording.MarkPoints)
+            {
+                if (point.Frameid > now)
+                {
+                    markpoint = point;
+                    break;
+                }
+            }
+            if (markpoint != null)
+                timeline.CurrentPos = markpoint.Frameid;
+            else
+                timeline.CurrentPos = timeline.Recording.FrameCount;
         }
 
         protected override void OnResize(EventArgs eventargs)

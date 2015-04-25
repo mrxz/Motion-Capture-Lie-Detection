@@ -45,41 +45,7 @@ namespace Motion_lie_detection
             this.visualizer.Name = "visualizer";
             this.visualizer.TabIndex = 0;
             this.Controls.Add(this.visualizer);
-
-    		//
-			// Menu bar
-			//
-			mainMenu = new MainMenu();
-
-			// File
-			MenuItem File = mainMenu.MenuItems.Add("File");
-			File.MenuItems.Add(new MenuItem("Start listening", new EventHandler(startListener), Shortcut.CtrlShiftO));
-            File.MenuItems.Add(new MenuItem("Stop listener", new EventHandler(stopListener), Shortcut.CtrlShiftS));
-			File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
-			File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
-			File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
-			File.MenuItems.Add(new MenuItem("Exit", new EventHandler(exit)));
-
-			// Markpoint.
-			MenuItem Mark = mainMenu.MenuItems.Add("Markpoint");
-			Mark.MenuItems.Add(new MenuItem("Add markpoint"));
-			Mark.MenuItems.Add(new MenuItem("Remove markpoint"));
-			Mark.MenuItems.Add(new MenuItem("Next markpoint"));
-			Mark.MenuItems.Add(new MenuItem("Previous markpoint"));
-
-			// Settings
-			MenuItem Settings = mainMenu.MenuItems.Add("Settings");
-			Settings.MenuItems.Add(new MenuItem("Something"));
-			Settings.MenuItems.Add(new MenuItem("Start dummy stream", new EventHandler(startDummyStream)));
-            Settings.MenuItems.Add(new MenuItem("Start endless dummy stream", new EventHandler(startEndlessDummyStream)));
-            Settings.MenuItems.Add(new MenuItem("TODO"));
-
-			// Help
-			MenuItem About = mainMenu.MenuItems.Add("Help");
-			About.MenuItems.Add(new MenuItem("About"));
-
-			this.Menu = mainMenu;
-
+            
 			//
 			// Timeline
 			//
@@ -115,6 +81,32 @@ namespace Motion_lie_detection
 			this.KeyPreview = true;
 			this.KeyDown += this.keyDown;
 			this.Resize += this.resize;
+
+            //
+            // Menu bar
+            //
+            mainMenu = new MainMenu();
+            this.Menu = mainMenu;
+
+            // File
+            MenuItem File = mainMenu.MenuItems.Add("File");
+            File.MenuItems.Add(new MenuItem("Start listening", new EventHandler(startListener), Shortcut.CtrlShiftO));
+            File.MenuItems.Add(new MenuItem("Stop listener", new EventHandler(stopListener), Shortcut.CtrlShiftS));
+            File.MenuItems.Add(new MenuItem("Open recording file", new EventHandler(openFile), Shortcut.CtrlO));
+            File.MenuItems.Add(new MenuItem("Save recording", new EventHandler(saveFile), Shortcut.CtrlS));
+            File.MenuItems.Add(new MenuItem("Close recording", new EventHandler(closeRecording), Shortcut.CtrlW));
+            File.MenuItems.Add(new MenuItem("Exit", new EventHandler(exit)));
+
+            // Markpoint.
+            MenuItem Mark = mainMenu.MenuItems.Add("Markpoint");
+            Mark.MenuItems.Add(new MenuItem("Add markpoint", rightSidePanel.AddMarkpoint));
+            Mark.MenuItems.Add(new MenuItem("Next markpoint", playbackPanel.NextMarkpoint));
+            Mark.MenuItems.Add(new MenuItem("Previous markpoint", playbackPanel.PreviousMarkpoint));
+
+            // Demo
+            MenuItem Settings = mainMenu.MenuItems.Add("Test");
+            Settings.MenuItems.Add(new MenuItem("Start dummy stream", new EventHandler(startDummyStream)));
+            Settings.MenuItems.Add(new MenuItem("Start endless dummy stream", new EventHandler(startEndlessDummyStream)));
 
 
 			// Note: we call resize once to make sure there's no difference between initial layout and resized layout.
