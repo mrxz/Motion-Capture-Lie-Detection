@@ -54,18 +54,7 @@ namespace Motion_lie_detection
 
             addButton = new Button();
             addButton.Text = "Add";
-            addButton.Click += (obj, e) =>
-            {
-                if (timeline.Recording == null)
-                    return;
-
-                // Insert the markpoint with an automatic description.
-                int id = timeline.Recording.MarkpointId;
-                MarkPoint newPoint = new MarkPoint(id, "Markpoint #" + (id + 1), timeline.CurrentPos);
-                timeline.Recording.AddMarkPoint(newPoint);
-                int index = timeline.Recording.MarkPoints.IndexOf(newPoint);
-                markpointBox.Items.Insert(index, newPoint);
-            };
+            addButton.Click += AddMarkpoint;
             this.Controls.Add(addButton);
 
             removeButton = new Button();
@@ -117,6 +106,19 @@ namespace Motion_lie_detection
             };
 
             this.Resize += resize;
+        }
+
+        public void AddMarkpoint(object sender, EventArgs e)
+        {
+            if (timeline.Recording == null)
+                return;
+
+            // Insert the markpoint with an automatic description.
+            int id = timeline.Recording.MarkpointId;
+            MarkPoint newPoint = new MarkPoint(id, "Markpoint #" + (id + 1), timeline.CurrentPos);
+            timeline.Recording.AddMarkPoint(newPoint);
+            int index = timeline.Recording.MarkPoints.IndexOf(newPoint);
+            markpointBox.Items.Insert(index, newPoint);
         }
 
         private void CreateEditBox()

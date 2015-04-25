@@ -73,6 +73,13 @@ namespace Motion_lie_detection
             return true;
         }
 
+        public override bool Stop()
+        {
+            // Nothing to do here.
+            LOG.info("Stopping");
+            return true;
+        }
+
         public override int GetFrameRate()
         {
             return frameRate;

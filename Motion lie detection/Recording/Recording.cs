@@ -91,6 +91,15 @@ namespace Motion_lie_detection
 			return false;
 		}
 
+        /**
+         * Method for finalizing the recording, meaning it won't be expanded and the recording provider can be closed.
+         */
+        public bool Finish()
+        {
+            // Let the recording provider stop.
+            return provider.Stop();
+        }
+
 		/**
 		 * Method that returns the frameID of the last (or latest) frame of the recording.
 		 * @return The last frame ID of the recording.
@@ -154,7 +163,5 @@ namespace Motion_lie_detection
                 return;
             markpoints.Remove(markpoint.Frameid);
         }
-
-
 	}
 }
