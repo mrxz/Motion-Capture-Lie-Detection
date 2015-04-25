@@ -14,7 +14,7 @@ To open a prerecorded file go to `File` and select `Open recording file` or
 press `Ctrl+O`.
 
 
-# Visualizer
+## Visualizer
 The data should be playing now. And you'll see a 3d character drawn in the
 middle of the screen. You can move the character around by holding the right
 mouse button and rotate the character by holding the left mouse button. You 
